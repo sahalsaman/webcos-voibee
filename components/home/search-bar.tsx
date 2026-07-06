@@ -32,7 +32,7 @@ export function SearchBar() {
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search trips, e.g. Manali backpacking"
+          placeholder="Search destination, e.g. Manali backpacking"
           className="h-11 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
       </div>

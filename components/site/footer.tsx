@@ -11,7 +11,7 @@ export function Footer() {
             <span className="flex size-9 items-center justify-center rounded-xl bg-brand-gradient text-white">
               <Compass className="size-5" />
             </span>
-            Trip<span className="text-gradient">nox</span>
+            Voibee
           </Link>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">
             The travel marketplace for explorers and the partners who power their
@@ -47,14 +47,14 @@ export function Footer() {
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li><Link className="hover:text-foreground" href="/register?role=partner">Become a Partner</Link></li>
             <li><Link className="hover:text-foreground" href="/login">Partner Login</Link></li>
-            <li><Link className="hover:text-foreground" href="/#why">Why Tripnox</Link></li>
+            <li><Link className="hover:text-foreground" href="/#why">Why Voibee</Link></li>
           </ul>
         </div>
       </div>
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-sm text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
-          <p>© {new Date().getFullYear()} Tripnox. All rights reserved.</p>
-          <p>Made for explorers · Powered by Tripnox</p>
+          <p>© {new Date().getFullYear()} Voibee. All rights reserved.</p>
+          <p>Made for explorers · Powered by Voibee</p>
         </div>
       </div>
     </footer>

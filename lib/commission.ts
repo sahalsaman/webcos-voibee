@@ -1,5 +1,5 @@
 /**
- * Commission engine — the heart of Tripnox pricing.
+ * Commission engine — the heart of Voibee pricing.
  *
  * Spec example (platform fee = 0):
  *   Base Price      = 10,000

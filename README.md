@@ -1,4 +1,4 @@
-# 🧭 Tripnox
+# 🧭 Voibee
 
 **Travel marketplace & white-label trip reseller platform.**
 
@@ -19,8 +19,8 @@ Travelers discover and book trips. Built with the Next.js 16 App Router.
 - **Partner portal** — dashboard, browse & create white-label links, link
   manager, bookings, earnings ledger, profile/branding.
 - **Traveler portal** — bookings, wishlist, upcoming/completed trips.
-- **White-label pages** — `tripnox.com/p/<partner>/<trip>` with partner branding
-  and "Powered by Tripnox".
+- **White-label pages** — `voibee.com/p/<partner>/<trip>` with partner branding
+  and "Powered by Voibee".
 - **Commission engine** — configurable platform fee; automatic split of every
   booking into partner earnings vs. operator revenue.
 - **Razorpay** payments with signature verification (plus a built-in demo mode
@@ -54,7 +54,7 @@ Fill in `.env.local`. The minimum to run locally:
 
 | Variable | Required | Notes |
 | --- | --- | --- |
-| `MONGODB_URI` | ✅ | Local `mongodb://127.0.0.1:27017/tripnox` or MongoDB Atlas |
+| `MONGODB_URI` | ✅ | Local `mongodb://127.0.0.1:27017/voibee` or MongoDB Atlas |
 | `AUTH_SECRET` | ✅ | `openssl rand -base64 32` |
 | `NEXT_PUBLIC_APP_URL` | ✅ | e.g. `http://localhost:3000` |
 | `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` | optional | Without these, checkout runs in **demo mode** (bookings auto-confirm) |
@@ -73,7 +73,7 @@ commissions and reviews. Default password for all demo accounts is
 
 | Role | Email |
 | --- | --- |
-| Admin | `admin@tripnox.com` |
+| Admin | `admin@voibee.com` |
 | Partner | `sahal@example.com` → storefront at `/p/sahal/goa-beach-escape` |
 | Traveler | `aarav@example.com` |
 
@@ -110,7 +110,7 @@ commission. Every money field scales by seat count.
 A partner picks a trip, sets a commission, and a `PartnerTrip` record is created
 that resolves the public URL `/p/<partnerSlug>/<tripSlug>`. The page renders with
 the partner's branding (logo, banner, business name) while keeping "Powered by
-Tripnox". Bookings through the link are attributed to the partner and credited to
+Voibee". Bookings through the link are attributed to the partner and credited to
 their earnings ledger automatically on payment.
 
 ---

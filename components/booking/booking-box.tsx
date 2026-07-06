@@ -110,11 +110,11 @@ export function BookingBox({
         key: keyId,
         amount: amount * 100,
         currency: "INR",
-        name: "Tripnox",
+        name: "Voibee",
         description: "Trip booking",
         order_id: razorpayOrderId,
         prefill: { name: form.name, email: form.email, contact: form.mobile },
-        theme: { color: "#0e9e8e" },
+        theme: { color: "#0060E6" },
         handler: async (resp: Record<string, string>) => {
           await confirm({
             bookingId,

@@ -17,9 +17,9 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { LineChart as LineIcon } from "lucide-react";
 import { formatINR, formatCompact } from "@/lib/utils";
 
-const PRIMARY = "#0e9e8e";
-const ACCENT = "#ff6b5e";
-const PALETTE = ["#0e9e8e", "#ff6b5e", "#6366f1", "#f59e0b", "#10b981"];
+const PRIMARY = "#0060E6";
+const ACCENT = "#00B6F0";
+const PALETTE = ["#0060E6", "#00B6F0", "#6366f1", "#f59e0b", "#10b981"];
 
 function hasData(data: { value?: number }[], key: string) {
   return data.some((d) => Number((d as Record<string, number>)[key]) > 0);

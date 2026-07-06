@@ -14,11 +14,11 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
   title: {
-    default: "Tripnox — Discover & Resell Unforgettable Trips",
-    template: "%s · Tripnox",
+    default: "Voibee — Discover & Resell Unforgettable Trips",
+    template: "%s · Voibee",
   },
   description:
-    "Tripnox is a travel marketplace where operators publish trips and partners resell them with white-label links to earn commissions.",
+    "Voibee is a travel marketplace where operators publish trips and partners resell them with white-label links to earn commissions.",
   keywords: [
     "travel",
     "trips",
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
-    siteName: "Tripnox",
-    title: "Tripnox — Discover & Resell Unforgettable Trips",
+    siteName: "Voibee",
+    title: "Voibee — Discover & Resell Unforgettable Trips",
     description:
       "Book curated trips or become a partner and earn by reselling travel packages.",
     url: appUrl,
@@ -42,8 +42,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#0e9e8e" },
-    { media: "(prefers-color-scheme: dark)", color: "#07111c" },
+    { media: "(prefers-color-scheme: light)", color: "#0060e6" },
+    { media: "(prefers-color-scheme: dark)", color: "#000c1a" },
   ],
   width: "device-width",
   initialScale: 1,

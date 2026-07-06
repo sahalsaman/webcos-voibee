@@ -20,7 +20,7 @@ const PartnerSchema = new Schema(
       index: true,
     },
     businessName: { type: String, required: true, trim: true },
-    // White-label namespace, e.g. tripnox.com/p/<slug>/<trip>
+    // White-label namespace, e.g. voibee.com/p/<slug>/<trip>
     slug: {
       type: String,
       required: true,

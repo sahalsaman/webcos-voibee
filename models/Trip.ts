@@ -38,6 +38,7 @@ const TripSchema = new Schema(
     featured: { type: Boolean, default: false, index: true },
     tags: { type: [String], default: [] },
     rating: { type: Number, default: 0, min: 0, max: 5 },
+    country: { type: String, default: "India" },
     reviewCount: { type: Number, default: 0 },
   },
   { timestamps: true },

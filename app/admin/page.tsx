@@ -53,7 +53,7 @@ export default async function AdminDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <AreaTrendChart title="Booking Trends" data={charts.trend} xKey="month" yKey="bookings" />
-        <AreaTrendChart title="Revenue Analytics" data={charts.trend} xKey="month" yKey="revenue" currency color="#ff6b5e" />
+        <AreaTrendChart title="Revenue Analytics" data={charts.trend} xKey="month" yKey="revenue" currency color="#00B6F0" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

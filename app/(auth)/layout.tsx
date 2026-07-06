@@ -18,7 +18,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <span className="flex size-10 items-center justify-center rounded-xl bg-white/20">
               <Compass className="size-6" />
             </span>
-            Tripnox
+            Voibee
           </Link>
           <div>
             <Quote className="size-10 opacity-60" />
@@ -26,7 +26,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               The marketplace where travelers find their next adventure and
               partners turn passion into profit.
             </p>
-            <p className="mt-4 text-white/80">Join thousands already exploring with Tripnox.</p>
+            <p className="mt-4 text-white/80">Join thousands already exploring with Voibee.</p>
           </div>
         </div>
       </div>
@@ -41,7 +41,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <span className="flex size-9 items-center justify-center rounded-xl bg-brand-gradient text-white">
               <Compass className="size-5" />
             </span>
-            Trip<span className="text-gradient">nox</span>
+            Voi<span className="text-gradient">bee</span>
           </Link>
           {children}
         </div>

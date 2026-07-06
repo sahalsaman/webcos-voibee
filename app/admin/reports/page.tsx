@@ -72,9 +72,9 @@ export default async function ReportsPage() {
           <CardTitle>Export data (CSV / Excel)</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
-          <CsvExportButton rows={bookingRows} filename="tripnox-bookings.csv" label="Revenue & Bookings" />
-          <CsvExportButton rows={tripRows} filename="tripnox-trips.csv" label="Trips" />
-          <CsvExportButton rows={partnerRows} filename="tripnox-partners.csv" label="Partners" />
+          <CsvExportButton rows={bookingRows} filename="voibee-bookings.csv" label="Revenue & Bookings" />
+          <CsvExportButton rows={tripRows} filename="voibee-trips.csv" label="Trips" />
+          <CsvExportButton rows={partnerRows} filename="voibee-partners.csv" label="Partners" />
         </CardContent>
       </Card>
 

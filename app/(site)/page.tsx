@@ -26,7 +26,7 @@ import { formatCompact } from "@/lib/utils";
 export const revalidate = 60;
 
 const HERO_BG =
-  "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1920&q=80";
+  "/hero-bg.png";
 
 const WHY = [
   {
@@ -55,7 +55,7 @@ const TESTIMONIALS = [
   {
     name: "Cheruvadi Travels",
     role: "Partner Agency",
-    text: "We resell Tripnox packages to our community and earn solid commissions without managing logistics. Game changer.",
+    text: "We resell Voibee packages to our community and earn solid commissions without managing logistics. Game changer.",
   },
   {
     name: "Sara Khan",
@@ -87,11 +87,11 @@ export default async function HomePage() {
         </div>
         <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-24 text-center sm:px-6 lg:px-8 lg:pt-32">
           <Badge variant="glass" className="mx-auto mb-5 text-white">
-            <Compass className="size-3.5" /> India&apos;s white-label travel marketplace
+            <Compass className="size-3.5" /> Your travel partner
           </Badge>
           <h1 className="mx-auto max-w-4xl text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">
             Discover unforgettable trips.{" "}
-            <span className="text-gradient">Resell &amp; earn</span> with Tripnox.
+            Plan your trip with <span className="text-gradient"> VOIBEE</span>
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base text-white/80 sm:text-lg">
             Book curated getaways from trusted operators — or become a partner and
@@ -199,10 +199,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ---------------- Why Tripnox ---------------- */}
+      {/* ---------------- Why Voibee ---------------- */}
       <section id="why" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Why Tripnox"
+          eyebrow="Why Voibee"
           title="Built for travelers and the partners who power them"
         />
         <div className="grid gap-6 md:grid-cols-3">
@@ -232,7 +232,7 @@ export default async function HomePage() {
                 Turn your audience into income
               </h2>
               <p className="mt-3 max-w-lg text-white/85">
-                Agencies, influencers and community leaders resell Tripnox trips
+                Agencies, influencers and community leaders resell Voibee trips
                 with white-label pages, set their own commission and get paid for
                 every booking.
               </p>
@@ -254,7 +254,7 @@ export default async function HomePage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {[
-                { icon: Link2, title: "White-label links", desc: "tripnox.com/p/your-brand/goa-trip" },
+                { icon: Link2, title: "White-label links", desc: "voibee.com/p/your-brand/goa-trip" },
                 { icon: Wallet, title: "Custom commission", desc: "Set your own margin per trip" },
                 { icon: TrendingUp, title: "Live earnings", desc: "Track leads, bookings & payouts" },
                 { icon: ShieldCheck, title: "Zero risk", desc: "No inventory, no upfront cost" },
@@ -307,7 +307,7 @@ export default async function HomePage() {
           Your next adventure is one click away
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-          Join thousands of travelers and partners building memories with Tripnox.
+          Join thousands of travelers and partners building memories with Voibee.
         </p>
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <Button asChild size="lg" variant="gradient">
@@ -345,9 +345,8 @@ function SectionHeading({
       <h2 className="text-2xl font-bold sm:text-3xl">{title}</h2>
       {subtitle ? (
         <p
-          className={`mt-2 text-muted-foreground ${
-            align === "center" ? "mx-auto max-w-2xl" : ""
-          }`}
+          className={`mt-2 text-muted-foreground ${align === "center" ? "mx-auto max-w-2xl" : ""
+            }`}
         >
           {subtitle}
         </p>

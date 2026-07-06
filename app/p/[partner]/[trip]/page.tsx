@@ -180,12 +180,12 @@ export default async function WhiteLabelTripPage({ params }: Props) {
         </div>
       </main>
 
-      {/* Powered by Tripnox */}
+      {/* Powered by Voibee */}
       <footer className="mt-16 border-t border-border bg-card py-6">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 text-sm text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
           <p>© {new Date().getFullYear()} {biz.businessName}</p>
           <Link href="/" className="flex items-center gap-1.5 font-medium hover:text-foreground">
-            <Compass className="size-4 text-primary" /> Powered by Tripnox
+            <Compass className="size-4 text-primary" /> Powered by Voibee
           </Link>
         </div>
       </footer>

@@ -4,29 +4,29 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ============================================================
-   Design tokens — Tripnox
-   Ocean teal primary + coral accent. Premium travel aesthetic.
+   Design tokens — Voibee
+   Blue primary + cyan accent. Premium travel aesthetic.
    ============================================================ */
 :root {
-  --background: #f8fafb;
-  --foreground: #0c1b2a;
+  --background: #f4f8fc;
+  --foreground: #001c47;
 
   --card: #ffffff;
-  --card-foreground: #0c1b2a;
+  --card-foreground: #001c47;
 
   --popover: #ffffff;
-  --popover-foreground: #0c1b2a;
+  --popover-foreground: #001c47;
 
-  --primary: #0e9e8e; /* ocean teal */
+  --primary: #0060e6; /* deep blue */
   --primary-foreground: #ffffff;
 
-  --secondary: #eef2f5;
-  --secondary-foreground: #0c1b2a;
+  --secondary: #e0f7fc; /* light cyan tint */
+  --secondary-foreground: #001c47;
 
-  --muted: #eef2f5;
-  --muted-foreground: #5c6b7a;
+  --muted: #eaf2f8;
+  --muted-foreground: #343e4b; /* charcoal */
 
-  --accent: #ff6b5e; /* sunset coral */
+  --accent: #00b6f0; /* bright cyan/blue */
   --accent-foreground: #ffffff;
 
   --destructive: #e11d48;
@@ -35,9 +35,9 @@
   --success: #16a34a;
   --warning: #f59e0b;
 
-  --border: #e2e8ee;
-  --input: #e2e8ee;
-  --ring: #0e9e8e;
+  --border: #dbe6f2;
+  --input: #dbe6f2;
+  --ring: #0060e6;
 
   --radius: 0.85rem;
 
@@ -47,26 +47,26 @@
 }
 
 .dark {
-  --background: #07111c;
-  --foreground: #e8eef4;
+  --background: #000c1a;
+  --foreground: #e0f7fc;
 
-  --card: #0d1b29;
-  --card-foreground: #e8eef4;
+  --card: #001633;
+  --card-foreground: #e0f7fc;
 
-  --popover: #0d1b29;
-  --popover-foreground: #e8eef4;
+  --popover: #001633;
+  --popover-foreground: #e0f7fc;
 
-  --primary: #2dd4bf; /* brighter teal for dark */
-  --primary-foreground: #04201d;
+  --primary: #00b6f0; /* vibrant blue/cyan */
+  --primary-foreground: #001c47;
 
-  --secondary: #14283a;
-  --secondary-foreground: #e8eef4;
+  --secondary: #001c47;
+  --secondary-foreground: #e0f7fc;
 
-  --muted: #14283a;
-  --muted-foreground: #93a4b5;
+  --muted: #00224d;
+  --muted-foreground: #a4bfdb;
 
-  --accent: #ff7a6e;
-  --accent-foreground: #2a0a07;
+  --accent: #00b6f0;
+  --accent-foreground: #000c1a;
 
   --destructive: #fb7185;
   --destructive-foreground: #2a0a10;
@@ -74,11 +74,11 @@
   --success: #4ade80;
   --warning: #fbbf24;
 
-  --border: #1e3346;
-  --input: #1e3346;
-  --ring: #2dd4bf;
+  --border: #002b5c;
+  --input: #002b5c;
+  --ring: #00b6f0;
 
-  --glass-bg: rgba(13, 27, 41, 0.55);
+  --glass-bg: rgba(0, 12, 26, 0.55);
   --glass-border: rgba(255, 255, 255, 0.08);
 }
 

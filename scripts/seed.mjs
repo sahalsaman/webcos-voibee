@@ -1,5 +1,5 @@
 /**
- * Tripnox seed script.
+ * Voibee seed script.
  *   npm run seed
  *
  * Loads .env.local, wipes the core collections and inserts a realistic demo
@@ -54,7 +54,7 @@ const travelerIds = [oid(), oid(), oid()];
 const partnerUserIds = [oid(), oid(), oid()];
 
 const users = [
-  { _id: adminId, name: "Tripnox Admin", email: "admin@tripnox.com", password: hash, mobile: "9000000001", role: "admin", createdAt: now, updatedAt: now },
+  { _id: adminId, name: "Voibee Admin", email: "admin@voibee.com", password: hash, mobile: "9000000001", role: "admin", createdAt: now, updatedAt: now },
   { _id: travelerIds[0], name: "Aarav Mehta", email: "aarav@example.com", password: hash, mobile: "9000000010", role: "traveler", createdAt: now, updatedAt: now },
   { _id: travelerIds[1], name: "Sara Khan", email: "sara@example.com", password: hash, mobile: "9000000011", role: "traveler", createdAt: now, updatedAt: now },
   { _id: travelerIds[2], name: "Rohit Nair", email: "rohit@example.com", password: hash, mobile: "9000000012", role: "traveler", createdAt: now, updatedAt: now },
@@ -176,7 +176,7 @@ function addBooking({ trip, traveler, partner, partnerTripId, seats, monthOffset
     status: "paid", method: "card", createdAt: created, updatedAt: created,
   });
   bookings.push({
-    _id: bId, bookingNumber: "TNX-" + counter++,
+    _id: bId, bookingNumber: "VOI-" + counter++,
     trip: trip._id, traveler: traveler, partner: partner ? partner._id : null,
     partnerTrip: partnerTripId || null,
     travelerDetails: { name: "Guest Traveler", email: "guest@example.com", mobile: "9000000099", travellers: seats },
@@ -249,7 +249,7 @@ console.log(`✓ Seed complete:
   ${partnerTrips.length} white-label links  ·  ${bookings.length} bookings  ·  ${reviews.length} reviews
 
   Login with password: ${PASSWORD}
-   admin     → admin@tripnox.com
+   admin     → admin@voibee.com
    partner   → sahal@example.com  (try /p/sahal/goa-beach-escape)
    traveler  → aarav@example.com
 `);

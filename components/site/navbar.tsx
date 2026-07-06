@@ -15,10 +15,11 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 const NAV_LINKS = [
   { href: "/trips", label: "Explore Trips" },
-  { href: "/#why", label: "Why Tripnox" },
+  { href: "/#why", label: "Why Voibee" },
   { href: "/#partner", label: "Partner Program" },
 ];
 
@@ -27,6 +28,8 @@ function dashboardPath(role?: string) {
   if (role === "partner") return "/partner";
   return "/traveler";
 }
+
+const app_logo = "/voibee-logo.png"
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -38,11 +41,9 @@ export function Navbar() {
       <div className="glass border-b border-border/60">
         <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-md">
-              <Compass className="size-5" />
-            </span>
+            <Image src={app_logo} alt="Logo" width={32} height={32} />
             <span>
-              Trip<span className="text-gradient">nox</span>
+              Voibee
             </span>
           </Link>
 

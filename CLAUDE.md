@@ -1,6 +1,6 @@
 @AGENTS.md
 
-# Tripnox — project guide for Claude
+# Voibee — project guide for Claude
 
 Travel marketplace & white-label trip reseller. Operators publish trips;
 partners resell them via branded links (`/p/<partner>/<trip>`) for commission;
@@ -23,7 +23,7 @@ npm run seed           # scripts/seed.mjs — wipes & loads demo data
 npm install --legacy-peer-deps   # peer deps need this flag
 ```
 
-Demo accounts (password `Password123!`): `admin@tripnox.com`,
+Demo accounts (password `Password123!`): `admin@voibee.com`,
 `sahal@example.com` (partner, storefront `/p/sahal/goa-beach-escape`),
 `aarav@example.com` (traveler).
 
