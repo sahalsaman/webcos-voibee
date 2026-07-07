@@ -24,6 +24,8 @@ export interface TripFilters {
   q?: string;
   destination?: string;
   category?: string;
+  startDate?: string;
+  endDate?: string;
   minPrice?: number;
   maxPrice?: number;
   sort?: "newest" | "price-asc" | "price-desc" | "rating";
@@ -36,6 +38,8 @@ export async function getTrips(filters: TripFilters = {}) {
     q,
     destination,
     category,
+    startDate,
+    endDate,
     minPrice,
     maxPrice,
     sort = "newest",
@@ -49,6 +53,15 @@ export async function getTrips(filters: TripFilters = {}) {
       if (destination) query.destination = new RegExp(destination, "i");
       if (category) query.category = category;
       if (q) query.$text = { $search: q };
+      if (startDate || endDate) {
+        const rangeStart = startDate ? new Date(`${startDate}T00:00:00.000Z`) : undefined;
+        const rangeEnd = endDate ? new Date(`${endDate}T23:59:59.999Z`) : rangeStart;
+
+        if (rangeStart && rangeEnd && !Number.isNaN(rangeStart.getTime()) && !Number.isNaN(rangeEnd.getTime())) {
+          query.startDate = { $lte: rangeEnd };
+          query.endDate = { $gte: rangeStart };
+        }
+      }
       if (minPrice != null || maxPrice != null) {
         query.basePrice = {
           ...(minPrice != null ? { $gte: minPrice } : {}),

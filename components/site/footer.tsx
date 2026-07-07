@@ -14,8 +14,8 @@ export function Footer() {
             Voibee
           </Link>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">
-            The travel marketplace for explorers and the partners who power their
-            journeys.
+            Curated trips for explorers who want clear plans, verified stays and
+            smooth support.
           </p>
         </div>
 
@@ -45,9 +45,9 @@ export function Footer() {
         <div>
           <h4 className="mb-3 text-sm font-semibold">Company</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link className="hover:text-foreground" href="/register?role=partner">Become a Partner</Link></li>
-            <li><Link className="hover:text-foreground" href="/login">Partner Login</Link></li>
             <li><Link className="hover:text-foreground" href="/#why">Why Voibee</Link></li>
+            <li><Link className="hover:text-foreground" href="/login">Traveler Login</Link></li>
+            <li><Link className="hover:text-foreground" href="/register">Create Account</Link></li>
           </ul>
         </div>
       </div>

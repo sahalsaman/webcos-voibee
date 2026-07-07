@@ -6,8 +6,6 @@ import {
   Wallet,
   Headphones,
   ArrowRight,
-  Link2,
-  TrendingUp,
   Quote,
   Star,
 } from "lucide-react";
@@ -17,12 +15,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { TripCard } from "@/components/trip/trip-card";
 import { SearchBar } from "@/components/home/search-bar";
-import { getFeaturedTrips, getHomeStats } from "@/lib/data";
+import { getFeaturedTrips } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
 import { POPULAR_DESTINATIONS } from "@/lib/constants";
-import { formatCompact } from "@/lib/utils";
 
-// Re-fetch featured trips & stats from the DB at most once a minute.
+// Re-fetch featured trips from the DB at most once a minute.
 export const revalidate = 60;
 
 const HERO_BG =
@@ -36,8 +33,8 @@ const WHY = [
   },
   {
     icon: Wallet,
-    title: "Earn as a partner",
-    desc: "Resell trips with your own commission via white-label links — no inventory, no risk.",
+    title: "Simple, secure booking",
+    desc: "Reserve your seat with transparent pricing, clear inclusions and secure payments.",
   },
   {
     icon: Headphones,
@@ -50,32 +47,22 @@ const TESTIMONIALS = [
   {
     name: "Aarav Mehta",
     role: "Traveler · Manali",
-    text: "Booking was effortless and the trip exceeded expectations. The white-label page from my agency felt completely premium.",
+    text: "Booking was effortless and the trip exceeded expectations. The itinerary was clear, comfortable and exactly what we wanted.",
   },
   {
-    name: "Cheruvadi Travels",
-    role: "Partner Agency",
-    text: "We resell Voibee packages to our community and earn solid commissions without managing logistics. Game changer.",
+    name: "Neha Iyer",
+    role: "Traveler · Goa",
+    text: "The whole trip felt smooth from the first search to the final day. Loved having support whenever we needed it.",
   },
   {
     name: "Sara Khan",
-    role: "Travel Influencer",
-    text: "I share my custom links with followers and track every booking and rupee earned from one clean dashboard.",
+    role: "Traveler · Dubai",
+    text: "Voibee made comparing packages easy, and the booking details were transparent before we paid.",
   },
 ];
 
 export default async function HomePage() {
-  const [featured, stats] = await Promise.all([
-    getFeaturedTrips(6),
-    getHomeStats(),
-  ]);
-
-  const statCards = [
-    { label: "Curated trips", value: stats.trips },
-    { label: "Partner businesses", value: stats.partners },
-    { label: "Happy travelers", value: stats.travelers },
-    { label: "Trips booked", value: stats.bookings },
-  ];
+  const featured = await getFeaturedTrips(6);
 
   return (
     <>
@@ -87,15 +74,15 @@ export default async function HomePage() {
         </div>
         <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-24 text-center sm:px-6 lg:px-8 lg:pt-32">
           <Badge variant="glass" className="mx-auto mb-5 text-white">
-            <Compass className="size-3.5" /> Your travel partner
+            <Compass className="size-3.5" /> Your trip companion
           </Badge>
           <h1 className="mx-auto max-w-4xl text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">
             Discover unforgettable trips.{" "}
-            Plan your trip with <span className="text-gradient"> VOIBEE</span>
+            <span className="text-gradient">Plan your trip with</span> VOIBEE
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base text-white/80 sm:text-lg">
-            Book curated getaways from trusted operators — or become a partner and
-            earn commissions reselling trips with your own branded links.
+            Book curated getaways from trusted operators with clear itineraries,
+            verified experiences and support from search to return.
           </p>
 
           <div className="mt-9">
@@ -203,7 +190,7 @@ export default async function HomePage() {
       <section id="why" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Why Voibee"
-          title="Built for travelers and the partners who power them"
+          title="Built for travelers who want every detail handled"
         />
         <div className="grid gap-6 md:grid-cols-3">
           {WHY.map((f) => (
@@ -217,56 +204,6 @@ export default async function HomePage() {
               </CardContent>
             </Card>
           ))}
-        </div>
-      </section>
-
-      {/* ---------------- Partner program ---------------- */}
-      <section id="partner" className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-3xl bg-brand-gradient p-8 text-white sm:p-12">
-          <div className="grid items-center gap-8 lg:grid-cols-2">
-            <div>
-              <Badge variant="glass" className="mb-4 text-white">
-                Partner Program
-              </Badge>
-              <h2 className="text-3xl font-extrabold sm:text-4xl">
-                Turn your audience into income
-              </h2>
-              <p className="mt-3 max-w-lg text-white/85">
-                Agencies, influencers and community leaders resell Voibee trips
-                with white-label pages, set their own commission and get paid for
-                every booking.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Button asChild size="lg" variant="secondary">
-                  <Link href="/register?role=partner">
-                    Become a Partner <ArrowRight className="size-4" />
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="border-white/40 bg-white/10 text-white hover:bg-white/20"
-                >
-                  <Link href="/trips">Explore trips</Link>
-                </Button>
-              </div>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {[
-                { icon: Link2, title: "White-label links", desc: "voibee.com/p/your-brand/goa-trip" },
-                { icon: Wallet, title: "Custom commission", desc: "Set your own margin per trip" },
-                { icon: TrendingUp, title: "Live earnings", desc: "Track leads, bookings & payouts" },
-                { icon: ShieldCheck, title: "Zero risk", desc: "No inventory, no upfront cost" },
-              ].map((c) => (
-                <div key={c.title} className="glass rounded-2xl p-5 text-white">
-                  <c.icon className="mb-3 size-6" />
-                  <p className="font-semibold">{c.title}</p>
-                  <p className="text-sm text-white/80">{c.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
@@ -307,16 +244,14 @@ export default async function HomePage() {
           Your next adventure is one click away
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-          Join thousands of travelers and partners building memories with Voibee.
+          Join travelers discovering curated getaways, transparent pricing and
+          support that stays with them throughout the journey.
         </p>
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <Button asChild size="lg" variant="gradient">
             <Link href="/trips">
               Explore Trips <ArrowRight className="size-4" />
             </Link>
-          </Button>
-          <Button asChild size="lg" variant="outline">
-            <Link href="/register?role=partner">Become a Partner</Link>
           </Button>
         </div>
       </section>

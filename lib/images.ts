@@ -10,11 +10,11 @@ const MAP: Record<string, string> = {
   Andaman:
     "https://images.unsplash.com/photo-1559494007-9f5847c49d94?auto=format&fit=crop&w=900&q=70",
   Rishikesh:
-    "https://images.unsplash.com/photo-1591018653367-7c7c9f9a3a35?auto=format&fit=crop&w=900&q=70",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Rishikesh-Lakshman_Jhula_by_Kaustubh_Nayyar.jpg/800px-Rishikesh-Lakshman_Jhula_by_Kaustubh_Nayyar.jpg",
   Kashmir:
-    "https://images.unsplash.com/photo-1566837497312-7be4ebbd7e62?auto=format&fit=crop&w=900&q=70",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Gulmarg_Gondola%2C_Cable_Car.JPG/800px-Gulmarg_Gondola%2C_Cable_Car.JPG",
   Meghalaya:
-    "https://images.unsplash.com/photo-1626516666770-3d3e0a3b0f7c?auto=format&fit=crop&w=900&q=70",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Living_root_bridges%2C_Nongriat_village%2C_Meghalaya.jpg/800px-Living_root_bridges%2C_Nongriat_village%2C_Meghalaya.jpg",
   Spiti:
     "https://images.unsplash.com/photo-1605640840605-14ac1855827b?auto=format&fit=crop&w=900&q=70",
   Coorg:

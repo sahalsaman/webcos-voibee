@@ -2,64 +2,95 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Search, MapPin } from "lucide-react";
+import { CalendarDays, MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { POPULAR_DESTINATIONS, TRIP_CATEGORIES } from "@/lib/constants";
+
+const MONTH_OPTION_COUNT = 18;
+
+function toDateInputValue(date: Date) {
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return localDate.toISOString().slice(0, 10);
+}
+
+function buildMonthOptions() {
+  const now = new Date();
+  const firstMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const monthFormatter = new Intl.DateTimeFormat("en-IN", {
+    month: "long",
+    year: "numeric",
+  });
+
+  return Array.from({ length: MONTH_OPTION_COUNT }, (_, index) => {
+    const monthStart = new Date(firstMonth.getFullYear(), firstMonth.getMonth() + index, 1);
+    const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
+
+    return {
+      label: monthFormatter.format(monthStart),
+      value: toDateInputValue(monthStart),
+      startDate: toDateInputValue(monthStart),
+      endDate: toDateInputValue(monthEnd),
+    };
+  });
+}
 
 export function SearchBar() {
   const router = useRouter();
   const [destination, setDestination] = useState("");
-  const [category, setCategory] = useState("");
-  const [q, setQ] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const monthOptions = buildMonthOptions();
+  const selectedMonthOption = monthOptions.find((option) => option.value === selectedMonth);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (q) params.set("q", q);
-    if (destination) params.set("destination", destination);
-    if (category) params.set("category", category);
+    const trimmedDestination = destination.trim();
+
+    if (trimmedDestination) params.set("destination", trimmedDestination);
+    if (selectedMonthOption) {
+      params.set("startDate", selectedMonthOption.startDate);
+      params.set("endDate", selectedMonthOption.endDate);
+    }
+
     router.push(`/trips?${params.toString()}`);
   }
 
   return (
     <form
       onSubmit={submit}
-      className="glass mx-auto flex w-full max-w-3xl flex-col gap-3 rounded-2xl p-3 shadow-xl sm:flex-row sm:items-center"
+      className="glass mx-auto grid w-full max-w-3xl gap-3 rounded-2xl p-3 shadow-xl md:grid-cols-[minmax(0,1fr)_220px_auto] md:items-center"
     >
-      <div className="flex flex-1 items-center gap-2 rounded-xl bg-background/70 px-3">
-        <Search className="size-4 shrink-0 text-muted-foreground" />
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Search destination, e.g. Manali backpacking"
-          className="h-11 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-        />
-      </div>
-      {/* <div className="flex items-center gap-2 rounded-xl bg-background/70 px-2 sm:w-44">
+      <label className="flex min-w-0 items-center gap-2 rounded-xl bg-background/70 px-3 py-2">
         <MapPin className="size-4 shrink-0 text-muted-foreground" />
-        <Select
+        <span className="sr-only">Destination</span>
+        <Input
           value={destination}
           onChange={(e) => setDestination(e.target.value)}
-          className="border-0 bg-transparent shadow-none focus-visible:ring-0"
+          placeholder="Destination"
+          className="h-10 border-0 bg-transparent px-0 shadow-none focus-visible:ring-0"
+        />
+      </label>
+
+      <label className="flex min-w-0 items-center gap-2 rounded-xl bg-background/70 px-3 py-2">
+        <CalendarDays className="size-4 shrink-0 text-muted-foreground" />
+        <span className="sr-only">Time</span>
+        <Select
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+          aria-label="Time"
+          className="h-10 border-0 bg-transparent shadow-none focus-visible:ring-0 md:w-[188px]"
         >
-          <option value="">Anywhere</option>
-          {POPULAR_DESTINATIONS.map((d) => (
-            <option key={d} value={d}>{d}</option>
+          <option value="">Any time</option>
+          {monthOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
           ))}
         </Select>
-      </div> */}
-      <Select
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        className="bg-background/70 sm:w-40"
-      >
-        <option value="">Anytime</option>
-        {TRIP_CATEGORIES.map((c) => (
-          <option key={c} value={c}>{c}</option>
-        ))}
-      </Select>
-      <Button type="submit" variant="gradient" size="lg" className="sm:px-6">
+      </label>
+
+      <Button type="submit" variant="gradient" size="lg" className="h-12 md:px-6">
         <Search className="size-4" /> Search
       </Button>
     </form>

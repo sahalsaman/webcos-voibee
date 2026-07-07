@@ -9,34 +9,50 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.voibee.com/";
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
   title: {
-    default: "Voibee — Discover & Resell Unforgettable Trips",
-    template: "%s · Voibee",
+    default: "Voibee Holidays | Discover & Book Unforgettable Tour Packages",
+    template: "%s · Voibee Holidays",
   },
   description:
-    "Voibee is a travel marketplace where operators publish trips and partners resell them with white-label links to earn commissions.",
+    "Explore curated holiday packages, custom family trips, and honeymoon tours with Voibee Holidays. Book your perfect getaway to Kerala, beautiful Indian destinations, and international hotspots at the best prices.",
   keywords: [
-    "travel",
-    "trips",
-    "tour packages",
-    "travel marketplace",
-    "white label travel",
-    "reseller",
-    "India tours",
+    "holiday packages",
+    "book tour packages online",
+    "Kerala tour packages",
+    "family vacation packages",
+    "honeymoon trips india",
+    "best travel agency online",
+    "customized trips india",
+    "budget travel packages",
+    "explore kerala tourism",
+    "india tour planner",
   ],
   openGraph: {
     type: "website",
-    siteName: "Voibee",
-    title: "Voibee — Discover & Resell Unforgettable Trips",
+    siteName: "Voibee Holidays",
+    title: "Voibee Holidays — Discover & Book Unforgettable Trips",
     description:
-      "Book curated trips or become a partner and earn by reselling travel packages.",
+      "Your gateway to seamless travel. Discover handpicked holiday destinations, customized itineraries, and affordable family tour packages across India and Kerala.",
     url: appUrl,
+    images: [
+      {
+        url: "/og-image.jpg", // Ensure you have a compelling banner image here
+        width: 1200,
+        height: 630,
+        alt: "Voibee Holidays - Discover Beautiful Destinations",
+      },
+    ],
   },
-  twitter: { card: "summary_large_image" },
+  twitter: {
+    card: "summary_large_image",
+    title: "Voibee Holidays — Plan Your Next Dream Vacation",
+    description: "Explore affordable, tailored tour packages for families, couples, and solo travelers. Start your next adventure with Voibee Holidays.",
+    images: "/og-image.jpg"
+  },
   robots: { index: true, follow: true },
 };
 

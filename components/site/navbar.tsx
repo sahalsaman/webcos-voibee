@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import {
-  Compass,
   Menu,
   X,
   LayoutDashboard,
@@ -20,7 +19,6 @@ import Image from "next/image";
 const NAV_LINKS = [
   { href: "/trips", label: "Explore Trips" },
   { href: "/#why", label: "Why Voibee" },
-  { href: "/#partner", label: "Partner Program" },
 ];
 
 function dashboardPath(role?: string) {

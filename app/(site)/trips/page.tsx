@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Compass } from "lucide-react";
 import { TripCard } from "@/components/trip/trip-card";
 import { TripFilters } from "@/components/trip/trip-filters";
@@ -31,6 +32,8 @@ export default async function TripsPage({
     q: str(sp.q),
     destination: str(sp.destination),
     category: str(sp.category),
+    startDate: str(sp.startDate),
+    endDate: str(sp.endDate),
     minPrice: str(sp.minPrice) ? Number(str(sp.minPrice)) : undefined,
     maxPrice: str(sp.maxPrice) ? Number(str(sp.maxPrice)) : undefined,
     sort: (str(sp.sort) as "newest") || "newest",
@@ -40,7 +43,7 @@ export default async function TripsPage({
 
   // Flatten current filters into a clean param map for pagination links.
   const linkParams: Record<string, string> = {};
-  for (const k of ["q", "destination", "category", "minPrice", "maxPrice", "sort"]) {
+  for (const k of ["q", "destination", "category", "startDate", "endDate", "minPrice", "maxPrice", "sort"]) {
     const v = str(sp[k]);
     if (v) linkParams[k] = v;
   }
@@ -81,7 +84,7 @@ export default async function TripsPage({
               description="Try widening your budget or clearing some filters to see more results."
               action={
                 <Button asChild variant="gradient">
-                  <a href="/trips">Clear filters</a>
+                  <Link href="/trips">Clear filters</Link>
                 </Button>
               }
             />
