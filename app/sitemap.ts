@@ -4,7 +4,7 @@ import "@/models";
 import Trip from "@/models/Trip";
 import PartnerTrip from "@/models/PartnerTrip";
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.voibee.com/";
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.voibee.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [

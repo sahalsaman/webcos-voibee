@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { Compass } from "lucide-react";
 import { POPULAR_DESTINATIONS } from "@/lib/constants";
+import Image from "next/image";
+
+const app_logo = "/voibee-logo.png"
 
 export function Footer() {
   return (
@@ -8,9 +10,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
         <div className="md:col-span-1">
           <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-brand-gradient text-white">
-              <Compass className="size-5" />
-            </span>
+            <Image src={app_logo} alt="Logo" width={32} height={32} />
             Voibee
           </Link>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">

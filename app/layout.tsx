@@ -9,7 +9,7 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.voibee.com/";
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.voibee.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
