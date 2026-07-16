@@ -3,7 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { BookingStatusSelect } from "@/components/admin/booking-status-select";
-import { listAdminBookings } from "@/lib/dashboard";
+import { ManualBookingDrawer } from "@/components/admin/manual-booking-drawer";
+import { listAdminBookings, listAdminBookableTrips } from "@/lib/dashboard";
 import { formatINR, formatDate } from "@/lib/utils";
 
 interface Row {
@@ -22,13 +23,19 @@ interface Row {
 }
 
 export default async function AdminBookingsPage() {
-  const bookings = (await listAdminBookings()) as Row[];
+  const [bookings, bookableTrips] = await Promise.all([
+    listAdminBookings() as Promise<Row[]>,
+    listAdminBookableTrips(),
+  ]);
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Bookings</h1>
-        <p className="text-muted-foreground">{bookings.length} total</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Bookings</h1>
+          <p className="text-muted-foreground">{bookings.length} total</p>
+        </div>
+        <ManualBookingDrawer trips={bookableTrips as Parameters<typeof ManualBookingDrawer>[0]["trips"]} />
       </div>
 
       {bookings.length ? (

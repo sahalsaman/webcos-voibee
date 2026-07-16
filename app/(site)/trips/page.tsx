@@ -6,7 +6,7 @@ import { TripFilters } from "@/components/trip/trip-filters";
 import { Pagination } from "@/components/ui/pagination";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
-import { getTrips } from "@/lib/data";
+import { getDestinations, getTrips } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Explore Trips",
@@ -27,10 +27,13 @@ export default async function TripsPage({
 }) {
   const sp = await searchParams;
   const page = Math.max(1, Number(str(sp.page)) || 1);
+  const country = str(sp.c);
 
-  const result = await getTrips({
+  const [result, destinations] = await Promise.all([
+    getTrips({
     q: str(sp.q),
     destination: str(sp.destination),
+    country: str(sp.country),
     category: str(sp.category),
     startDate: str(sp.startDate),
     endDate: str(sp.endDate),
@@ -39,11 +42,13 @@ export default async function TripsPage({
     sort: (str(sp.sort) as "newest") || "newest",
     page,
     pageSize: 9,
-  });
+  }),
+    getDestinations(country),
+  ]);
 
   // Flatten current filters into a clean param map for pagination links.
   const linkParams: Record<string, string> = {};
-  for (const k of ["q", "destination", "category", "startDate", "endDate", "minPrice", "maxPrice", "sort"]) {
+  for (const k of ["q", "destination", "country", "category", "startDate", "endDate", "minPrice", "maxPrice", "sort", "c"]) {
     const v = str(sp[k]);
     if (v) linkParams[k] = v;
   }
@@ -59,7 +64,20 @@ export default async function TripsPage({
 
       <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
         <aside>
-          <TripFilters />
+          <TripFilters
+            key={JSON.stringify(linkParams)}
+            destinations={destinations.map((d) => d.title)}
+            initialFilters={{
+              q: str(sp.q) ?? "",
+              destination: str(sp.destination) ?? "",
+              category: str(sp.category) ?? "",
+              startDate: str(sp.startDate) ?? "",
+              endDate: str(sp.endDate) ?? "",
+              minPrice: str(sp.minPrice) ?? "",
+              maxPrice: str(sp.maxPrice) ?? "",
+              sort: str(sp.sort) ?? "newest",
+            }}
+          />
         </aside>
 
         <div>

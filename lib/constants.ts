@@ -16,17 +16,40 @@ export const PARTNER_STATUSES = ["pending", "approved", "suspended"] as const;
 export type PartnerStatus = (typeof PARTNER_STATUSES)[number];
 
 export const TRIP_STATUSES = ["draft", "active", "inactive", "soldout"] as const;
+export const DESTINATION_STATUSES = ["active", "inactive"] as const;
+export const OFFER_CARD_STATUSES = ["active", "inactive"] as const;
+export const EMPLOYEE_STATUSES = ["active", "inactive"] as const;
 export type TripStatus = (typeof TRIP_STATUSES)[number];
+export type EmployeeStatus = (typeof EMPLOYEE_STATUSES)[number];
+
+export const COUNTRY_OPTIONS = [
+  { name: "India", code: "IN", currency: "INR", symbol: "₹" },
+  { name: "United Arab Emirates", code: "AE", currency: "AED", symbol: "د.إ" },
+  { name: "Indonesia", code: "ID", currency: "IDR", symbol: "Rp" },
+  { name: "Maldives", code: "MV", currency: "MVR", symbol: "Rf" },
+  { name: "Singapore", code: "SG", currency: "SGD", symbol: "S$" },
+  { name: "Thailand", code: "TH", currency: "THB", symbol: "฿" },
+  { name: "Malaysia", code: "MY", currency: "MYR", symbol: "RM" },
+  { name: "Vietnam", code: "VN", currency: "VND", symbol: "₫" },
+  { name: "Sri Lanka", code: "LK", currency: "LKR", symbol: "Rs" },
+  { name: "Azerbaijan", code: "AZ", currency: "AZN", symbol: "₼" },
+  { name: "Georgia", code: "GE", currency: "GEL", symbol: "₾" },
+  { name: "Turkey", code: "TR", currency: "TRY", symbol: "₺" },
+  { name: "Japan", code: "JP", currency: "JPY", symbol: "¥" },
+  { name: "France", code: "FR", currency: "EUR", symbol: "€" },
+] as const;
+export type CountryOption = (typeof COUNTRY_OPTIONS)[number];
 
 export const TRIP_CATEGORIES = [
-  "Aug 2026",
-  "Sep 2026",
-  "Oct 2026",
-  "Nov 2026",
-  "Dec 2026",
-  "Jan 2027",
-  "Feb 2027",
-  "Mar 2027",
+  "Adventure",
+  "Honeymoon",
+  "Family",
+  "Group",
+  "Solo",
+  "Luxury",
+  "Wellness & spa",
+  "Spiritual",
+  "Festival",
 ] as const;
 export type TripCategory = (typeof TRIP_CATEGORIES)[number];
 
@@ -67,16 +90,3 @@ export const DEFAULT_SETTINGS = {
   currency: "INR",
   minWithdrawal: 1000,
 };
-
-export const POPULAR_DESTINATIONS = [
-  "Goa",
-  "Manali",
-  "Kerala",
-  "Ladakh",
-  "Andaman",
-  "Rishikesh",
-  "Kashmir",
-  "Meghalaya",
-  "Spiti",
-  "Coorg",
-] as const;

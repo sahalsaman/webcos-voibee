@@ -1,10 +1,39 @@
+"use client";
+
 import Link from "next/link";
-import { POPULAR_DESTINATIONS } from "@/lib/constants";
+import { TRIP_CATEGORIES } from "@/lib/constants";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import type { DestinationDTO } from "@/types";
 
 const app_logo = "/voibee-logo.png"
 
 export function Footer() {
+  const params = useSearchParams();
+  const country = params.get("c")?.toUpperCase();
+  const [destinations, setDestinations] = useState<DestinationDTO[]>([]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const qs = country ? `?c=${encodeURIComponent(country)}` : "";
+
+    fetch(`/api/destinations${qs}`, { signal: controller.signal })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((payload) => {
+        if (payload?.success && Array.isArray(payload.data)) {
+          setDestinations(payload.data.slice(0, 8));
+        }
+      })
+      .catch((err) => {
+        if (err.name !== "AbortError") setDestinations([]);
+      });
+
+    return () => controller.abort();
+  }, [country]);
+  const withCountry = (href: string) =>
+    country ? `${href}${href.includes("?") ? "&" : "?"}c=${encodeURIComponent(country)}` : href;
+
   return (
     <footer className="border-t border-border bg-card">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
@@ -20,22 +49,26 @@ export function Footer() {
         </div>
 
         <div>
-          <h4 className="mb-3 text-sm font-semibold">Explore</h4>
+          <h4 className="mb-3 text-sm font-semibold">Trip themes</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link className="hover:text-foreground" href="/trips">All Trips</Link></li>
-            <li><Link className="hover:text-foreground" href="/trips?category=Weekend">Weekend Getaways</Link></li>
-            <li><Link className="hover:text-foreground" href="/trips?category=Group">Group Trips</Link></li>
-            <li><Link className="hover:text-foreground" href="/trips?category=International">International</Link></li>
+            <li><Link className="hover:text-foreground" href={withCountry("/trips")}>All trips</Link></li>
+            {TRIP_CATEGORIES.slice(0, 4).map((theme) => (
+              <li key={theme}>
+                <Link className="hover:text-foreground" href={withCountry(`/trips?category=${encodeURIComponent(theme)}`)}>
+                  {theme}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
 
         <div>
           <h4 className="mb-3 text-sm font-semibold">Destinations</h4>
           <ul className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
-            {POPULAR_DESTINATIONS.slice(0, 8).map((d) => (
-              <li key={d}>
-                <Link className="hover:text-foreground" href={`/trips?destination=${d}`}>
-                  {d}
+            {destinations.map((d) => (
+              <li key={d._id}>
+                <Link className="hover:text-foreground" href={withCountry(`/trips?destination=${encodeURIComponent(d.title)}`)}>
+                  {d.title}
                 </Link>
               </li>
             ))}
@@ -46,6 +79,7 @@ export function Footer() {
           <h4 className="mb-3 text-sm font-semibold">Company</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li><Link className="hover:text-foreground" href="/#why">Why Voibee</Link></li>
+            <li><Link className="hover:text-foreground" href="/visa">Visa Assistance</Link></li>
             <li><Link className="hover:text-foreground" href="/login">Traveler Login</Link></li>
             <li><Link className="hover:text-foreground" href="/register">Create Account</Link></li>
           </ul>

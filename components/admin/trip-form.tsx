@@ -10,8 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { TRIP_CATEGORIES, TRIP_STATUSES } from "@/lib/constants";
-import type { TripDTO } from "@/types";
+import { COUNTRY_OPTIONS, TRIP_CATEGORIES, TRIP_STATUSES } from "@/lib/constants";
+import type { DestinationDTO, TripDTO } from "@/types";
 
 type ItineraryItem = { day: number; title: string; description: string };
 
@@ -19,14 +19,15 @@ function toDateInput(d?: string) {
   return d ? new Date(d).toISOString().slice(0, 10) : "";
 }
 
-export function TripForm({ trip }: { trip?: TripDTO }) {
+export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinations?: DestinationDTO[] }) {
   const router = useRouter();
   const editing = Boolean(trip);
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     title: trip?.title ?? "",
-    destination: trip?.destination ?? "",
+    destination: trip?.destination ?? destinations[0]?.title ?? "",
+    country: trip?.country ?? destinations.find((destination) => destination.title === trip?.destination)?.country ?? "India",
     description: trip?.description ?? "",
     basePrice: trip?.basePrice ?? 0,
     totalSeats: trip?.totalSeats ?? 0,
@@ -52,6 +53,15 @@ export function TripForm({ trip }: { trip?: TripDTO }) {
     setForm((f) => ({ ...f, [k]: v }));
   }
 
+  function onDestinationChange(value: string) {
+    const destination = destinations.find((item) => item.title === value);
+    setForm((current) => ({
+      ...current,
+      destination: value,
+      country: destination?.country ?? current.country,
+    }));
+  }
+
   const lines = (s: string) => s.split("\n").map((x) => x.trim()).filter(Boolean);
 
   async function onSubmit(e: React.FormEvent) {
@@ -60,6 +70,7 @@ export function TripForm({ trip }: { trip?: TripDTO }) {
     const payload = {
       title: form.title,
       destination: form.destination,
+      country: form.country,
       description: form.description,
       basePrice: Number(form.basePrice),
       totalSeats: Number(form.totalSeats),
@@ -109,7 +120,20 @@ export function TripForm({ trip }: { trip?: TripDTO }) {
           </div>
           <div>
             <Label className="mb-1.5 block">Destination</Label>
-            <Input value={form.destination} onChange={(e) => set("destination", e.target.value)} required />
+            <Select value={form.destination} onChange={(e) => onDestinationChange(e.target.value)} required>
+              {form.destination && !destinations.some((destination) => destination.title === form.destination) ? (
+                <option value={form.destination}>{form.destination}</option>
+              ) : null}
+              {destinations.map((destination) => (
+                <option key={destination._id} value={destination.title}>{destination.title}</option>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <Label className="mb-1.5 block">Country</Label>
+            <Select value={form.country} onChange={(e) => set("country", e.target.value)}>
+              {COUNTRY_OPTIONS.map((country) => <option key={country.code} value={country.name}>{country.name}</option>)}
+            </Select>
           </div>
           <div>
             <Label className="mb-1.5 block">Pickup location</Label>

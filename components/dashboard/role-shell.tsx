@@ -5,6 +5,7 @@ import {
   Plane,
   CalendarCheck,
   Users,
+  UsersRound,
   Settings,
   FileBarChart,
   Wallet,
@@ -13,6 +14,8 @@ import {
   Heart,
   UserCircle,
   ShoppingBag,
+  Megaphone,
+  Globe2,
 } from "lucide-react";
 import { DashboardShell, type NavItem } from "@/components/dashboard/shell";
 
@@ -22,8 +25,13 @@ const NAVS: Record<string, { label: string; items: NavItem[] }> = {
     items: [
       { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
       { href: "/admin/trips", label: "Trips", icon: Plane },
+      { href: "/admin/destinations", label: "Destinations", icon: Globe2 },
+      { href: "/admin/offers", label: "Offer Cards", icon: Megaphone },
       { href: "/admin/bookings", label: "Bookings", icon: CalendarCheck },
-      { href: "/admin/partners", label: "Partners", icon: Users },
+      { href: "/admin/travelers", label: "Travelers", icon: Users },
+      { href: "/admin/partners", label: "Partners", icon: UsersRound },
+      { href: "/admin/finance", label: "Finance", icon: Wallet },
+      { href: "/admin/employees", label: "Employees", icon: UsersRound },
       { href: "/admin/reports", label: "Reports", icon: FileBarChart },
       { href: "/admin/settings", label: "Settings", icon: Settings },
     ],

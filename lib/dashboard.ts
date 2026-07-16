@@ -8,6 +8,10 @@ import Booking from "@/models/Booking";
 import User from "@/models/User";
 import Commission from "@/models/Commission";
 import Wishlist from "@/models/Wishlist";
+import OfferCard from "@/models/OfferCard";
+import Destination from "@/models/Destination";
+import Payment from "@/models/Payment";
+import Employee from "@/models/Employee";
 
 async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
@@ -151,10 +155,144 @@ export async function listAdminTrips() {
   return safe(async () => serialize(await Trip.find({}).sort({ createdAt: -1 }).lean()), []);
 }
 
+export async function listAdminBookableTrips() {
+  return safe(
+    async () =>
+      serialize(
+        await Trip.find({ status: "active" })
+          .sort({ startDate: 1, title: 1 })
+          .select("title destination basePrice availableSeats totalSeats startDate status")
+          .lean(),
+      ),
+    [],
+  );
+}
+
 export async function getAdminTripById(id: string) {
   return safe(async () => {
     const trip = await Trip.findById(id).lean();
     return trip ? serialize(trip) : null;
+  }, null);
+}
+
+export async function listAdminOfferCards() {
+  return safe(async () => serialize(await OfferCard.find({}).sort({ sortOrder: 1, createdAt: -1 }).lean()), []);
+}
+
+export async function getAdminOfferCardById(id: string) {
+  return safe(async () => {
+    const offer = await OfferCard.findById(id).lean();
+    return offer ? serialize(offer) : null;
+  }, null);
+}
+
+export async function listAdminDestinations() {
+  return safe(async () => serialize(await Destination.find({}).sort({ featured: -1, createdAt: -1 }).lean()), []);
+}
+
+export async function getAdminDestinationById(id: string) {
+  return safe(async () => {
+    const destination = await Destination.findById(id).lean();
+    return destination ? serialize(destination) : null;
+  }, null);
+}
+
+export async function listAdminTravelers() {
+  return safe(async () => {
+    const travelers = await User.find({ role: "traveler" }).sort({ createdAt: -1 }).lean();
+    const ids = travelers.map((traveler) => traveler._id);
+    const bookingAgg = await Booking.aggregate([
+      { $match: { traveler: { $in: ids } } },
+      {
+        $group: {
+          _id: "$traveler",
+          bookingCount: { $sum: 1 },
+          paidAmount: { $sum: { $cond: [{ $eq: ["$paymentStatus", "paid"] }, "$totalAmount", 0] } },
+          lastBookingAt: { $max: "$createdAt" },
+        },
+      },
+    ]);
+    const bookings = await Booking.find({ traveler: { $in: ids } })
+      .sort({ createdAt: -1 })
+      .populate({ path: "trip", model: Trip, select: "title destination startDate" })
+      .lean();
+    const summaryByTraveler = new Map(bookingAgg.map((item) => [String(item._id), item]));
+    const bookingsByTraveler = new Map<string, unknown[]>();
+    for (const booking of serialize(bookings) as Array<Record<string, unknown>>) {
+      const key = String(booking.traveler);
+      bookingsByTraveler.set(key, [...(bookingsByTraveler.get(key) ?? []), booking]);
+    }
+    return serialize(travelers).map((traveler: Record<string, unknown>) => {
+      const key = String(traveler._id);
+      const summary = summaryByTraveler.get(key);
+      return {
+        ...traveler,
+        bookingCount: summary?.bookingCount ?? 0,
+        paidAmount: summary?.paidAmount ?? 0,
+        lastBookingAt: summary?.lastBookingAt ?? null,
+        bookings: bookingsByTraveler.get(key) ?? [],
+      };
+    });
+  }, []);
+}
+
+export async function getAdminFinanceSummary() {
+  return safe(async () => {
+    const [bookingAgg, paymentAgg, commissionAgg, recentPayments] = await Promise.all([
+      Booking.aggregate([
+        {
+          $group: {
+            _id: null,
+            totalRevenue: { $sum: "$totalAmount" },
+            paidRevenue: { $sum: { $cond: [{ $eq: ["$paymentStatus", "paid"] }, "$totalAmount", 0] } },
+            adminEarnings: { $sum: "$adminEarnings" },
+            partnerEarnings: { $sum: "$partnerEarnings" },
+            bookings: { $sum: 1 },
+          },
+        },
+      ]),
+      Payment.aggregate([
+        {
+          $group: {
+            _id: "$status",
+            amount: { $sum: "$amount" },
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+      Commission.aggregate([
+        {
+          $group: {
+            _id: "$status",
+            amount: { $sum: "$amount" },
+            platformFee: { $sum: "$platformFee" },
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+      Payment.find({})
+        .sort({ createdAt: -1 })
+        .limit(12)
+        .populate({ path: "booking", model: Booking, select: "bookingNumber travelerDetails totalAmount paymentStatus" })
+        .lean(),
+    ]);
+    return {
+      totals: bookingAgg[0] ?? { totalRevenue: 0, paidRevenue: 0, adminEarnings: 0, partnerEarnings: 0, bookings: 0 },
+      paymentsByStatus: serialize(paymentAgg),
+      commissionsByStatus: serialize(commissionAgg),
+      recentPayments: serialize(recentPayments),
+    };
+  }, { totals: { totalRevenue: 0, paidRevenue: 0, adminEarnings: 0, partnerEarnings: 0, bookings: 0 }, paymentsByStatus: [], commissionsByStatus: [], recentPayments: [] });
+}
+
+export async function listAdminEmployees() {
+  return safe(async () => serialize(await Employee.find({}).sort({ createdAt: -1 }).lean()), []);
+}
+
+export async function getAdminEmployeeById(id: string) {
+  return safe(async () => {
+    const employee = await Employee.findById(id).lean();
+    return employee ? serialize(employee) : null;
   }, null);
 }
 

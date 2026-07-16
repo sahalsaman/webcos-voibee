@@ -19,6 +19,7 @@ import Image from "next/image";
 const NAV_LINKS = [
   { href: "/trips", label: "Explore Trips" },
   { href: "/#why", label: "Why Voibee" },
+  { href: "/visa", label: "Visa" },
 ];
 
 function dashboardPath(role?: string) {
@@ -48,7 +49,7 @@ export function Navbar() {
           <div className="hidden items-center gap-1 md:flex">
             {NAV_LINKS.map((l) => (
               <Link
-                key={l.href}
+                key={`${l.href}-${l.label}`}
                 href={l.href}
                 className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
@@ -111,7 +112,7 @@ export function Navbar() {
         <div className="flex flex-col gap-1 px-4 py-3">
           {NAV_LINKS.map((l) => (
             <Link
-              key={l.href}
+              key={`${l.href}-${l.label}`}
               href={l.href}
               onClick={() => setOpen(false)}
               className="rounded-md px-3 py-2 text-sm font-medium hover:bg-secondary"

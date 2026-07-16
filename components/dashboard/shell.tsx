@@ -21,13 +21,11 @@ export function DashboardShell({
   nav,
   roleLabel,
   user,
-  badge,
   children,
 }: {
   nav: NavItem[];
   roleLabel: string;
   user: { name?: string | null; email?: string | null; image?: string | null };
-  badge?: string;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -42,7 +40,7 @@ export function DashboardShell({
         <span className="flex size-9 items-center justify-center rounded-xl bg-brand-gradient text-white">
           <Compass className="size-5" />
         </span>
-        Trip<span className="text-gradient">nox</span>
+        Voi<span className="text-gradient">bee</span>
       </Link>
       <div className="px-5 pb-3">
         <Badge variant="secondary">{roleLabel}</Badge>

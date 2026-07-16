@@ -13,3 +13,6 @@ export { default as Review } from "./Review";
 export { default as Wishlist } from "./Wishlist";
 export { default as Notification } from "./Notification";
 export { default as Settings, getSettings } from "./Settings";
+export { default as Destination } from "./Destination";
+export { default as OfferCard } from "./OfferCard";
+export { default as Employee } from "./Employee";

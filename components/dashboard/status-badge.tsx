@@ -3,6 +3,8 @@ import { Badge } from "@/components/ui/badge";
 type Variant = "default" | "accent" | "secondary" | "success" | "warning" | "destructive" | "outline";
 
 const MAP: Record<string, Variant> = {
+  active: "success",
+  inactive: "secondary",
   // bookings
   pending: "warning",
   confirmed: "success",

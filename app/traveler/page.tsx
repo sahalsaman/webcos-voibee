@@ -28,7 +28,7 @@ export default async function TravelerDashboard() {
     getTravelerWishlist(user.id),
   ]);
   const list = bookings as Booking[];
-  const now = Date.now();
+  const now = new Date().getTime();
 
   const upcoming = list.filter(
     (b) => b.status !== "cancelled" && b.trip && new Date(b.trip.endDate).getTime() >= now,

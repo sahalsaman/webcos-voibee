@@ -7,6 +7,8 @@ import type {
   BookingStatus,
   PaymentStatus,
   CommissionStatus,
+  OFFER_CARD_STATUSES,
+  EmployeeStatus,
 } from "@/lib/constants";
 
 /** Plain (serialized) shapes returned to client components. */
@@ -22,6 +24,7 @@ export interface TripDTO {
   title: string;
   slug: string;
   destination: string;
+  country: string;
   description: string;
   images: string[];
   videos: string[];
@@ -43,6 +46,40 @@ export interface TripDTO {
   createdAt: string;
 }
 
+export interface DestinationDTO {
+  _id: string;
+  title: string;
+  description: string;
+  images: string[];
+  videos: string[];
+  basePrice: number;
+  status: "active" | "inactive";
+  featured: boolean;
+  tags: string[];
+  popular: boolean;
+  country: string;
+  countryCode: string;
+  createdAt: string;
+}
+
+export interface OfferCardDTO {
+  _id: string;
+  title: string;
+  description: string;
+  images: string[];
+  videos: string[];
+  href: string;
+  ctaLabel: string;
+  priceLabel: string;
+  status: (typeof OFFER_CARD_STATUSES)[number];
+  featured: boolean;
+  sortOrder: number;
+  tags: string[];
+  country: string;
+  countryCode: string;
+  createdAt: string;
+}
+
 export interface UserDTO {
   _id: string;
   name: string;
@@ -50,6 +87,21 @@ export interface UserDTO {
   mobile?: string;
   role: Role;
   image?: string;
+  createdAt?: string;
+}
+
+export interface EmployeeDTO {
+  _id: string;
+  name: string;
+  email: string;
+  mobile?: string;
+  designation: string;
+  department: string;
+  status: EmployeeStatus;
+  salary: number;
+  joinedAt?: string;
+  notes?: string;
+  createdAt: string;
 }
 
 export interface PartnerDTO {

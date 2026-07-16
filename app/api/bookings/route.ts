@@ -10,7 +10,6 @@ import {
 } from "@/lib/razorpay";
 import "@/models";
 import Trip from "@/models/Trip";
-import Partner from "@/models/Partner";
 import PartnerTrip from "@/models/PartnerTrip";
 import Booking from "@/models/Booking";
 import Payment from "@/models/Payment";

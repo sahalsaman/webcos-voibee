@@ -2,12 +2,14 @@ import { connectDB } from "@/lib/db";
 import { serialize } from "@/lib/utils";
 import "@/models"; // ensure all schemas are registered
 import Trip from "@/models/Trip";
+import Destination from "@/models/Destination";
+import OfferCard from "@/models/OfferCard";
 import Partner from "@/models/Partner";
 import PartnerTrip from "@/models/PartnerTrip";
 import Review from "@/models/Review";
 import User from "@/models/User";
 import Booking from "@/models/Booking";
-import type { TripDTO, PartnerDTO, ReviewDTO } from "@/types";
+import type { TripDTO, PartnerDTO, ReviewDTO, DestinationDTO, OfferCardDTO } from "@/types";
 
 /** Run a DB query, returning `fallback` if the DB is unreachable/unconfigured. */
 async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
@@ -20,9 +22,84 @@ async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   }
 }
 
+export function isIndiaCountry(code?: string) {
+  return (code ?? "IN").toUpperCase() === "IN";
+}
+
+export async function getDestinations(countryCode?: string) {
+  return safe(async () => {
+    const query: Record<string, unknown> = { status: "active" };
+    if (!isIndiaCountry(countryCode)) query.countryCode = { $ne: "IN" };
+
+    const items = await Destination.find(query)
+      .sort({ popular: -1, featured: -1, title: 1 })
+      .lean();
+
+    if (items.length > 0) return serialize(items) as DestinationDTO[];
+
+    const tripMatch: Record<string, unknown> = { status: "active" };
+    if (!isIndiaCountry(countryCode)) tripMatch.country = { $ne: "India" };
+
+    const fromTrips = await Trip.aggregate([
+      { $match: tripMatch },
+      {
+        $group: {
+          _id: "$destination",
+          basePrice: { $min: "$basePrice" },
+          image: { $first: { $arrayElemAt: ["$images", 0] } },
+          country: { $first: { $ifNull: ["$country", "India"] } },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    return fromTrips.map((d) => ({
+      _id: String(d._id),
+      title: String(d._id),
+      description: "",
+      images: d.image ? [d.image] : [],
+      videos: [],
+      basePrice: Number(d.basePrice) || 0,
+      status: "active",
+      featured: false,
+      tags: [],
+      popular: false,
+      country: d.country || "India",
+      countryCode: d.country === "India" ? "IN" : "INTL",
+      createdAt: new Date().toISOString(),
+    })) as DestinationDTO[];
+  }, [] as DestinationDTO[]);
+}
+
+export async function getHomeDestinations(countryCode?: string) {
+  const items = await getDestinations(countryCode);
+
+  return {
+    domestic: isIndiaCountry(countryCode)
+      ? items.filter((d) => d.countryCode.toUpperCase() === "IN")
+      : [],
+    international: items.filter((d) => d.countryCode.toUpperCase() !== "IN"),
+  };
+}
+
+export async function getOfferCards(countryCode?: string, limit = 4) {
+  return safe(async () => {
+    const query: Record<string, unknown> = { status: "active" };
+    if (!isIndiaCountry(countryCode)) query.countryCode = { $ne: "IN" };
+
+    const items = await OfferCard.find(query)
+      .sort({ featured: -1, sortOrder: 1, createdAt: -1 })
+      .limit(limit)
+      .lean();
+
+    return serialize(items) as OfferCardDTO[];
+  }, [] as OfferCardDTO[]);
+}
+
 export interface TripFilters {
   q?: string;
   destination?: string;
+  country?: string;
   category?: string;
   startDate?: string;
   endDate?: string;
@@ -37,6 +114,7 @@ export async function getTrips(filters: TripFilters = {}) {
   const {
     q,
     destination,
+    country,
     category,
     startDate,
     endDate,
@@ -51,6 +129,7 @@ export async function getTrips(filters: TripFilters = {}) {
     async () => {
       const query: Record<string, unknown> = { status: "active" };
       if (destination) query.destination = new RegExp(destination, "i");
+      if (country) query.country = new RegExp(`^${country}$`, "i");
       if (category) query.category = category;
       if (q) query.$text = { $search: q };
       if (startDate || endDate) {

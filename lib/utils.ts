@@ -15,6 +15,17 @@ export function formatINR(amount: number, opts?: { decimals?: boolean }) {
   }).format(Number.isFinite(amount) ? amount : 0);
 }
 
+/** Format money using the visitor country. */
+export function formatCurrencyForCountry(amount: number, countryCode?: string, opts?: { decimals?: boolean }) {
+  const isIndia = (countryCode ?? "IN").toUpperCase() === "IN";
+
+  return new Intl.NumberFormat(isIndia ? "en-IN" : "en-US", {
+    style: "currency",
+    currency: isIndia ? "INR" : "USD",
+    maximumFractionDigits: opts?.decimals ? 2 : 0,
+  }).format(Number.isFinite(amount) ? amount : 0);
+}
+
 /** Compact number, e.g. 12500 -> 12.5K. */
 export function formatCompact(n: number) {
   return new Intl.NumberFormat("en-IN", { notation: "compact" }).format(n || 0);

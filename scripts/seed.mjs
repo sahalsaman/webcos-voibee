@@ -26,7 +26,7 @@ if (!URI) {
   process.exit(1);
 }
 
-const PASSWORD = process.env.SEED_PASSWORD || "Password123!";
+const PASSWORD = process.env.SEED_PASSWORD || "123456";
 const oid = () => new mongoose.Types.ObjectId();
 const now = new Date();
 const daysFromNow = (d) => new Date(now.getTime() + d * 86400000);
@@ -39,7 +39,7 @@ const db = mongoose.connection.db;
 console.log("→ connected to", db.databaseName);
 
 const collections = [
-  "users", "partners", "trips", "partnertrips",
+  "users", "partners", "destinations", "offercards", "trips", "partnertrips",
   "bookings", "payments", "commissions", "reviews",
   "wishlists", "notifications", "settings",
 ];
@@ -79,16 +79,95 @@ await db.collection("settings").insertOne({
   currency: "INR", minWithdrawal: 1000, createdAt: now, updatedAt: now,
 });
 
+/* -------------------------- DESTINATIONS -------------------------- */
+const destinationDefs = [
+  { title: "Goa", country: "India", countryCode: "IN", basePrice: 8999, image: "1512343879784-a960bf40e7f2", tags: ["beach", "nightlife"], featured: true, popular: true },
+  { title: "Manali", country: "India", countryCode: "IN", basePrice: 11999, image: "1626621341517-bbf3d9990a23", tags: ["mountains", "trekking"], featured: true, popular: true },
+  { title: "Kerala", country: "India", countryCode: "IN", basePrice: 14999, image: "1602216056096-3b40cc0c9944", tags: ["backwaters", "family"], featured: true, popular: true },
+  { title: "Ladakh", country: "India", countryCode: "IN", basePrice: 22999, image: "1581793745862-99fde7fa73d2", tags: ["roadtrip", "adventure"], featured: true, popular: true },
+  { title: "Andaman", country: "India", countryCode: "IN", basePrice: 26999, image: "1559494007-9f5847c49d94", tags: ["islands", "honeymoon"], featured: false, popular: true },
+  { title: "Rishikesh", country: "India", countryCode: "IN", basePrice: 6999, image: "1591018653367-7c7c9f9a3a35", tags: ["rafting", "wellness"], featured: false, popular: true },
+  { title: "Kashmir", country: "India", countryCode: "IN", basePrice: 18999, image: "1566837497312-7be4ebbd7e62", tags: ["snow", "family"], featured: true, popular: true },
+  { title: "Meghalaya", country: "India", countryCode: "IN", basePrice: 17999, image: "1623598548755-cf0a84d9c9bb", tags: ["waterfalls", "nature"], featured: false, popular: true },
+  { title: "Spiti", country: "India", countryCode: "IN", basePrice: 19999, image: "1605640840605-14ac1855827b", tags: ["offbeat", "monastery"], featured: false, popular: true },
+  { title: "Coorg", country: "India", countryCode: "IN", basePrice: 9999, image: "1593693397690-362cb9666fc2", tags: ["coffee", "wellness"], featured: false, popular: true },
+  { title: "Dubai", country: "United Arab Emirates", countryCode: "AE", basePrice: 499, image: "1512453979798-5ea266f8880c", tags: ["luxury", "shopping"], featured: true, popular: true },
+  { title: "Bali", country: "Indonesia", countryCode: "ID", basePrice: 699, image: "1537996194471-e657df975ab4", tags: ["wellness", "honeymoon"], featured: true, popular: true },
+  { title: "Singapore", country: "Singapore", countryCode: "SG", basePrice: 599, image: "1525625293386-3f8f99389edd", tags: ["family", "city"], featured: true, popular: true },
+  { title: "Thailand", country: "Thailand", countryCode: "TH", basePrice: 549, image: "1508009603885-50cf7c579365", tags: ["beach", "group"], featured: false, popular: true },
+  { title: "Maldives", country: "Maldives", countryCode: "MV", basePrice: 899, image: "1514282401047-d79a71a590e8", tags: ["honeymoon", "luxury"], featured: true, popular: true },
+  { title: "Malaysia", country: "Malaysia", countryCode: "MY", basePrice: 449, image: "1596422846543-75c6fc197f07", tags: ["family", "city"], featured: false, popular: true },
+  { title: "Vietnam", country: "Vietnam", countryCode: "VN", basePrice: 599, image: "1528127269322-539801943592", tags: ["culture", "solo"], featured: false, popular: true },
+  { title: "Sri Lanka", country: "Sri Lanka", countryCode: "LK", basePrice: 399, image: "1586861635167-e5223aadc9fe", tags: ["beach", "spiritual"], featured: false, popular: true },
+  { title: "Azerbaijan", country: "Azerbaijan", countryCode: "AZ", basePrice: 649, image: "1603466340270-41ae443a65a5", tags: ["culture", "luxury"], featured: false, popular: true },
+  { title: "Georgia", country: "Georgia", countryCode: "GE", basePrice: 649, image: "1565008576549-57569a49371d", tags: ["mountains", "wine"], featured: false, popular: true },
+];
+
+const destinations = destinationDefs.map((d) => ({
+  _id: oid(),
+  title: d.title,
+  description: `Curated ${d.title} packages with transparent pricing, verified stays and local experiences.`,
+  images: [img(d.image)],
+  videos: [],
+  basePrice: d.basePrice,
+  status: "active",
+  featured: d.featured,
+  tags: d.tags,
+  popular: d.popular,
+  country: d.country,
+  countryCode: d.countryCode,
+  createdAt: now,
+  updatedAt: now,
+}));
+await db.collection("destinations").insertMany(destinations);
+
+/* ---------------------------- OFFER CARDS ---------------------------- */
+const offerCards = [
+  { title: "Dubai summer flash deal", description: "Luxury stays, skyline views and guided city experiences with smooth Voibee support.", href: "/trips?destination=Dubai", ctaLabel: "Book Dubai", priceLabel: "From $499", image: "1512453979798-5ea266f8880c", country: "United Arab Emirates", countryCode: "AE", featured: true, sortOrder: 1, tags: ["dubai", "luxury"] },
+  { title: "Bali honeymoon special", description: "Private villas, wellness experiences and island days curated for couples.", href: "/trips?destination=Bali", ctaLabel: "Explore Bali", priceLabel: "From $699", image: "1537996194471-e657df975ab4", country: "Indonesia", countryCode: "ID", featured: true, sortOrder: 2, tags: ["bali", "honeymoon"] },
+  { title: "Kerala family holiday", description: "Backwaters, nature stays and relaxed family itineraries across Kerala.", href: "/trips?destination=Kerala", ctaLabel: "View Kerala", priceLabel: "From ₹14,999", image: "1602216056096-3b40cc0c9944", country: "India", countryCode: "IN", featured: false, sortOrder: 3, tags: ["kerala", "family"] },
+  { title: "Varanasi festival escape", description: "A spiritual city break around river rituals, heritage walks and festive evenings.", href: "/trips?destination=Varanasi", ctaLabel: "See festival trips", priceLabel: "From ₹7,999", image: "1561361513-2d000a50f0dc", country: "India", countryCode: "IN", featured: false, sortOrder: 4, tags: ["festival", "spiritual"] },
+];
+
+await db.collection("offercards").insertMany(offerCards.map((offer) => ({
+  _id: oid(),
+  title: offer.title,
+  description: offer.description,
+  images: [img(offer.image)],
+  videos: [],
+  href: offer.href,
+  ctaLabel: offer.ctaLabel,
+  priceLabel: offer.priceLabel,
+  status: "active",
+  featured: offer.featured,
+  sortOrder: offer.sortOrder,
+  tags: offer.tags,
+  country: offer.country,
+  countryCode: offer.countryCode,
+  createdAt: now,
+  updatedAt: now,
+})));
+
 /* ----------------------------- TRIPS ----------------------------- */
 const tripDefs = [
-  { title: "Goa Beach Escape", destination: "Goa", category: "Weekend", basePrice: 8999, seats: 30, days: 4, img: "1512343879784-a960bf40e7f2", featured: true, tags: ["beach", "nightlife"] },
-  { title: "Manali Adventure Trek", destination: "Manali", category: "Adventure", basePrice: 11999, seats: 25, days: 6, img: "1626621341517-bbf3d9990a23", featured: true, tags: ["trekking", "mountains"] },
-  { title: "Kerala Backwaters Bliss", destination: "Kerala", category: "Family", basePrice: 14999, seats: 20, days: 5, img: "1602216056096-3b40cc0c9944", featured: true, tags: ["houseboat", "nature"] },
-  { title: "Ladakh Road Trip", destination: "Ladakh", category: "Backpacking", basePrice: 22999, seats: 16, days: 8, img: "1581793745862-99fde7fa73d2", featured: true, tags: ["bikes", "highaltitude"] },
-  { title: "Andaman Island Getaway", destination: "Andaman", category: "Honeymoon", basePrice: 26999, seats: 18, days: 6, img: "1559494007-9f5847c49d94", featured: false, tags: ["islands", "scuba"] },
-  { title: "Rishikesh Yoga & Rafting", destination: "Rishikesh", category: "Weekend", basePrice: 6999, seats: 35, days: 3, img: "1591018653367-7c7c9f9a3a35", featured: false, tags: ["rafting", "yoga"] },
-  { title: "Kashmir Paradise Tour", destination: "Kashmir", category: "Family", basePrice: 18999, seats: 22, days: 6, img: "1566837497312-7be4ebbd7e62", featured: true, tags: ["snow", "shikara"] },
-  { title: "Spiti Valley Expedition", destination: "Spiti", category: "Adventure", basePrice: 19999, seats: 14, days: 7, img: "1605640840605-14ac1855827b", featured: false, tags: ["offbeat", "monastery"] },
+  { title: "Goa Beach Escape", destination: "Goa", country: "India", category: "Group", basePrice: 8999, seats: 30, days: 4, img: "1512343879784-a960bf40e7f2", featured: true, tags: ["beach", "nightlife"] },
+  { title: "Manali Adventure Trek", destination: "Manali", country: "India", category: "Adventure", basePrice: 11999, seats: 25, days: 6, img: "1626621341517-bbf3d9990a23", featured: true, tags: ["trekking", "mountains"] },
+  { title: "Kerala Backwaters Bliss", destination: "Kerala", country: "India", category: "Family", basePrice: 14999, seats: 20, days: 5, img: "1602216056096-3b40cc0c9944", featured: true, tags: ["houseboat", "nature"] },
+  { title: "Ladakh Road Trip", destination: "Ladakh", country: "India", category: "Adventure", basePrice: 22999, seats: 16, days: 8, img: "1581793745862-99fde7fa73d2", featured: true, tags: ["bikes", "highaltitude"] },
+  { title: "Andaman Island Getaway", destination: "Andaman", country: "India", category: "Honeymoon", basePrice: 26999, seats: 18, days: 6, img: "1559494007-9f5847c49d94", featured: false, tags: ["islands", "scuba"] },
+  { title: "Rishikesh Yoga & Rafting", destination: "Rishikesh", country: "India", category: "Wellness & spa", basePrice: 6999, seats: 35, days: 3, img: "1591018653367-7c7c9f9a3a35", featured: false, tags: ["rafting", "yoga"] },
+  { title: "Kashmir Paradise Tour", destination: "Kashmir", country: "India", category: "Family", basePrice: 18999, seats: 22, days: 6, img: "1566837497312-7be4ebbd7e62", featured: true, tags: ["snow", "shikara"] },
+  { title: "Spiti Valley Expedition", destination: "Spiti", country: "India", category: "Adventure", basePrice: 19999, seats: 14, days: 7, img: "1605640840605-14ac1855827b", featured: false, tags: ["offbeat", "monastery"] },
+  { title: "Meghalaya Waterfall Trails", destination: "Meghalaya", country: "India", category: "Adventure", basePrice: 17999, seats: 18, days: 6, img: "1623598548755-cf0a84d9c9bb", featured: false, tags: ["waterfalls", "nature"] },
+  { title: "Coorg Wellness Retreat", destination: "Coorg", country: "India", category: "Wellness & spa", basePrice: 9999, seats: 16, days: 4, img: "1593693397690-362cb9666fc2", featured: false, tags: ["coffee", "spa"] },
+  { title: "Dubai Luxury Break", destination: "Dubai", country: "United Arab Emirates", category: "Luxury", basePrice: 499, seats: 24, days: 5, img: "1512453979798-5ea266f8880c", featured: true, tags: ["shopping", "skyline"] },
+  { title: "Bali Honeymoon Escape", destination: "Bali", country: "Indonesia", category: "Honeymoon", basePrice: 699, seats: 18, days: 6, img: "1537996194471-e657df975ab4", featured: true, tags: ["villas", "wellness"] },
+  { title: "Singapore Family Fun", destination: "Singapore", country: "Singapore", category: "Family", basePrice: 599, seats: 26, days: 5, img: "1525625293386-3f8f99389edd", featured: true, tags: ["city", "themeparks"] },
+  { title: "Thailand Island Group Trip", destination: "Thailand", country: "Thailand", category: "Group", basePrice: 549, seats: 30, days: 6, img: "1508009603885-50cf7c579365", featured: false, tags: ["beach", "nightlife"] },
+  { title: "Maldives Water Villa Stay", destination: "Maldives", country: "Maldives", category: "Luxury", basePrice: 899, seats: 12, days: 5, img: "1514282401047-d79a71a590e8", featured: true, tags: ["islands", "honeymoon"] },
+  { title: "Vietnam Solo Discovery", destination: "Vietnam", country: "Vietnam", category: "Solo", basePrice: 599, seats: 20, days: 7, img: "1528127269322-539801943592", featured: false, tags: ["culture", "food"] },
+  { title: "Sri Lanka Spiritual Circuit", destination: "Sri Lanka", country: "Sri Lanka", category: "Spiritual", basePrice: 399, seats: 20, days: 5, img: "1586861635167-e5223aadc9fe", featured: false, tags: ["temples", "coast"] },
+  { title: "Azerbaijan Festival Week", destination: "Azerbaijan", country: "Azerbaijan", category: "Festival", basePrice: 649, seats: 20, days: 6, img: "1603466340270-41ae443a65a5", featured: false, tags: ["culture", "festival"] },
 ];
 
 const inclusions = ["Accommodation", "Daily breakfast & dinner", "All transfers", "Professional trip captain", "Sightseeing as per itinerary"];
@@ -119,6 +198,7 @@ const trips = tripDefs.map((t, i) => {
     endDate: daysFromNow(14 + i * 7 + t.days),
     pickupLocation: t.destination + " Airport",
     category: t.category,
+    country: t.country,
     status: "active",
     featured: t.featured,
     tags: t.tags,
