@@ -39,7 +39,6 @@ export async function POST(request: Request) {
       const pt = await PartnerTrip.findOne({
         partnerSlug: body.partnerSlug,
         tripSlug: trip.slug,
-        active: true,
       });
       if (pt) {
         commission = pt.commission;

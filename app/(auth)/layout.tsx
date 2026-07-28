@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Compass, Quote } from "lucide-react";
+import { appConfig } from "../app,config";
 
 const SIDE_IMG =
   "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=70";
@@ -18,7 +19,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <span className="flex size-10 items-center justify-center rounded-xl bg-white/20">
               <Compass className="size-6" />
             </span>
-            Voibee
+            {appConfig.appNameCap}
           </Link>
           <div>
             <Quote className="size-10 opacity-60" />
@@ -26,7 +27,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               The marketplace where travelers find their next adventure and
               partners turn passion into profit.
             </p>
-            <p className="mt-4 text-white/80">Join thousands already exploring with Voibee.</p>
+            <p className="mt-4 text-white/80">Join thousands already exploring with {appConfig.appName}.</p>
           </div>
         </div>
       </div>
@@ -41,7 +42,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <span className="flex size-9 items-center justify-center rounded-xl bg-brand-gradient text-white">
               <Compass className="size-5" />
             </span>
-            Voibee
+            {appConfig.appNameCap}
           </Link>
           {children}
         </div>

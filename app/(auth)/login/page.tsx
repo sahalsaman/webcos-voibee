@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loginSchema, type LoginInput } from "@/lib/validations";
+import { appConfig } from "@/app/app,config";
 
 function dashboardPath(role?: string) {
   if (role === "admin") return "/admin";
@@ -75,7 +76,7 @@ function LoginForm() {
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        New to Voibee?{" "}
+        New to {appConfig.appNameCap}?{" "}
         <Link href="/register" className="font-semibold text-primary hover:underline">
           Create an account
         </Link>

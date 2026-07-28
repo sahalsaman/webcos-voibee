@@ -36,6 +36,17 @@ export const partnerRegisterSchema = travelerRegisterSchema.extend({
     .optional(),
 });
 
+export const adminPartnerInviteSchema = z.object({
+  name: z.string().trim().min(2, "Name is too short"),
+  email: z.string().email("Enter a valid email"),
+  mobile,
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  businessName: z.string().trim().min(2, "Business name is required"),
+  partnerType: z.enum(PARTNER_TYPES).default("Travel Agency"),
+  status: z.enum(["pending", "approved"]).default("approved"),
+  defaultCommission: z.number().nonnegative().default(1000),
+});
+
 export const tripSchema = z.object({
   title: z.string().trim().min(3),
   destination: z.string().trim().min(2),
@@ -143,6 +154,7 @@ export const bookingSchema = z.object({
 export type LoginInput = z.infer<typeof loginSchema>;
 export type TravelerRegisterInput = z.infer<typeof travelerRegisterSchema>;
 export type PartnerRegisterInput = z.infer<typeof partnerRegisterSchema>;
+export type AdminPartnerInviteInput = z.infer<typeof adminPartnerInviteSchema>;
 export type TripInput = z.infer<typeof tripSchema>;
 export type DestinationInput = z.infer<typeof destinationSchema>;
 export type EmployeeInput = z.infer<typeof employeeSchema>;

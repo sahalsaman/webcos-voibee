@@ -4,6 +4,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Avatar } from "@/components/ui/avatar";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { PartnerActions } from "@/components/admin/partner-actions";
+import { PartnerInviteDrawer } from "@/components/admin/partner-invite-drawer";
 import { listAdminPartners } from "@/lib/dashboard";
 import { formatINR } from "@/lib/utils";
 
@@ -23,9 +24,12 @@ export default async function AdminPartnersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Partners</h1>
-        <p className="text-muted-foreground">{partners.length} registered</p>
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">Partners</h1>
+          <p className="text-muted-foreground">{partners.length} invited or registered</p>
+        </div>
+        <PartnerInviteDrawer />
       </div>
 
       {partners.length ? (
@@ -69,7 +73,7 @@ export default async function AdminPartnersPage() {
           </CardContent>
         </Card>
       ) : (
-        <EmptyState icon={Users} title="No partners yet" description="Approved partners will appear here." />
+        <EmptyState icon={Users} title="No partners yet" description="Invite partners from admin to create their login and white-label namespace." action={<PartnerInviteDrawer />} />
       )}
     </div>
   );

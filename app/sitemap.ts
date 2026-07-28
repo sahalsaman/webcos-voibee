@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import "@/models";
 import Trip from "@/models/Trip";
 import PartnerTrip from "@/models/PartnerTrip";
+import Partner from "@/models/Partner";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.voibee.com";
 
@@ -10,6 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: appUrl, changeFrequency: "daily", priority: 1 },
     { url: `${appUrl}/trips`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${appUrl}/destinations`, changeFrequency: "daily", priority: 0.85 },
     { url: `${appUrl}/visa`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${appUrl}/register`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${appUrl}/login`, changeFrequency: "monthly", priority: 0.3 },
@@ -17,9 +19,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     await connectDB();
-    const [trips, partnerTrips] = await Promise.all([
+    const [trips, partnerTrips, approvedPartners] = await Promise.all([
       Trip.find({ status: "active" }).select("slug updatedAt").lean(),
       PartnerTrip.find({ active: true }).select("partnerSlug tripSlug updatedAt").lean(),
+      Partner.find({ status: "approved" }).select("slug updatedAt").lean(),
     ]);
 
     const tripRoutes: MetadataRoute.Sitemap = trips.map((t) => ({
@@ -29,6 +32,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }));
 
+    const activePartnerSlugs = new Set(partnerTrips.map((p) => p.partnerSlug));
+
+    const partnerRoutes: MetadataRoute.Sitemap = approvedPartners
+      .filter((partner) => activePartnerSlugs.has(partner.slug))
+      .map((partner) => ({
+        url: `${appUrl}/p/${partner.slug}`,
+        lastModified: partner.updatedAt as Date,
+        changeFrequency: "weekly",
+        priority: 0.65,
+      }));
+
     const wlRoutes: MetadataRoute.Sitemap = partnerTrips.map((p) => ({
       url: `${appUrl}/p/${p.partnerSlug}/${p.tripSlug}`,
       lastModified: p.updatedAt as Date,
@@ -36,7 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     }));
 
-    return [...staticRoutes, ...tripRoutes, ...wlRoutes];
+    return [...staticRoutes, ...tripRoutes, ...partnerRoutes, ...wlRoutes];
   } catch {
     return staticRoutes;
   }

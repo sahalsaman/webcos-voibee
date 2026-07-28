@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { formatINR, formatDate } from "@/lib/utils";
+import { appConfig } from "@/app/app,config";
 
 declare global {
   interface Window {
@@ -110,7 +111,7 @@ export function BookingBox({
         key: keyId,
         amount: amount * 100,
         currency: "INR",
-        name: "Voibee",
+        name: appConfig.appName,
         description: "Trip booking",
         order_id: razorpayOrderId,
         prefill: { name: form.name, email: form.email, contact: form.mobile },

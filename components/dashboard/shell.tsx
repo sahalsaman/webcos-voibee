@@ -40,7 +40,7 @@ export function DashboardShell({
         <span className="flex size-9 items-center justify-center rounded-xl bg-brand-gradient text-white">
           <Compass className="size-5" />
         </span>
-        Voi<span className="text-gradient">bee</span>
+        Voibee
       </Link>
       <div className="px-5 pb-3">
         <Badge variant="secondary">{roleLabel}</Badge>

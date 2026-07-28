@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { Analytics } from "@vercel/analytics/next"
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -71,6 +72,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${jakarta.variable} h-full`}>
       <body className="min-h-full bg-background text-foreground antialiased">
+        <Analytics/>
         <Providers>{children}</Providers>
       </body>
     </html>

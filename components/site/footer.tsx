@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { DestinationDTO } from "@/types";
+import { appConfig } from "@/app/app,config";
 
 const app_logo = "/voibee-logo.png"
 
@@ -40,7 +41,7 @@ export function Footer() {
         <div className="md:col-span-1">
           <Link href="/" className="flex items-center gap-2 font-bold text-lg">
             <Image src={app_logo} alt="Logo" width={32} height={32} />
-            Voibee
+             {appConfig.appNameCap}
           </Link>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">
             Curated trips for explorers who want clear plans, verified stays and
@@ -65,6 +66,7 @@ export function Footer() {
         <div>
           <h4 className="mb-3 text-sm font-semibold">Destinations</h4>
           <ul className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
+            <li className="col-span-2"><Link className="font-medium text-primary hover:underline" href={withCountry("/destinations")}>View all destinations</Link></li>
             {destinations.map((d) => (
               <li key={d._id}>
                 <Link className="hover:text-foreground" href={withCountry(`/trips?destination=${encodeURIComponent(d.title)}`)}>
@@ -87,8 +89,8 @@ export function Footer() {
       </div>
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-sm text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
-          <p>© {new Date().getFullYear()} Voibee. All rights reserved.</p>
-          <p>Made for explorers · Powered by Voibee</p>
+          <p>© {new Date().getFullYear()} {appConfig.appName}. All rights reserved.</p>
+          <p>Made for explorers · Powered by {appConfig.appName}</p>
         </div>
       </div>
     </footer>

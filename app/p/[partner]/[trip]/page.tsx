@@ -17,6 +17,7 @@ import { BookingBox } from "@/components/booking/booking-box";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getWhiteLabelTrip, trackPartnerTripClick } from "@/lib/data";
 import { tripDuration } from "@/lib/utils";
+import { appConfig } from "@/app/app,config";
 
 type Props = { params: Promise<{ partner: string; trip: string }> };
 
@@ -185,7 +186,7 @@ export default async function WhiteLabelTripPage({ params }: Props) {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 text-sm text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
           <p>© {new Date().getFullYear()} {biz.businessName}</p>
           <Link href="/" className="flex items-center gap-1.5 font-medium hover:text-foreground">
-            <Compass className="size-4 text-primary" /> Powered by Voibee
+            <Compass className="size-4 text-primary" /> Powered by {appConfig.appName}
           </Link>
         </div>
       </footer>

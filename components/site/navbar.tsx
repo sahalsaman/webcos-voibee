@@ -15,10 +15,11 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { appConfig } from "@/app/app,config";
 
 const NAV_LINKS = [
-  { href: "/trips", label: "Explore Trips" },
-  { href: "/#why", label: "Why Voibee" },
+  { href: "/destinations", label: "Destinations" },
+  { href: "/trips", label: "Holiday Packages" },
   { href: "/visa", label: "Visa" },
 ];
 
@@ -42,7 +43,7 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-2 font-bold text-lg">
             <Image src={app_logo} alt="Logo" width={32} height={32} />
             <span>
-              Voibee
+              {appConfig.appNameCap}
             </span>
           </Link>
 

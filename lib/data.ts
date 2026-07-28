@@ -250,16 +250,14 @@ export async function getWhiteLabelTrip(partnerSlug: string, tripSlug: string) {
     const pt = await PartnerTrip.findOne({
       partnerSlug,
       tripSlug,
-      active: true,
     })
-      .populate({ path: "trip", model: Trip })
+      .populate({ path: "trip", model: Trip, match: { status: "active" } })
       .populate({
         path: "partner",
         model: Partner,
-        match: { status: "approved" },
         populate: { path: "user", model: User, select: "name image" },
       })
-      .lean<{ trip: unknown; partner: unknown; commission: number; sellingPrice: number }>();
+      .lean<{ trip: unknown; partner: unknown; commission: number; sellingPrice: number; active: boolean }>();
 
     if (!pt || !pt.partner || !pt.trip) return null;
     return serialize(pt) as unknown as {
@@ -268,6 +266,39 @@ export async function getWhiteLabelTrip(partnerSlug: string, tripSlug: string) {
       partner: PartnerDTO;
       commission: number;
       sellingPrice: number;
+      active: boolean;
+    };
+  }, null);
+}
+
+/** Partner storefront for /p/<partnerSlug>, listing selected trips. */
+export async function getPartnerStorefront(partnerSlug: string) {
+  return safe(async () => {
+    const partner = await Partner.findOne({ slug: partnerSlug })
+      .populate({ path: "user", model: User, select: "name image" })
+      .lean();
+    if (!partner) return null;
+
+    const links = await PartnerTrip.find({
+      partner: partner._id,
+      partnerSlug,
+    })
+      .sort({ createdAt: -1 })
+      .populate({ path: "trip", model: Trip, match: { status: "active" } })
+      .lean();
+
+    return {
+      partner: serialize(partner) as PartnerDTO,
+      links: (serialize(links) as Array<{
+        _id: string;
+        tripSlug: string;
+        commission: number;
+        sellingPrice: number;
+        active: boolean;
+        clicks: number;
+        bookings: number;
+        trip: TripDTO | null;
+      }>).filter((link) => Boolean(link.trip)),
     };
   }, null);
 }
