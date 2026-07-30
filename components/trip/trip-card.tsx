@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Star, Calendar, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { isCustomDateTripCategory } from "@/lib/constants";
 import { formatINR, tripDuration, formatDate } from "@/lib/utils";
 import type { TripDTO } from "@/types";
 
@@ -19,9 +20,11 @@ const FALLBACK_IMG =
 export function TripCard({ trip, href, priceOverride, priceLabel }: TripCardProps) {
   const link = href ?? `/trips/${trip.slug}`;
   const img = trip.images?.[0] || FALLBACK_IMG;
+  const customDate = isCustomDateTripCategory(trip.category);
   const { label: duration } = tripDuration(trip.startDate, trip.endDate);
   const price = priceOverride ?? trip.basePrice;
-  const soldOut = trip.availableSeats <= 0;
+  const soldOut = customDate ? false : trip.availableSeats <= 0;
+  const scheduleLabel = customDate ? "Custom date" : duration;
 
   return (
     <Link
@@ -64,12 +67,14 @@ export function TripCard({ trip, href, priceOverride, priceLabel }: TripCardProp
 
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
-            <Calendar className="size-3.5" /> {duration}
+            <Calendar className="size-3.5" /> {scheduleLabel}
           </span>
-          <span className="flex items-center gap-1">
-            <Users className="size-3.5" />
-            {soldOut ? "Waitlist" : `${trip.availableSeats} seats left`}
-          </span>
+          {!customDate ? (
+            <span className="flex items-center gap-1">
+              <Users className="size-3.5" />
+              {soldOut ? "Waitlist" : `${trip.availableSeats} seats left`}
+            </span>
+          ) : null}
         </div>
 
         <div className="mt-4 flex items-end justify-between border-t border-border pt-3">
@@ -83,7 +88,7 @@ export function TripCard({ trip, href, priceOverride, priceLabel }: TripCardProp
             </p>
           </div>
           <span className="text-xs font-medium text-muted-foreground">
-            {formatDate(trip.startDate)}
+            {customDate ? "Custom date" : formatDate(trip.startDate)}
           </span>
         </div>
       </div>

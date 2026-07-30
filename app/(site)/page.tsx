@@ -12,7 +12,6 @@ import {
   Heart,
   Users,
   UserRound,
-  Gem,
   Leaf,
   Sparkles,
   Flower2,
@@ -28,14 +27,13 @@ import { OfferCarousel, type OfferSlide } from "@/components/home/offer-carousel
 import { getFeaturedTrips, getHomeDestinations, getOfferCards, isIndiaCountry } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
 import { formatCurrencyForCountry } from "@/lib/utils";
-import { TRIP_CATEGORIES } from "@/lib/constants";
+import type { TripCategory } from "@/lib/constants";
 import type { DestinationDTO, OfferCardDTO } from "@/types";
 
 // Re-fetch featured trips from the DB at most once a minute.
 export const revalidate = 60;
 
-const HERO_BG =
-  "/hero-bg.png";
+const HERO_BG = "/hero-experience.png";
 
 const WHY = [
   {
@@ -73,18 +71,27 @@ const TESTIMONIALS = [
   },
 ];
 
+const TRUST_AVATARS = [
+  { initials: "AR", className: "bg-[#1b335f]" },
+  { initials: "NI", className: "bg-[#ef8f7b]" },
+  { initials: "RM", className: "bg-[#0f8f83]" },
+  { initials: "SK", className: "bg-[#f6b13f]" },
+  { initials: "VP", className: "bg-[#263238]" },
+  { initials: "MA", className: "bg-[#78a8ff]" },
+];
+
+
 const TRIP_THEME_DETAILS = [
-  { name: "Adventure", icon: Mountain },
+  { name: "Holiday Package", icon: Mountain },
   { name: "Honeymoon", icon: Heart },
   { name: "Family", icon: Users },
-  { name: "Group", icon: Sparkles },
-  { name: "Solo", icon: UserRound },
-  { name: "Luxury", icon: Gem },
-  { name: "Wellness & spa", icon: Leaf },
+  { name: "Group Trip", icon: Sparkles },
+  { name: "Strangers", icon: UserRound },
+  { name: "Wellness", icon: Leaf },
   { name: "Spiritual", icon: Flower2 },
   { name: "Festival", icon: PartyPopper },
 ] satisfies Array<{
-  name: (typeof TRIP_CATEGORIES)[number];
+  name: TripCategory;
   icon: typeof Compass;
 }>;
 
@@ -132,39 +139,49 @@ export default async function HomePage({
   return (
     <>
       {/* ---------------- Hero ---------------- */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden bg-background">
         <div className="absolute inset-0">
-          <Image src={HERO_BG} alt="" fill priority className="object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background" />
+          <Image
+            src={HERO_BG}
+            alt="Happy travelers exploring together"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/78 to-background/10" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
         </div>
-        <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-24 text-center sm:px-6 lg:px-8 lg:pt-32">
-          <Badge variant="glass" className="mx-auto mb-5 text-white">
-            <Compass className="size-3.5" /> Your trip companion
-          </Badge>
-          <h1 className="mx-auto max-w-4xl text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">
-            Discover unforgettable trips.{" "}
-            <span className="text-gradient">Plan your trip with</span> VOIBEE
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base text-white/80 sm:text-lg">
-            Book curated getaways from trusted operators with clear itineraries,
-            verified experiences and support from search to return.
-          </p>
+        <div className="relative mx-auto grid min-h-[600px] max-w-7xl items-center px-4 pb-12 pt-20 sm:min-h-[640px] sm:px-6 lg:min-h-[680px] lg:grid-cols-[minmax(0,0.9fr)_minmax(320px,0.7fr)] lg:px-8 lg:pb-20 lg:pt-28">
+          <div className="max-w-3xl">
+           
+            <h1 className="text-4xl font-extrabold leading-[1.04] text-foreground sm:text-5xl lg:text-7xl">
+              Experience trips
+              <span className="block text-gradient">with your VOIBEE</span>
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
+              Find curated trips, meet friendly travel buddies, and book verified experiences with support from search to return.
+            </p>
 
-          <div className="mt-9">
-            <SearchBar />
-          </div>
+            <div className="mt-9">
+              <SearchBar />
+            </div>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-            {heroDestinations.map((d) => (
-              <Link key={d._id} href={hrefWithCountry(`/trips?destination=${encodeURIComponent(d.title)}`, country)}>
-                <Badge variant="glass" className="border-white/25 bg-black/45 text-white shadow-sm hover:bg-black/60">
-                  {d.title}
-                </Badge>
-              </Link>
-            ))}
+            <div className="mt-6 flex flex-wrap gap-2">
+              {heroDestinations.map((d) => (
+                <Link key={d._id} href={hrefWithCountry(`/trips?destination=${encodeURIComponent(d.title)}`, country)}>
+                  <Badge variant="glass" className="border-primary/15 bg-card/90 shadow-sm hover:border-primary/35 hover:text-primary">
+                    {d.title}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
+
+      <TrustReviewStrip />
           </div>
         </div>
       </section>
+
 
       <OfferCarousel offers={offers} />
 
@@ -211,7 +228,7 @@ export default async function HomePage({
             eyebrow="Browse by theme"
             title="Choose the trip mood that fits you"
           />
-          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-9">
+          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-8">
             {TRIP_THEME_DETAILS.map((theme) => {
               const Icon = theme.icon;
 
@@ -323,23 +340,98 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Final CTA ---------------- */}
-      <section className="mx-auto max-w-4xl px-4 py-20 text-center sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-extrabold sm:text-4xl">
-          Your next adventure is one click away
-        </h2>
-        <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-          Join travelers discovering curated getaways, transparent pricing and
-          support that stays with them throughout the journey.
-        </p>
-        <div className="mt-7 flex flex-wrap justify-center gap-3">
-          <Button asChild size="lg" variant="gradient">
-            <Link href="/trips">
-              Explore Trips <ArrowRight className="size-4" />
-            </Link>
-          </Button>
+      <section className="px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl overflow-hidden rounded-2xl border border-border bg-card shadow-xl shadow-slate-950/10 lg:grid-cols-[1fr_420px]">
+          <div className="p-8 sm:p-10 lg:p-12">
+            <Badge variant="secondary" className="mb-5 w-fit">
+              <Users className="size-3.5" /> Travel buddies are waiting
+            </Badge>
+            <h2 className="max-w-2xl text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
+              Start traveling together
+            </h2>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
+              Join group trips, choose custom-date experiences, or plan your own escape with like-minded TripMates.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Button asChild size="lg" variant="gradient">
+                <Link href={hrefWithCountry("/trips", country)}>
+                  Join the community <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href={hrefWithCountry("/destinations", country)}>
+                  Explore destinations
+                </Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
     </>
+  );
+}
+
+function TrustReviewStrip() {
+  return (
+    <section className=" ">
+      <div className=" grid  gap-12 px-4 py-5  lg:grid-cols-[1.15fr_0.95fr_auto] lg:items-center pt-16">
+   
+          <div>       
+            <div className="flex -space-x-2.5">
+            {TRUST_AVATARS.map((avatar) => (
+              <span
+                key={avatar.initials}
+                className={`${avatar.className} flex size-6 items-center justify-center rounded-full border-2 border-card text-[10px] font-bold text-white shadow-sm sm:size-7`}
+              >
+                {avatar.initials}
+              </span>
+            ))}
+          </div>
+            <div className="flex items-center gap-1.5 text-warning">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Star key={index} className="size-3 fill-current sm:size-4" />
+              ))}
+              <span className="ml-1.5 text-sm font-extrabold text-foreground sm:text-base">4.7/5.0</span>
+            </div>
+            <p className="mt-1 text-xs font-semibold text-foreground sm:text-xs">200,000+ active travellers worldwide</p>
+          </div>
+
+        <div>
+          <div className="flex items-center gap-2">
+            <Star className="size-5 fill-[#00b67a] text-[#00b67a]" />
+            <span className="text-lg font-bold text-foreground">Trustpilot</span>
+          </div>
+          <div className="mt-1.5 flex items-center gap-2.5">
+            <div className="flex gap-1">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <span key={index} className="flex size-5 items-center justify-center bg-[#00b67a] text-white sm:size-6">
+                  <Star className="size-4 fill-current" />
+                </span>
+              ))}
+            </div>
+            <span className="text-sm font-extrabold text-foreground sm:text-base">4.5/5.0</span>
+          </div>
+          <p className="mt-1 text-xs font-semibold text-foreground sm:text-xs">100% happy travel buddies</p>
+        </div>
+
+        <div className="flex items-center gap-4 rounded-xl border border-border bg-background px-5 py-3 shadow-sm lg:min-w-[245px]">
+          <span className="text-5xl font-extrabold leading-none">
+            <span className="text-[#4285f4]">G</span>
+          </span>
+          <div>
+            <p className="text-sm text-muted-foreground sm:text-base">Google Reviews</p>
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-extrabold text-foreground">4.8</span>
+              <div className="flex text-[#ff5a1f]">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star key={index} className="size-4 fill-current" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 

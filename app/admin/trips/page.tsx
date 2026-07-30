@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { TripRowActions } from "@/components/admin/trip-row-actions";
 import { listAdminTrips } from "@/lib/dashboard";
+import { isCustomDateTripCategory } from "@/lib/constants";
 import { formatINR, formatDate } from "@/lib/utils";
 import type { TripDTO } from "@/types";
 
@@ -42,8 +43,10 @@ export default async function AdminTripsPage() {
                 </tr>
               </thead>
               <tbody>
-                {trips.map((t) => (
-                  <tr key={t._id} className="border-b border-border/50 hover:bg-secondary/40">
+                {trips.map((t) => {
+                  const customDate = isCustomDateTripCategory(t.category);
+                  return (
+                    <tr key={t._id} className="border-b border-border/50 hover:bg-secondary/40">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         <Image
@@ -60,12 +63,13 @@ export default async function AdminTripsPage() {
                       </div>
                     </td>
                     <td className="p-4 font-medium">{formatINR(t.basePrice)}</td>
-                    <td className="p-4">{t.availableSeats}/{t.totalSeats}</td>
-                    <td className="p-4 text-muted-foreground">{formatDate(t.startDate)}</td>
-                    <td className="p-4"><StatusBadge status={t.status} /></td>
-                    <td className="p-4"><TripRowActions id={t._id} slug={t.slug} /></td>
-                  </tr>
-                ))}
+                      <td className="p-4">{customDate ? "Custom" : `${t.availableSeats}/${t.totalSeats}`}</td>
+                      <td className="p-4 text-muted-foreground">{customDate ? "Custom date" : formatDate(t.startDate)}</td>
+                      <td className="p-4"><StatusBadge status={t.status} /></td>
+                      <td className="p-4"><TripRowActions id={t._id} slug={t.slug} /></td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </CardContent>

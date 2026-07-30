@@ -33,7 +33,7 @@ const TripSchema = new Schema(
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     pickupLocation: { type: String, default: "" },
-    category: { type: String, enum: TRIP_CATEGORIES, default: "Group", index: true },
+    category: { type: String, enum: TRIP_CATEGORIES, default: "Holiday Package", index: true },
     status: { type: String, enum: TRIP_STATUSES, default: "draft", index: true },
     featured: { type: Boolean, default: false, index: true },
     tags: { type: [String], default: [] },

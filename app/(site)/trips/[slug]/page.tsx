@@ -18,6 +18,7 @@ import {
   getReviewsForTrip,
   getRelatedTrips,
 } from "@/lib/data";
+import { isCustomDateTripCategory } from "@/lib/constants";
 import { formatDate, tripDuration } from "@/lib/utils";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -47,7 +48,9 @@ export default async function TripDetailPage({ params }: Props) {
     getRelatedTrips(trip._id, trip.destination, 3),
   ]);
 
+  const customDate = isCustomDateTripCategory(trip.category);
   const { label: duration } = tripDuration(trip.startDate, trip.endDate);
+  const scheduleLabel = customDate ? "Custom date" : duration;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -61,7 +64,7 @@ export default async function TripDetailPage({ params }: Props) {
       price: trip.basePrice,
       priceCurrency: "INR",
       availability:
-        trip.availableSeats > 0
+        customDate || trip.availableSeats > 0
           ? "https://schema.org/InStock"
           : "https://schema.org/SoldOut",
     },
@@ -95,7 +98,7 @@ export default async function TripDetailPage({ params }: Props) {
             <MapPin className="size-4 text-primary" /> {trip.destination}
           </span>
           <span className="flex items-center gap-1">
-            <Clock className="size-4 text-primary" /> {duration}
+            <Clock className="size-4 text-primary" /> {scheduleLabel}
           </span>
           {trip.rating > 0 ? (
             <span className="flex items-center gap-1">
@@ -236,6 +239,7 @@ export default async function TripDetailPage({ params }: Props) {
             startDate={trip.startDate}
             endDate={trip.endDate}
             pickupLocation={trip.pickupLocation}
+            customDate={customDate}
           />
         </aside>
       </div>

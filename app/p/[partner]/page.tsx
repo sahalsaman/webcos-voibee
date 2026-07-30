@@ -54,7 +54,7 @@ export default async function PartnerStorefrontPage({ params, searchParams }: Pr
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 glass border-b border-border/60">
+      <header className="sticky top-0 z-50 glass border-b border-border/70 bg-card/90">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             {biz.logo || biz.profileImage ? (
@@ -88,7 +88,7 @@ export default async function PartnerStorefrontPage({ params, searchParams }: Pr
         <section className="mt-5 py-10">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold">Our Holiday packages</h2>
+              <h2 className="text-2xl font-bold">Our Packages</h2>
               {/* <p className="text-sm text-muted-foreground">Trips available from {biz.businessName}</p> */}
             </div>
           </div>

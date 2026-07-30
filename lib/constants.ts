@@ -41,17 +41,38 @@ export const COUNTRY_OPTIONS = [
 export type CountryOption = (typeof COUNTRY_OPTIONS)[number];
 
 export const TRIP_CATEGORIES = [
-  "Adventure",
+  "Holiday Package",
   "Honeymoon",
   "Family",
-  "Group",
-  "Solo",
-  "Luxury",
-  "Wellness & spa",
+  "Group Trip",
+  "Strangers",
+  "Wellness",
   "Spiritual",
   "Festival",
 ] as const;
 export type TripCategory = (typeof TRIP_CATEGORIES)[number];
+
+export const FIXED_DEPARTURE_TRIP_CATEGORIES = [
+  "Holiday Package",
+  "Strangers",
+  "Festival",
+] as const;
+
+export const CUSTOM_DATE_TRIP_CATEGORIES = [
+  "Honeymoon",
+  "Family",
+  "Group Trip",
+  "Wellness",
+  "Spiritual",
+] as const;
+
+export function isFixedDepartureTripCategory(category?: string) {
+  return (FIXED_DEPARTURE_TRIP_CATEGORIES as readonly string[]).includes(category ?? "");
+}
+
+export function isCustomDateTripCategory(category?: string) {
+  return (CUSTOM_DATE_TRIP_CATEGORIES as readonly string[]).includes(category ?? "");
+}
 
 export const BOOKING_STATUSES = [
   "pending",

@@ -163,9 +163,9 @@ export function SearchBar() {
   return (
     <form
       onSubmit={submit}
-      className="glass relative mx-auto grid w-full max-w-3xl gap-3 rounded-2xl p-3 shadow-xl md:grid-cols-[minmax(0,1fr)_220px_auto] md:items-center"
+      className="glass relative mx-auto grid w-full max-w-3xl gap-3 rounded-2xl p-3 shadow-xl shadow-slate-950/10 md:grid-cols-[minmax(0,1fr)_220px_auto] md:items-center dark:shadow-xl"
     >
-      <label className="flex min-w-0 items-center gap-2 rounded-xl bg-background/80 px-3 py-2">
+      <label className="flex min-w-0 items-center gap-2 rounded-xl border border-border/60 bg-card/90 px-3 py-2 shadow-sm">
         <MapPin className="size-4 shrink-0 text-muted-foreground" />
         <span className="sr-only">Destination</span>
         <Input
@@ -180,7 +180,7 @@ export function SearchBar() {
         />
       </label>
 
-      <label className="flex min-w-0 items-center gap-2 rounded-xl bg-background/80 px-3 py-2">
+      <label className="flex min-w-0 items-center gap-2 rounded-xl border border-border/60 bg-card/90 px-3 py-2 shadow-sm">
         <CalendarDays className="size-4 shrink-0 text-muted-foreground" />
         <span className="sr-only">Time</span>
         <Select
@@ -204,7 +204,7 @@ export function SearchBar() {
 
       {showResults ? (
         <div className="md:col-span-3">
-          <div className="overflow-hidden rounded-xl border border-white/15 bg-background/95 text-foreground shadow-2xl backdrop-blur-xl">
+          <div className="overflow-hidden rounded-xl border border-border bg-card/98 text-foreground shadow-2xl shadow-slate-950/15 backdrop-blur-xl dark:border-white/15 dark:bg-background/95">
             {loading ? (
               <div className="flex items-center gap-2 px-4 py-4 text-sm text-muted-foreground">
                 <Loader2 className="size-4 animate-spin" /> Searching
@@ -218,9 +218,9 @@ export function SearchBar() {
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => goToResult(item)}
                     className={cn(
-                      "grid w-full grid-cols-[42px_minmax(0,1fr)_auto] items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-primary/10",
+                      "grid w-full grid-cols-[42px_minmax(0,1fr)_auto] items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-secondary/70",
                       index > 0 && "border-t border-border/60",
-                      activeIndex === index && "bg-primary/10",
+                      activeIndex === index && "bg-secondary",
                     )}
                   >
                     <span className="flex size-10 items-center justify-center rounded-full bg-secondary text-xl shadow-sm">
@@ -232,7 +232,7 @@ export function SearchBar() {
                         {item.destination} · {item.country}
                       </span>
                     </span>
-                    <span className="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">
+                    <span className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary">
                       {resultLabel(item.type)}
                     </span>
                   </button>

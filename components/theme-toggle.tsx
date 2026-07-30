@@ -20,6 +20,7 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       aria-label="Toggle theme"
+      className="rounded-full border border-border/70 bg-card/80 text-foreground shadow-sm hover:bg-secondary"
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
       {mounted ? (

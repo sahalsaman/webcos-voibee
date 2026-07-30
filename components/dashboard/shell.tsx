@@ -10,6 +10,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { appConfig } from "@/app/app,config";
 
 export interface NavItem {
   href: string;
@@ -40,7 +41,7 @@ export function DashboardShell({
         <span className="flex size-9 items-center justify-center rounded-xl bg-brand-gradient text-white">
           <Compass className="size-5" />
         </span>
-        Voibee
+        {appConfig.appNameCap}
       </Link>
       <div className="px-5 pb-3">
         <Badge variant="secondary">{roleLabel}</Badge>

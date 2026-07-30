@@ -16,6 +16,7 @@ import { Gallery } from "@/components/trip/gallery";
 import { BookingBox } from "@/components/booking/booking-box";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getWhiteLabelTrip, trackPartnerTripClick } from "@/lib/data";
+import { isCustomDateTripCategory } from "@/lib/constants";
 import { tripDuration } from "@/lib/utils";
 import { appConfig } from "@/app/app,config";
 
@@ -48,13 +49,15 @@ export default async function WhiteLabelTripPage({ params }: Props) {
   trackPartnerTripClick(partner, trip);
 
   const { partner: biz, trip: t, sellingPrice, commission } = wl;
+  const customDate = isCustomDateTripCategory(t.category);
   const { label: duration } = tripDuration(t.startDate, t.endDate);
+  const scheduleLabel = customDate ? "Custom date" : duration;
   const price = sellingPrice || t.basePrice + commission;
 
   return (
     <div className="flex min-h-screen flex-col">
       {/* Partner-branded header */}
-      <header className="sticky top-0 z-50 glass border-b border-border/60">
+      <header className="sticky top-0 z-50 glass border-b border-border/70 bg-card/90">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             {biz.logo || biz.profileImage ? (
@@ -89,7 +92,7 @@ export default async function WhiteLabelTripPage({ params }: Props) {
         <div className="mb-4">
           <div className="flex flex-wrap items-center gap-2">
             <Badge>{t.category}</Badge>
-            <Badge variant="glass">
+            <Badge variant="secondary">
               <Globe className="size-3" /> Curated by {biz.businessName}
             </Badge>
           </div>
@@ -99,7 +102,7 @@ export default async function WhiteLabelTripPage({ params }: Props) {
               <MapPin className="size-4 text-primary" /> {t.destination}
             </span>
             <span className="flex items-center gap-1">
-              <Clock className="size-4 text-primary" /> {duration}
+              <Clock className="size-4 text-primary" /> {scheduleLabel}
             </span>
           </div>
         </div>
@@ -176,6 +179,7 @@ export default async function WhiteLabelTripPage({ params }: Props) {
               endDate={t.endDate}
               pickupLocation={t.pickupLocation}
               partnerSlug={partner}
+              customDate={customDate}
             />
           </aside>
         </div>

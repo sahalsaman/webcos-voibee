@@ -10,13 +10,37 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { COUNTRY_OPTIONS, TRIP_CATEGORIES, TRIP_STATUSES } from "@/lib/constants";
+import { COUNTRY_OPTIONS, TRIP_CATEGORIES, TRIP_STATUSES, isFixedDepartureTripCategory, type TripCategory } from "@/lib/constants";
 import type { DestinationDTO, TripDTO } from "@/types";
 
 type ItineraryItem = { day: number; title: string; description: string };
 
 function toDateInput(d?: string) {
   return d ? new Date(d).toISOString().slice(0, 10) : "";
+}
+
+function dateToInput(date: Date) {
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 10);
+}
+
+function todayInput() {
+  return dateToInput(new Date());
+}
+
+function normalizeTripCategory(category?: string): TripCategory {
+  const legacy: Record<string, TripCategory> = {
+    Adventure: "Holiday Package",
+    Group: "Group Trip",
+    Solo: "Strangers",
+    Luxury: "Holiday Package",
+    "Wellness & spa": "Wellness",
+  };
+
+  if (category && (TRIP_CATEGORIES as readonly string[]).includes(category)) {
+    return category as TripCategory;
+  }
+  return legacy[category ?? ""] ?? "Holiday Package";
 }
 
 export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinations?: DestinationDTO[] }) {
@@ -35,7 +59,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
     startDate: toDateInput(trip?.startDate),
     endDate: toDateInput(trip?.endDate),
     pickupLocation: trip?.pickupLocation ?? "",
-    category: trip?.category ?? "Group",
+    category: normalizeTripCategory(trip?.category),
     status: trip?.status ?? "draft",
     featured: trip?.featured ?? false,
     images: (trip?.images ?? []).join("\n"),
@@ -48,6 +72,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       ? trip.itinerary
       : [{ day: 1, title: "", description: "" }],
   );
+  const needsDateAndSeats = isFixedDepartureTripCategory(form.category);
 
   function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -67,16 +92,20 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    const startDate = needsDateAndSeats ? form.startDate : form.startDate || todayInput();
+    const endDate = needsDateAndSeats ? form.endDate : form.endDate || startDate;
+    const totalSeats = needsDateAndSeats ? Number(form.totalSeats) : 999;
+    const availableSeats = needsDateAndSeats ? Number(form.availableSeats) || totalSeats : 999;
     const payload = {
       title: form.title,
       destination: form.destination,
       country: form.country,
       description: form.description,
       basePrice: Number(form.basePrice),
-      totalSeats: Number(form.totalSeats),
-      availableSeats: Number(form.availableSeats) || Number(form.totalSeats),
-      startDate: form.startDate,
-      endDate: form.endDate,
+      totalSeats,
+      availableSeats,
+      startDate,
+      endDate,
       pickupLocation: form.pickupLocation,
       category: form.category,
       status: form.status,
@@ -157,27 +186,36 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
             <Input type="number" min={0} value={form.basePrice} onChange={(e) => set("basePrice", Number(e.target.value))} required />
           </div>
           <div>
-            <Label className="mb-1.5 block">Total seats</Label>
-            <Input type="number" min={0} value={form.totalSeats} onChange={(e) => set("totalSeats", Number(e.target.value))} />
-          </div>
-          <div>
-            <Label className="mb-1.5 block">Available seats</Label>
-            <Input type="number" min={0} value={form.availableSeats} onChange={(e) => set("availableSeats", Number(e.target.value))} />
-          </div>
-          <div>
-            <Label className="mb-1.5 block">Start date</Label>
-            <Input type="date" value={form.startDate} onChange={(e) => set("startDate", e.target.value)} required />
-          </div>
-          <div>
-            <Label className="mb-1.5 block">End date</Label>
-            <Input type="date" value={form.endDate} onChange={(e) => set("endDate", e.target.value)} required />
-          </div>
-          <div>
             <Label className="mb-1.5 block">Category</Label>
             <Select value={form.category} onChange={(e) => set("category", e.target.value as typeof form.category)}>
               {TRIP_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </Select>
           </div>
+          {needsDateAndSeats ? (
+            <>
+              <div>
+                <Label className="mb-1.5 block">Total seats</Label>
+                <Input type="number" min={1} value={form.totalSeats} onChange={(e) => set("totalSeats", Number(e.target.value))} required />
+              </div>
+              <div>
+                <Label className="mb-1.5 block">Available seats</Label>
+                <Input type="number" min={0} value={form.availableSeats} onChange={(e) => set("availableSeats", Number(e.target.value))} required />
+              </div>
+              <div>
+                <Label className="mb-1.5 block">Start date</Label>
+                <Input type="date" value={form.startDate} onChange={(e) => set("startDate", e.target.value)} required />
+              </div>
+              <div>
+                <Label className="mb-1.5 block">End date</Label>
+                <Input type="date" value={form.endDate} onChange={(e) => set("endDate", e.target.value)} required />
+              </div>
+            </>
+          ) : (
+            <div className="rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4 text-sm text-muted-foreground sm:col-span-2">
+              <p className="font-medium text-foreground">Custom date package</p>
+              <p className="mt-1">Date and seats are handled per enquiry for this category.</p>
+            </div>
+          )}
           <div>
             <Label className="mb-1.5 block">Status</Label>
             <Select value={form.status} onChange={(e) => set("status", e.target.value as typeof form.status)}>
@@ -197,7 +235,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
           </div>
           <div>
             <Label className="mb-1.5 block">Tags (comma separated)</Label>
-            <Input value={form.tags} onChange={(e) => set("tags", e.target.value)} placeholder="adventure, trekking" />
+            <Input value={form.tags} onChange={(e) => set("tags", e.target.value)} placeholder="beach, luxury" />
           </div>
         </CardContent>
       </Card>

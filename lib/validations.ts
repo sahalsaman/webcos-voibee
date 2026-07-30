@@ -71,7 +71,7 @@ export const tripSchema = z.object({
   startDate: z.string(),
   endDate: z.string(),
   pickupLocation: z.string().default(""),
-  category: z.enum(TRIP_CATEGORIES).default("Group"),
+  category: z.enum(TRIP_CATEGORIES).default("Holiday Package"),
   status: z.enum(TRIP_STATUSES).default("draft"),
   featured: z.boolean().default(false),
   tags: z.array(z.string()).default([]),

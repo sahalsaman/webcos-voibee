@@ -13,8 +13,6 @@ import Notification from "@/models/Notification";
 export async function POST(request: Request) {
   try {
     const user = await currentUser();
-    if (!user) return fail("Authentication required", 401);
-
     const body = await request.json();
     const { bookingId } = body as { bookingId?: string };
     if (!bookingId) return fail("Missing booking reference", 400);
@@ -22,14 +20,23 @@ export async function POST(request: Request) {
     await connectDB();
     const booking = await Booking.findById(bookingId);
     if (!booking) return fail("Booking not found", 404);
-    if (String(booking.traveler) !== user.id) return fail("Forbidden", 403);
+
+    const payment = await Payment.findById(booking.payment);
+    const savedToken = typeof payment?.notes?.confirmationToken === "string"
+      ? payment.notes.confirmationToken
+      : undefined;
+    const requestToken = typeof body.confirmationToken === "string" ? body.confirmationToken : undefined;
+
+    const tokenMatches = Boolean(savedToken && savedToken === requestToken);
+    const userOwnsBooking = Boolean(user && booking.traveler && String(booking.traveler) === user.id);
+    if (!tokenMatches && !userOwnsBooking) {
+      return fail(user ? "Forbidden" : "Invalid booking confirmation", 403);
+    }
 
     // Idempotent: already confirmed → return success.
     if (booking.paymentStatus === "paid") {
       return ok({ bookingNumber: booking.bookingNumber, alreadyConfirmed: true });
     }
-
-    const payment = await Payment.findById(booking.payment);
 
     // Verify the gateway signature unless we're in demo (mock) mode.
     const isMock = body.mock === true || !razorpayConfigured;
@@ -103,14 +110,16 @@ export async function POST(request: Request) {
       }
     }
 
-    // Notifications (in-app).
+    // Notifications (in-app) only apply to logged-in traveler bookings.
     const trip = await Trip.findById(booking.trip).select("title").lean<{ title: string }>();
-    await Notification.create({
-      user: booking.traveler,
-      type: "booking",
-      title: "Booking confirmed 🎉",
-      message: `Your booking ${booking.bookingNumber} for "${trip?.title ?? "your trip"}" is confirmed.`,
-    });
+    if (booking.traveler) {
+      await Notification.create({
+        user: booking.traveler,
+        type: "booking",
+        title: "Booking confirmed",
+        message: `Your booking ${booking.bookingNumber} for "${trip?.title ?? "your trip"}" is confirmed.`,
+      });
+    }
 
     return ok({ bookingNumber: booking.bookingNumber });
   } catch (err) {

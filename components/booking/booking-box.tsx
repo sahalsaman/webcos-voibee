@@ -38,17 +38,18 @@ interface BookingBoxProps {
   endDate: string;
   pickupLocation: string;
   partnerSlug?: string;
+  customDate?: boolean;
 }
 
 export function BookingBox({
   tripId,
-  slug,
   pricePerPerson,
   availableSeats,
   startDate,
   endDate,
   pickupLocation,
   partnerSlug,
+  customDate = false,
 }: BookingBoxProps) {
   const router = useRouter();
   const { data: session } = useSession();
@@ -61,8 +62,8 @@ export function BookingBox({
     notes: "",
   });
 
-  const soldOut = availableSeats <= 0;
-  const maxSeats = Math.min(availableSeats, 20);
+  const soldOut = customDate ? false : availableSeats <= 0;
+  const maxSeats = customDate ? 20 : Math.min(availableSeats, 20);
   const total = pricePerPerson * seats;
 
   function setField(k: keyof typeof form, v: string) {
@@ -70,10 +71,6 @@ export function BookingBox({
   }
 
   async function handleBook() {
-    if (!session?.user) {
-      router.push(`/login?callbackUrl=${encodeURIComponent(`/trips/${slug}`)}`);
-      return;
-    }
     if (!form.name || !form.email || !/^[6-9]\d{9}$/.test(form.mobile)) {
       toast.error("Please enter your name, email and a valid 10-digit mobile.");
       return;
@@ -96,11 +93,11 @@ export function BookingBox({
         throw new Error(data.message || "Could not create booking");
       }
 
-      const { bookingId, razorpayOrderId, amount, keyId, mock } = data.data;
+      const { bookingId, razorpayOrderId, amount, keyId, mock, confirmationToken } = data.data;
 
       // Demo mode: Razorpay not configured server-side -> confirm directly.
       if (mock) {
-        await confirm({ bookingId, mock: true });
+        await confirm({ bookingId, confirmationToken, mock: true });
         return;
       }
 
@@ -119,6 +116,7 @@ export function BookingBox({
         handler: async (resp: Record<string, string>) => {
           await confirm({
             bookingId,
+            confirmationToken,
             razorpay_order_id: resp.razorpay_order_id,
             razorpay_payment_id: resp.razorpay_payment_id,
             razorpay_signature: resp.razorpay_signature,
@@ -147,8 +145,12 @@ export function BookingBox({
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || "Verification failed");
-      toast.success("Booking confirmed! 🎉");
-      router.push(`/traveler/bookings?success=${data.data.bookingNumber}`);
+      toast.success(`Booking confirmed! Ref: ${data.data.bookingNumber}`);
+      if (session?.user) {
+        router.push(`/traveler/bookings?success=${data.data.bookingNumber}`);
+      } else {
+        setLoading(false);
+      }
       router.refresh();
     } catch (err) {
       toast.error((err as Error).message);
@@ -163,7 +165,7 @@ export function BookingBox({
           <span className="text-2xl font-bold">{formatINR(pricePerPerson)}</span>
           <span className="text-sm text-muted-foreground"> /person</span>
         </div>
-        {!soldOut ? (
+        {!soldOut && !customDate ? (
           <span className="text-xs font-medium text-success">
             {availableSeats} seats left
           </span>
@@ -173,7 +175,7 @@ export function BookingBox({
       <div className="mt-4 space-y-2 text-sm text-muted-foreground">
         <p className="flex items-center gap-2">
           <Calendar className="size-4 text-primary" />
-          {formatDate(startDate)} → {formatDate(endDate)}
+          {customDate ? "Custom date" : `${formatDate(startDate)} → ${formatDate(endDate)}`}
         </p>
         {pickupLocation ? (
           <p className="flex items-center gap-2">

@@ -21,7 +21,7 @@ const BookingSchema = new Schema(
       index: true,
     },
     trip: { type: Schema.Types.ObjectId, ref: "Trip", required: true, index: true },
-    traveler: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
+    traveler: { type: Schema.Types.ObjectId, ref: "User", default: null, index: true },
     // Set when booked through a white-label link; null for direct bookings.
     partner: { type: Schema.Types.ObjectId, ref: "Partner", default: null, index: true },
     partnerTrip: { type: Schema.Types.ObjectId, ref: "PartnerTrip", default: null },

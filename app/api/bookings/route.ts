@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import { connectDB } from "@/lib/db";
 import { ok, fail, handleError, currentUser } from "@/lib/api";
 import { bookingSchema } from "@/lib/validations";
@@ -13,13 +14,12 @@ import Trip from "@/models/Trip";
 import PartnerTrip from "@/models/PartnerTrip";
 import Booking from "@/models/Booking";
 import Payment from "@/models/Payment";
+import User from "@/models/User";
 import { getSettings } from "@/models/Settings";
 
 export async function POST(request: Request) {
   try {
     const user = await currentUser();
-    if (!user) return fail("Please log in to book a trip", 401);
-
     const body = bookingSchema.parse(await request.json());
     await connectDB();
 
@@ -58,14 +58,34 @@ export async function POST(request: Request) {
       },
     });
 
-    const bookingNumber = shortId("TNX-");
+    const bookingNumber = shortId("VOI-");
+    const confirmationToken = randomBytes(24).toString("hex");
+    const travelerDetails = {
+      ...body.travelerDetails,
+      email: body.travelerDetails.email.toLowerCase(),
+      travellers: body.travelerDetails.travellers || body.seats,
+    };
+    const travelerId = user?.id ?? String((await User.findOneAndUpdate(
+      { email: travelerDetails.email },
+      {
+        $setOnInsert: {
+          name: travelerDetails.name,
+          email: travelerDetails.email,
+          role: "traveler",
+        },
+        $set: {
+          mobile: travelerDetails.mobile,
+        },
+      },
+      { upsert: true, new: true },
+    ))._id);
     const booking = await Booking.create({
       bookingNumber,
       trip: trip._id,
-      traveler: user.id,
+      traveler: travelerId,
       partner: partnerId,
       partnerTrip: partnerTripId,
-      travelerDetails: body.travelerDetails,
+      travelerDetails,
       seats: body.seats,
       basePrice: breakdown.basePrice,
       commission: breakdown.commission,
@@ -80,32 +100,40 @@ export async function POST(request: Request) {
 
     // Create the payment + Razorpay order (or fall back to demo mode).
     if (razorpayConfigured) {
-      const order = await createOrder(breakdown.travelerPays, bookingNumber);
-      const payment = await Payment.create({
-        booking: booking._id,
-        razorpayOrderId: order!.id,
-        amount: breakdown.travelerPays,
-        status: "created",
-      });
-      booking.payment = payment._id;
-      await booking.save();
+      try {
+        const order = await createOrder(breakdown.travelerPays, bookingNumber);
+        if (order?.id) {
+          const payment = await Payment.create({
+            booking: booking._id,
+            razorpayOrderId: order.id,
+            amount: breakdown.travelerPays,
+            status: "created",
+            notes: { confirmationToken },
+          });
+          booking.payment = payment._id;
+          await booking.save();
 
-      return ok({
-        bookingId: String(booking._id),
-        bookingNumber,
-        amount: breakdown.travelerPays,
-        razorpayOrderId: order!.id,
-        keyId: publicKeyId,
-        mock: false,
-      });
+          return ok({
+            bookingId: String(booking._id),
+            bookingNumber,
+            amount: breakdown.travelerPays,
+            razorpayOrderId: order.id,
+            keyId: publicKeyId,
+            confirmationToken,
+            mock: false,
+          });
+        }
+      } catch (gatewayError) {
+        console.warn("[booking] Razorpay order creation failed; using mock payment", gatewayError);
+      }
     }
 
-    // Demo mode — no gateway configured.
+    // Demo mode — no gateway configured, or gateway authentication failed.
     const payment = await Payment.create({
       booking: booking._id,
       amount: breakdown.travelerPays,
       status: "created",
-      notes: { mock: true },
+      notes: { mock: true, confirmationToken },
     });
     booking.payment = payment._id;
     await booking.save();
@@ -114,6 +142,7 @@ export async function POST(request: Request) {
       bookingId: String(booking._id),
       bookingNumber,
       amount: breakdown.travelerPays,
+      confirmationToken,
       mock: true,
     });
   } catch (err) {

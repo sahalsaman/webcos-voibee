@@ -59,7 +59,7 @@ export function OfferCarousel({ offers }: { offers: OfferSlide[] }) {
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/10" />
                 <div className="relative z-10 flex min-h-[220px] max-w-2xl flex-col justify-center px-5 py-8 text-white sm:min-h-[260px] sm:px-8 lg:px-10">
-                  <Badge variant="glass" className="mb-4 w-fit text-white">
+                  <Badge variant="glass" className="mb-4 w-fit border-white/25 bg-black/45 text-white shadow-sm">
                     Limited offer
                   </Badge>
                   <h2 className="text-2xl font-extrabold leading-tight sm:text-4xl">

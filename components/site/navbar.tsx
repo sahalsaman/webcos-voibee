@@ -18,8 +18,10 @@ import Image from "next/image";
 import { appConfig } from "@/app/app,config";
 
 const NAV_LINKS = [
+  { href: "/trips", label: "Explore Packages" },
   { href: "/destinations", label: "Destinations" },
-  { href: "/trips", label: "Holiday Packages" },
+  { href: "/experiences", label: "Experiences" },
+  { href: "/events", label: "Major Events" },
   { href: "/visa", label: "Visa" },
 ];
 
@@ -38,9 +40,9 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50">
-      <div className="glass border-b border-border/60">
-        <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2 font-bold text-lg">
+      <div className="glass border-b border-border/70 bg-card/90">
+        <nav className="mx-auto flex h-22 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2 font-extrabold text-2xl text-[#1261e0]">
             <Image src={app_logo} alt="Logo" width={32} height={32} />
             <span>
               {appConfig.appNameCap}
@@ -52,7 +54,7 @@ export function Navbar() {
               <Link
                 key={`${l.href}-${l.label}`}
                 href={l.href}
-                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="rounded-md px-3 py-2  text-muted-foreground text-base transition-colors hover:text-foreground"
               >
                 {l.label}
               </Link>
@@ -63,7 +65,7 @@ export function Navbar() {
             <ThemeToggle />
             {user ? (
               <div className="hidden items-center gap-2 md:flex">
-                <Button asChild variant="ghost" size="sm">
+                <Button asChild variant="ghost" size="default">
                   <Link href={dashboardPath(user.role)}>
                     <LayoutDashboard className="size-4" /> Dashboard
                   </Link>
@@ -80,10 +82,10 @@ export function Navbar() {
               </div>
             ) : (
               <div className="hidden items-center gap-2 md:flex">
-                <Button asChild variant="ghost" size="sm">
+                <Button asChild variant="ghost" size="default">
                   <Link href="/login">Log in</Link>
                 </Button>
-                <Button asChild variant="gradient" size="sm">
+                <Button asChild variant="gradient" size="default">
                   <Link href="/register">Get started</Link>
                 </Button>
               </div>
@@ -105,7 +107,7 @@ export function Navbar() {
       {/* Mobile menu */}
       <div
         className={cn(
-          "glass overflow-hidden border-b border-border/60 md:hidden",
+          "glass overflow-hidden border-b border-border/70 bg-card/95 md:hidden",
           open ? "max-h-96" : "max-h-0 border-b-0",
           "transition-all duration-300",
         )}
