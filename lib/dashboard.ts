@@ -9,6 +9,7 @@ import User from "@/models/User";
 import Commission from "@/models/Commission";
 import Wishlist from "@/models/Wishlist";
 import OfferCard from "@/models/OfferCard";
+import Event from "@/models/Event";
 import Destination from "@/models/Destination";
 import Payment from "@/models/Payment";
 import Employee from "@/models/Employee";
@@ -183,6 +184,17 @@ export async function getAdminOfferCardById(id: string) {
   return safe(async () => {
     const offer = await OfferCard.findById(id).lean();
     return offer ? serialize(offer) : null;
+  }, null);
+}
+
+export async function listAdminEvents() {
+  return safe(async () => serialize(await Event.find({}).sort({ startDate: 1, sortOrder: 1, createdAt: -1 }).lean()), []);
+}
+
+export async function getAdminEventById(id: string) {
+  return safe(async () => {
+    const event = await Event.findById(id).lean();
+    return event ? serialize(event) : null;
   }, null);
 }
 

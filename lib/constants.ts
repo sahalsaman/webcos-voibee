@@ -18,8 +18,10 @@ export type PartnerStatus = (typeof PARTNER_STATUSES)[number];
 export const TRIP_STATUSES = ["draft", "active", "inactive", "soldout"] as const;
 export const DESTINATION_STATUSES = ["active", "inactive"] as const;
 export const OFFER_CARD_STATUSES = ["active", "inactive"] as const;
+export const EVENT_STATUSES = ["draft", "active", "inactive"] as const;
 export const EMPLOYEE_STATUSES = ["active", "inactive"] as const;
 export type TripStatus = (typeof TRIP_STATUSES)[number];
+export type EventStatus = (typeof EVENT_STATUSES)[number];
 export type EmployeeStatus = (typeof EMPLOYEE_STATUSES)[number];
 
 export const COUNTRY_OPTIONS = [

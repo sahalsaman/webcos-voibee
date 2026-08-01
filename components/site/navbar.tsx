@@ -20,7 +20,6 @@ import { appConfig } from "@/app/app,config";
 const NAV_LINKS = [
   { href: "/trips", label: "Explore Packages" },
   { href: "/destinations", label: "Destinations" },
-  { href: "/experiences", label: "Experiences" },
   { href: "/events", label: "Major Events" },
   { href: "/visa", label: "Visa" },
 ];
@@ -41,7 +40,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50">
       <div className="glass border-b border-border/70 bg-card/90">
-        <nav className="mx-auto flex h-22 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 font-extrabold text-2xl text-[#1261e0]">
             <Image src={app_logo} alt="Logo" width={32} height={32} />
             <span>
@@ -62,7 +61,12 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
-            <ThemeToggle />
+            {user && ( <ThemeToggle />)}
+              {/* <Button asChild variant="ghost" size="default">
+                <Link href="/saved">
+                  <HeartIcon className="size-4 text-pink-500" /> Saved
+                </Link>
+              </Button> */}
             {user ? (
               <div className="hidden items-center gap-2 md:flex">
                 <Button asChild variant="ghost" size="default">
@@ -82,11 +86,11 @@ export function Navbar() {
               </div>
             ) : (
               <div className="hidden items-center gap-2 md:flex">
+                <Button asChild variant="gradient" size="default">
+                  <Link href="/register">Join Our Community</Link>
+                </Button>
                 <Button asChild variant="ghost" size="default">
                   <Link href="/login">Log in</Link>
-                </Button>
-                <Button asChild variant="gradient" size="default">
-                  <Link href="/register">Get started</Link>
                 </Button>
               </div>
             )}
@@ -151,7 +155,7 @@ export function Navbar() {
               </Link>
               <Button asChild variant="gradient" className="mt-1">
                 <Link href="/register" onClick={() => setOpen(false)}>
-                  Get started
+                  Join Our Community
                 </Link>
               </Button>
             </>

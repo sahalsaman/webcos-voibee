@@ -15,4 +15,5 @@ export { default as Notification } from "./Notification";
 export { default as Settings, getSettings } from "./Settings";
 export { default as Destination } from "./Destination";
 export { default as OfferCard } from "./OfferCard";
+export { default as Event } from "./Event";
 export { default as Employee } from "./Employee";

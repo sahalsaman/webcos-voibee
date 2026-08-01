@@ -3,6 +3,7 @@ import {
   TRIP_CATEGORIES,
   TRIP_STATUSES,
   OFFER_CARD_STATUSES,
+  EVENT_STATUSES,
   BOOKING_STATUSES,
   PAYMENT_STATUSES,
   PARTNER_TYPES,
@@ -119,6 +120,26 @@ export const offerCardSchema = z.object({
   countryCode: z.string().trim().length(2).default("IN"),
 });
 
+export const eventSchema = z.object({
+  title: z.string().trim().min(2),
+  description: z.string().default(""),
+  images: z.array(z.string()).default([]),
+  videos: z.array(z.string()).default([]),
+  venue: z.string().trim().default(""),
+  city: z.string().trim().min(2),
+  country: z.string().trim().default("India"),
+  countryCode: z.string().trim().length(2).default("IN"),
+  startDate: z.string().trim().min(1),
+  endDate: z.string().trim().optional().or(z.literal("")),
+  priceLabel: z.string().trim().default(""),
+  href: z.string().trim().min(1).default("/trips"),
+  ctaLabel: z.string().trim().default("Explore packages"),
+  status: z.enum(EVENT_STATUSES).default("active"),
+  featured: z.boolean().default(false),
+  sortOrder: z.number().default(0),
+  tags: z.array(z.string()).default([]),
+});
+
 export const whiteLabelSchema = z.object({
   tripId: z.string().min(1),
   commission: z.number().nonnegative(),
@@ -158,4 +179,5 @@ export type AdminPartnerInviteInput = z.infer<typeof adminPartnerInviteSchema>;
 export type TripInput = z.infer<typeof tripSchema>;
 export type DestinationInput = z.infer<typeof destinationSchema>;
 export type EmployeeInput = z.infer<typeof employeeSchema>;
+export type EventInput = z.infer<typeof eventSchema>;
 export type BookingInput = z.infer<typeof bookingSchema>;

@@ -4,12 +4,13 @@ import "@/models"; // ensure all schemas are registered
 import Trip from "@/models/Trip";
 import Destination from "@/models/Destination";
 import OfferCard from "@/models/OfferCard";
+import Event from "@/models/Event";
 import Partner from "@/models/Partner";
 import PartnerTrip from "@/models/PartnerTrip";
 import Review from "@/models/Review";
 import User from "@/models/User";
 import Booking from "@/models/Booking";
-import type { TripDTO, PartnerDTO, ReviewDTO, DestinationDTO, OfferCardDTO } from "@/types";
+import type { TripDTO, PartnerDTO, ReviewDTO, DestinationDTO, OfferCardDTO, EventDTO } from "@/types";
 
 /** Run a DB query, returning `fallback` if the DB is unreachable/unconfigured. */
 async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
@@ -94,6 +95,19 @@ export async function getOfferCards(countryCode?: string, limit = 4) {
 
     return serialize(items) as OfferCardDTO[];
   }, [] as OfferCardDTO[]);
+}
+
+export async function getMajorEvents(countryCode?: string) {
+  return safe(async () => {
+    const query: Record<string, unknown> = { status: "active" };
+    if (!isIndiaCountry(countryCode)) query.countryCode = { $ne: "IN" };
+
+    const items = await Event.find(query)
+      .sort({ featured: -1, startDate: 1, sortOrder: 1, createdAt: -1 })
+      .lean();
+
+    return serialize(items) as EventDTO[];
+  }, [] as EventDTO[]);
 }
 
 export interface TripFilters {
