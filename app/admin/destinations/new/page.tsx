@@ -5,7 +5,7 @@ export default function NewDestinationPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">New Destination</h1>
-        <p className="text-muted-foreground">Add a place for website and admin trip selection</p>
+        <p className="text-muted-foreground">Add a place for website and admin package selection</p>
       </div>
       <DestinationForm />
     </div>

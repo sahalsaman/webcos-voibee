@@ -1,6 +1,6 @@
 /** Shared enums & option lists used by models, forms and UI. */
 
-export const ROLES = ["admin", "partner", "traveler"] as const;
+export const ROLES = ["admin", "employee", "partner", "traveler"] as const;
 export type Role = (typeof ROLES)[number];
 
 export const PARTNER_TYPES = [
@@ -20,6 +20,42 @@ export const DESTINATION_STATUSES = ["active", "inactive"] as const;
 export const OFFER_CARD_STATUSES = ["active", "inactive"] as const;
 export const EVENT_STATUSES = ["draft", "active", "inactive"] as const;
 export const EMPLOYEE_STATUSES = ["active", "inactive"] as const;
+
+export const ADMIN_PORTAL_PAGES = [
+  { key: "dashboard", label: "Dashboard", href: "/admin" },
+  { key: "calendar", label: "Calendar", href: "/admin/calendar" },
+  { key: "trips", label: "Packages", href: "/admin/packages" },
+  { key: "destinations", label: "Destinations", href: "/admin/destinations" },
+  { key: "offers", label: "Offer Cards", href: "/admin/offers" },
+  { key: "events", label: "Major Events", href: "/admin/events" },
+  { key: "bookings", label: "Bookings", href: "/admin/bookings" },
+  { key: "travelers", label: "Travelers", href: "/admin/travelers" },
+  { key: "partners", label: "Partners", href: "/admin/partners" },
+  { key: "finance", label: "Finance", href: "/admin/finance" },
+  { key: "employees", label: "Employees", href: "/admin/employees" },
+  { key: "reports", label: "Reports", href: "/admin/reports" },
+  { key: "settings", label: "Settings", href: "/admin/settings" },
+] as const;
+export type AdminPortalPageKey = (typeof ADMIN_PORTAL_PAGES)[number]["key"];
+export const ADMIN_PORTAL_PAGE_KEYS = ADMIN_PORTAL_PAGES.map((page) => page.key) as [AdminPortalPageKey, ...AdminPortalPageKey[]];
+
+export function adminPortalPageKeyForPath(pathname: string) {
+  const cleanPath = pathname.split("?")[0] || "/admin";
+  const match = [...ADMIN_PORTAL_PAGES]
+    .sort((a, b) => b.href.length - a.href.length)
+    .find((page) => cleanPath === page.href || cleanPath.startsWith(`${page.href}/`));
+  return match?.key ?? "dashboard";
+}
+
+export function suggestedEmployeePortalPages(designation: string) {
+  const text = designation.toLowerCase();
+  if (text.includes("finance") || text.includes("account")) return ["dashboard", "calendar", "bookings", "finance", "reports"];
+  if (text.includes("sales") || text.includes("booking")) return ["dashboard", "calendar", "bookings", "travelers", "partners"];
+  if (text.includes("content") || text.includes("marketing")) return ["dashboard", "calendar", "destinations", "offers", "events", "reports"];
+  if (text.includes("operation") || text.includes("trip") || text.includes("package")) return ["dashboard", "calendar", "trips", "destinations", "bookings", "travelers"];
+  if (text.includes("hr") || text.includes("human")) return ["dashboard", "calendar", "employees", "reports"];
+  return ["dashboard"];
+}
 export type TripStatus = (typeof TRIP_STATUSES)[number];
 export type EventStatus = (typeof EVENT_STATUSES)[number];
 export type EmployeeStatus = (typeof EMPLOYEE_STATUSES)[number];

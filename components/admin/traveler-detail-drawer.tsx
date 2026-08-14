@@ -87,7 +87,7 @@ export function TravelerDetailDrawer({ travelers }: { travelers: Traveler[] }) {
                     <div key={booking._id} className="rounded-lg border border-border p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="font-medium">{trip?.title || "Trip"}</p>
+                          <p className="font-medium">{trip?.title || "Package"}</p>
                           <p className="text-xs text-muted-foreground">{booking.bookingNumber} · {trip?.destination || "-"}</p>
                         </div>
                         <p className="font-semibold">{formatINR(booking.totalAmount)}</p>

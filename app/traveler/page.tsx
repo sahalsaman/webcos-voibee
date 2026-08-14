@@ -45,8 +45,8 @@ export default async function TravelerDashboard() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard label="Upcoming Trips" value={upcoming.length} icon={Plane} accent="primary" />
-        <StatCard label="Completed Trips" value={completed.length} icon={CheckCircle2} accent="success" />
+        <StatCard label="Upcoming Packages" value={upcoming.length} icon={Plane} accent="primary" />
+        <StatCard label="Completed Packages" value={completed.length} icon={CheckCircle2} accent="success" />
         <StatCard label="Wishlist" value={(wishlist as unknown[]).length} icon={Heart} accent="accent" />
       </div>
 
@@ -63,7 +63,7 @@ export default async function TravelerDashboard() {
               {list.slice(0, 5).map((b) => (
                 <div key={b._id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border p-3">
                   <div>
-                    <p className="font-medium">{b.trip?.title ?? "Trip"}</p>
+                    <p className="font-medium">{b.trip?.title ?? "Package"}</p>
                     <p className="text-xs text-muted-foreground">
                       {b.bookingNumber} · {b.seats} seat(s) · {b.trip ? formatDate(b.trip.startDate) : "—"}
                     </p>
@@ -82,7 +82,7 @@ export default async function TravelerDashboard() {
               description="Start exploring and book your first adventure!"
               action={
                 <Button asChild variant="gradient">
-                  <Link href="/trips">Explore trips</Link>
+                  <Link href="/packages">Explore packages</Link>
                 </Button>
               }
             />

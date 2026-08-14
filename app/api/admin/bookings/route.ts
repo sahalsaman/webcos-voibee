@@ -15,25 +15,25 @@ export async function POST(request: Request) {
     await connectDB();
 
     const trip = await Trip.findById(body.tripId);
-    if (!trip || trip.status !== "active") return fail("This trip is not available for booking", 404);
+    if (!trip || trip.status !== "active") return fail("This package is not available for booking", 404);
     if (trip.availableSeats < body.seats) {
       return fail(`Only ${trip.availableSeats} seat(s) left`, 409);
     }
 
+    const travelerEmail = body.travelerDetails.email.toLowerCase();
     const traveler = await User.findOneAndUpdate(
-      { email: body.travelerDetails.email.toLowerCase() },
+      { email: travelerEmail },
       {
         $setOnInsert: {
-          name: body.travelerDetails.name,
-          email: body.travelerDetails.email.toLowerCase(),
-          mobile: body.travelerDetails.mobile,
+          email: travelerEmail,
           role: "traveler",
         },
         $set: {
+          name: body.travelerDetails.name,
           mobile: body.travelerDetails.mobile,
         },
       },
-      { upsert: true, new: true },
+      { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
     );
 
     const totalAmount = trip.basePrice * body.seats;
@@ -71,8 +71,10 @@ export async function POST(request: Request) {
       await booking.save();
     }
 
-    trip.availableSeats = Math.max(0, trip.availableSeats - body.seats);
-    await trip.save();
+    await Trip.updateOne(
+      { _id: trip._id },
+      { $set: { availableSeats: Math.max(0, Number(trip.availableSeats || 0) - body.seats) } },
+    );
 
     return ok({ id: String(booking._id), bookingNumber }, 201);
   } catch (err) {

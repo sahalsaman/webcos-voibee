@@ -10,6 +10,14 @@ const ItinerarySchema = new Schema(
   { _id: false },
 );
 
+const PackageOptionSchema = new Schema(
+  {
+    label: { type: String, required: true, trim: true },
+    price: { type: Number, required: true, min: 0 },
+  },
+  { _id: false },
+);
+
 const TripSchema = new Schema(
   {
     title: { type: String, required: true, trim: true },
@@ -27,6 +35,9 @@ const TripSchema = new Schema(
     itinerary: { type: [ItinerarySchema], default: [] },
     inclusions: { type: [String], default: [] },
     exclusions: { type: [String], default: [] },
+    packageOptions: { type: [PackageOptionSchema], default: [] },
+    holidayPackage: { type: Boolean, default: true, index: true },
+    holidayGroup: { type: String, default: "", trim: true },
     basePrice: { type: Number, required: true, min: 0 },
     totalSeats: { type: Number, default: 0, min: 0 },
     availableSeats: { type: Number, default: 0, min: 0 },

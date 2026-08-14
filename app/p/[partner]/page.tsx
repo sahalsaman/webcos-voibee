@@ -31,8 +31,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const storefront = await getPartnerStorefront(partner);
   if (!storefront) return { title: "Partner not found" };
 
-  const title = `${storefront.partner.businessName} trips`;
-  const description = `Browse selected trips from ${storefront.partner.businessName} on ${appConfig.appName}.`;
+  const title = `${storefront.partner.businessName} packages`;
+  const description = `Browse selected packages from ${storefront.partner.businessName} on ${appConfig.appName}.`;
   return {
     title,
     description,
@@ -89,7 +89,7 @@ export default async function PartnerStorefrontPage({ params, searchParams }: Pr
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold">Our Packages</h2>
-              {/* <p className="text-sm text-muted-foreground">Trips available from {biz.businessName}</p> */}
+              {/* <p className="text-sm text-muted-foreground">Packages available from {biz.businessName}</p> */}
             </div>
           </div>
 
@@ -123,8 +123,8 @@ export default async function PartnerStorefrontPage({ params, searchParams }: Pr
           ) : (
             <EmptyState
               icon={Link2}
-              title="No selected trips yet"
-              description={`${biz.businessName} has not published active trip links yet.`}
+              title="No selected packages yet"
+              description={`${biz.businessName} has not published active package links yet.`}
             />
           )}
         </section>

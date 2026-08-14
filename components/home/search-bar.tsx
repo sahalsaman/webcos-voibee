@@ -48,7 +48,7 @@ function buildMonthOptions() {
 }
 
 function resultLabel(type: SearchResult["type"]) {
-  if (type === "trip") return "Trip";
+  if (type === "trip") return "Package";
   if (type === "country") return "Country";
   return "Destination";
 }
@@ -141,7 +141,7 @@ export function SearchBar() {
       params.set("endDate", selectedMonthOption.endDate);
     }
 
-    router.push(`/trips?${params.toString()}`);
+    router.push(`/packages?${params.toString()}`);
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -174,29 +174,13 @@ export function SearchBar() {
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 120)}
           onKeyDown={onKeyDown}
-          placeholder="Search destination, trip or country"
+          placeholder="Search destination, package or country"
           autoComplete="off"
           className="h-10 border-0 bg-transparent px-0 shadow-none focus-visible:ring-0"
         />
       </label>
 
-      <label className="flex min-w-0 items-center gap-2 rounded-xl border border-border/60 bg-card/90 px-3 py-2 shadow-sm">
-        <CalendarDays className="size-4 shrink-0 text-muted-foreground" />
-        <span className="sr-only">Time</span>
-        <Select
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(e.target.value)}
-          aria-label="Time"
-          className="h-10 border-0 bg-transparent shadow-none focus-visible:ring-0 md:w-[188px]"
-        >
-          <option value="">Any time</option>
-          {monthOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
-      </label>
+
 
       <Button type="submit" variant="gradient" size="lg" className="h-12 md:px-6">
         <Search className="size-4" /> Search
@@ -239,7 +223,7 @@ export function SearchBar() {
                 ))}
               </div>
             ) : (
-              <div className="px-4 py-4 text-sm text-muted-foreground">No matched destinations or trips</div>
+              <div className="px-4 py-4 text-sm text-muted-foreground">No matched destinations or packages</div>
             )}
           </div>
         </div>

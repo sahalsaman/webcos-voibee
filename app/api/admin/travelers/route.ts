@@ -1,0 +1,38 @@
+import { connectDB } from "@/lib/db";
+import { ok, fail, handleError, requireApiRole } from "@/lib/api";
+import { adminTravelerSchema } from "@/lib/validations";
+import "@/models";
+import User from "@/models/User";
+
+export async function POST(request: Request) {
+  try {
+    await requireApiRole(["admin"]);
+    const data = adminTravelerSchema.parse(await request.json());
+    await connectDB();
+
+    const email = data.email.toLowerCase();
+    const existing = await User.findOne({ email });
+    if (existing && existing.role !== "traveler") {
+      return fail("This email already belongs to an admin or partner account", 409);
+    }
+
+    const traveler = await User.findOneAndUpdate(
+      { email },
+      {
+        $setOnInsert: {
+          email,
+          role: "traveler",
+        },
+        $set: {
+          name: data.name,
+          mobile: data.mobile,
+        },
+      },
+      { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
+    );
+
+    return ok({ id: String(traveler._id), created: !existing }, existing ? 200 : 201);
+  } catch (err) {
+    return handleError(err);
+  }
+}

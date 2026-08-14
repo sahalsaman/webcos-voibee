@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Star, Calendar, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { PackageOptionsList } from "@/components/trip/package-options";
 import { isCustomDateTripCategory } from "@/lib/constants";
 import { formatINR, tripDuration, formatDate } from "@/lib/utils";
 import type { TripDTO } from "@/types";
@@ -18,13 +19,14 @@ const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=70";
 
 export function TripCard({ trip, href, priceOverride, priceLabel }: TripCardProps) {
-  const link = href ?? `/trips/${trip.slug}`;
+  const link = href ?? `/packages/${trip.slug}`;
   const img = trip.images?.[0] || FALLBACK_IMG;
-  const customDate = isCustomDateTripCategory(trip.category);
+  const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
   const { label: duration } = tripDuration(trip.startDate, trip.endDate);
   const price = priceOverride ?? trip.basePrice;
+  const priceOffset = priceOverride != null ? priceOverride - trip.basePrice : 0;
+  const visiblePackageOptions = trip.packageOptions?.slice(0, 3) ?? [];
   const soldOut = customDate ? false : trip.availableSeats <= 0;
-  const scheduleLabel = customDate ? "Custom date" : duration;
 
   return (
     <Link
@@ -67,7 +69,7 @@ export function TripCard({ trip, href, priceOverride, priceLabel }: TripCardProp
 
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
-            <Calendar className="size-3.5" /> {scheduleLabel}
+            <Calendar className="size-3.5" /> {duration}
           </span>
           {!customDate ? (
             <span className="flex items-center gap-1">
@@ -76,6 +78,10 @@ export function TripCard({ trip, href, priceOverride, priceLabel }: TripCardProp
             </span>
           ) : null}
         </div>
+
+        {visiblePackageOptions.length ? (
+          <PackageOptionsList options={visiblePackageOptions} priceOffset={priceOffset} compact className="mt-3" />
+        ) : null}
 
         <div className="mt-4 flex items-end justify-between border-t border-border pt-3">
           <div>
@@ -88,7 +94,7 @@ export function TripCard({ trip, href, priceOverride, priceLabel }: TripCardProp
             </p>
           </div>
           <span className="text-xs font-medium text-muted-foreground">
-            {customDate ? "Custom date" : formatDate(trip.startDate)}
+            {customDate ? "" : formatDate(trip.startDate)}
           </span>
         </div>
       </div>

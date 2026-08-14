@@ -1,7 +1,7 @@
 import { Schema, model, models, type InferSchemaType } from "mongoose";
 
 /**
- * A white-label listing: a partner's resale of an admin trip with their own
+ * A white-label listing: a partner's resale of an admin package with their own
  * commission. Resolves the public URL /p/<partnerSlug>/<tripSlug>.
  */
 const PartnerTripSchema = new Schema(

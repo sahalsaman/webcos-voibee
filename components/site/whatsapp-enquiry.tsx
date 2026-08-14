@@ -2,7 +2,7 @@ import { appConfig } from "@/app/app,config";
 import { MessageCircle } from "lucide-react";
 
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919000000001";
-const WHATSAPP_TEXT = `Hi ${appConfig.appName}, I want to enquire about a trip.`;
+const WHATSAPP_TEXT = `Hi ${appConfig.appName}, I want to enquire about a package.`;
 
 export function WhatsAppEnquiry() {
   const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_TEXT)}`;

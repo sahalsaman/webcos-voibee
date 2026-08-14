@@ -12,13 +12,13 @@ export function TripRowActions({ id, slug }: { id: string; slug: string }) {
   const [deleting, setDeleting] = useState(false);
 
   async function onDelete() {
-    if (!confirm("Delete this trip? This cannot be undone.")) return;
+    if (!confirm("Delete this package? This cannot be undone.")) return;
     setDeleting(true);
     try {
-      const res = await fetch(`/api/trips/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/packages/${id}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message);
-      toast.success("Trip deleted");
+      toast.success("Package deleted");
       router.refresh();
     } catch (err) {
       toast.error((err as Error).message);
@@ -29,12 +29,12 @@ export function TripRowActions({ id, slug }: { id: string; slug: string }) {
   return (
     <div className="flex items-center justify-end gap-1">
       <Button asChild variant="ghost" size="icon" aria-label="View">
-        <Link href={`/trips/${slug}`} target="_blank">
+        <Link href={`/packages/${slug}`} target="_blank">
           <ExternalLink className="size-4" />
         </Link>
       </Button>
       <Button asChild variant="ghost" size="icon" aria-label="Edit">
-        <Link href={`/admin/trips/${id}/edit`}>
+        <Link href={`/admin/packages/${id}/edit`}>
           <Pencil className="size-4" />
         </Link>
       </Button>

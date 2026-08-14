@@ -59,7 +59,7 @@ export default async function DestinationsPage({ searchParams }: { searchParams:
         {showDomestic ? (
           <DestinationSection
             title="Domestic destinations"
-            subtitle="Popular places across India for quick holidays, family trips and group escapes."
+            subtitle="Popular places across India for quick holidays, family packages and group escapes."
             destinations={homeDestinations.domestic}
             country={country}
           />
@@ -105,7 +105,7 @@ function DestinationSection({
           <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
         </div>
         <Button asChild variant="outline" size="sm">
-          <Link href={hrefWithCountry("/trips", country)}>
+          <Link href={hrefWithCountry("/packages", country)}>
             View packages <ArrowRight className="size-4" />
           </Link>
         </Button>
@@ -123,7 +123,7 @@ function DestinationSection({
 function DestinationCard({ destination, country }: { destination: DestinationDTO; country?: string }) {
   return (
     <Link
-      href={hrefWithCountry(`/trips?destination=${encodeURIComponent(destination.title)}`, country)}
+      href={hrefWithCountry(`/packages?destination=${encodeURIComponent(destination.title)}`, country)}
       className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10"
     >
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -151,7 +151,7 @@ function DestinationCard({ destination, country }: { destination: DestinationDTO
           <p className="text-xs text-muted-foreground">Starting from</p>
           <p className="text-lg font-bold">{formatCurrencyForCountry(destination.basePrice, country)}</p>
         </div>
-        <span className="text-sm font-semibold text-primary">View trips</span>
+        <span className="text-sm font-semibold text-primary">View packages</span>
       </div>
     </Link>
   );

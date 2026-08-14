@@ -19,7 +19,7 @@ export async function PATCH(request: Request, { params }: Ctx) {
     if (data.endDate) update.endDate = new Date(data.endDate);
 
     const trip = await Trip.findByIdAndUpdate(id, update, { new: true }).lean();
-    if (!trip) return fail("Trip not found", 404);
+    if (!trip) return fail("Package not found", 404);
     return ok(trip);
   } catch (err) {
     return handleError(err);
@@ -33,7 +33,7 @@ export async function DELETE(_request: Request, { params }: Ctx) {
     const { id } = await params;
     await connectDB();
     const res = await Trip.findByIdAndDelete(id);
-    if (!res) return fail("Trip not found", 404);
+    if (!res) return fail("Package not found", 404);
     return ok({ deleted: true });
   } catch (err) {
     return handleError(err);

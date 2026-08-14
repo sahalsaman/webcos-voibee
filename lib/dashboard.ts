@@ -433,7 +433,7 @@ export async function getPartnerCommissions(partnerId: string) {
   }, []);
 }
 
-/** Active trips a partner can resell, annotated with whether a link exists. */
+/** Active packages a partner can resell, annotated with whether a link exists. */
 export async function getResellableTrips(partnerId: string) {
   return safe(async () => {
     const [trips, existing] = await Promise.all([

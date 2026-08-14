@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
     const trip = await Trip.findById(body.tripId);
     if (!trip || trip.status !== "active") {
-      return fail("This trip is not available for booking", 404);
+      return fail("This package is not available for booking", 404);
     }
     if (trip.availableSeats < body.seats) {
       return fail(`Only ${trip.availableSeats} seat(s) left`, 409);
@@ -65,20 +65,38 @@ export async function POST(request: Request) {
       email: body.travelerDetails.email.toLowerCase(),
       travellers: body.travelerDetails.travellers || body.seats,
     };
-    const travelerId = user?.id ?? String((await User.findOneAndUpdate(
-      { email: travelerDetails.email },
-      {
-        $setOnInsert: {
-          name: travelerDetails.name,
-          email: travelerDetails.email,
-          role: "traveler",
+
+    let travelerId: string;
+    if (user?.role === "traveler") {
+      const traveler = await User.findByIdAndUpdate(
+        user.id,
+        {
+          $set: {
+            name: travelerDetails.name,
+            mobile: travelerDetails.mobile,
+          },
         },
-        $set: {
-          mobile: travelerDetails.mobile,
+        { returnDocument: "after" },
+      );
+      travelerId = String(traveler?._id ?? user.id);
+    } else {
+      const traveler = await User.findOneAndUpdate(
+        { email: travelerDetails.email },
+        {
+          $setOnInsert: {
+            email: travelerDetails.email,
+            role: "traveler",
+          },
+          $set: {
+            name: travelerDetails.name,
+            mobile: travelerDetails.mobile,
+          },
         },
-      },
-      { upsert: true, new: true },
-    ))._id);
+        { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
+      );
+      travelerId = String(traveler._id);
+    }
+
     const booking = await Booking.create({
       bookingNumber,
       trip: trip._id,

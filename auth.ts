@@ -6,6 +6,7 @@ import { connectDB } from "@/lib/db";
 import { loginSchema } from "@/lib/validations";
 import User from "@/models/User";
 import Partner from "@/models/Partner";
+import Employee from "@/models/Employee";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -40,6 +41,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             .select("slug")
             .lean<{ slug: string }>();
           partnerSlug = partner?.slug;
+        }
+
+        if (user.role === "employee") {
+          const employee = await Employee.findOne({
+            user: user._id,
+            status: "active",
+            portalAccess: true,
+          }).select("_id");
+          if (!employee) return null;
         }
 
         return {

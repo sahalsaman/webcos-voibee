@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { Gallery } from "@/components/trip/gallery";
 import { BookingBox } from "@/components/booking/booking-box";
+import { PackageOptionsList } from "@/components/trip/package-options";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getWhiteLabelTrip, trackPartnerTripClick } from "@/lib/data";
 import { isCustomDateTripCategory } from "@/lib/constants";
@@ -25,7 +26,7 @@ type Props = { params: Promise<{ partner: string; trip: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { partner, trip } = await params;
   const wl = await getWhiteLabelTrip(partner, trip);
-  if (!wl) return { title: "Trip not found" };
+  if (!wl) return { title: "Package not found" };
   return {
     title: `${wl.trip.title} · ${wl.partner.businessName}`,
     description: wl.trip.description?.slice(0, 160),
@@ -49,7 +50,7 @@ export default async function WhiteLabelTripPage({ params }: Props) {
   trackPartnerTripClick(partner, trip);
 
   const { partner: biz, trip: t, sellingPrice, commission } = wl;
-  const customDate = isCustomDateTripCategory(t.category);
+  const customDate = t.holidayPackage ?? isCustomDateTripCategory(t.category);
   const { label: duration } = tripDuration(t.startDate, t.endDate);
   const scheduleLabel = customDate ? "Custom date" : duration;
   const price = sellingPrice || t.basePrice + commission;
@@ -117,6 +118,13 @@ export default async function WhiteLabelTripPage({ params }: Props) {
                 {t.description || "Detailed overview coming soon."}
               </p>
             </section>
+
+            {t.packageOptions?.length ? (
+              <section>
+                <h2 className="mb-3 text-xl font-semibold">Package options</h2>
+                <PackageOptionsList options={t.packageOptions} priceOffset={commission} />
+              </section>
+            ) : null}
 
             {t.itinerary?.length ? (
               <section>

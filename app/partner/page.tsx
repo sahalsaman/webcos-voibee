@@ -99,9 +99,9 @@ export default async function PartnerDashboard() {
           <CardHeader><CardTitle>Your storefront</CardTitle></CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">Your white-label namespace:</p>
-            <p className="mt-1 font-mono text-sm">/p/{partner.slug}/&lt;trip&gt;</p>
+            <p className="mt-1 font-mono text-sm">/p/{partner.slug}/&lt;package&gt;</p>
             <p className="mt-4 text-sm text-muted-foreground">
-              Share trip links with your audience. Every booking earns you commission
+              Share package links with your audience. Every booking earns you commission
               automatically.
             </p>
           </CardContent>

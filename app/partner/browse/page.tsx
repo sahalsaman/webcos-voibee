@@ -40,9 +40,9 @@ export default async function PartnerBrowsePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Browse Trips</h1>
+        <h1 className="text-2xl font-bold">Browse Packages</h1>
         <p className="text-muted-foreground">
-          Set your commission and generate a white-label link for any trip.
+          Set your commission and generate a white-label link for any package.
         </p>
       </div>
 
@@ -79,8 +79,8 @@ export default async function PartnerBrowsePage() {
       ) : (
         <EmptyState
           icon={Compass}
-          title="No trips available to resell yet"
-          description="Once the operator publishes active trips, you can create links here."
+          title="No packages available to resell yet"
+          description="Once the operator publishes active packages, you can create links here."
         />
       )}
     </div>

@@ -64,7 +64,7 @@ export default async function TravelerBookingsPage({
                 />
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-semibold">{b.trip?.title ?? "Trip"}</h3>
+                    <h3 className="font-semibold">{b.trip?.title ?? "Package"}</h3>
                     <StatusBadge status={b.status} />
                   </div>
                   <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
@@ -78,7 +78,7 @@ export default async function TravelerBookingsPage({
                   <span className="text-lg font-bold">{formatINR(b.totalAmount)}</span>
                   {b.trip ? (
                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/trips/${b.trip.slug}`}>View trip</Link>
+                      <Link href={`/packages/${b.trip.slug}`}>View package</Link>
                     </Button>
                   ) : null}
                 </div>
@@ -90,10 +90,10 @@ export default async function TravelerBookingsPage({
         <EmptyState
           icon={ShoppingBag}
           title="No bookings yet"
-          description="Your booked trips will show up here."
+          description="Your booked packages will show up here."
           action={
             <Button asChild variant="gradient">
-              <Link href="/trips">Explore trips</Link>
+              <Link href="/packages">Explore packages</Link>
             </Button>
           }
         />

@@ -1,4 +1,4 @@
-import { requireRole } from "@/lib/session";
+import { requireAdminPortalAccess } from "@/lib/session";
 import { RoleShell } from "@/components/dashboard/role-shell";
 
 export default async function AdminLayout({
@@ -6,9 +6,15 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await requireRole(["admin"]);
+  const { user, accessPages, designation } = await requireAdminPortalAccess();
+  const role = user.role === "employee" ? "employee" : "admin";
   return (
-    <RoleShell role="admin" user={{ name: user.name, email: user.email, image: user.image }}>
+    <RoleShell
+      role={role}
+      accessPages={accessPages}
+      roleLabel={role === "employee" ? designation || "Employee" : undefined}
+      user={{ name: user.name, email: user.email, image: user.image }}
+    >
       {children}
     </RoleShell>
   );

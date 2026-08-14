@@ -13,6 +13,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Gallery } from "@/components/trip/gallery";
 import { TripCard } from "@/components/trip/trip-card";
 import { BookingBox } from "@/components/booking/booking-box";
+import { PackageOptionsList } from "@/components/trip/package-options";
 import {
   getTripBySlug,
   getReviewsForTrip,
@@ -26,7 +27,7 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const trip = await getTripBySlug(slug);
-  if (!trip) return { title: "Trip not found" };
+  if (!trip) return { title: "Package not found" };
   return {
     title: trip.title,
     description: trip.description?.slice(0, 160),
@@ -48,7 +49,7 @@ export default async function TripDetailPage({ params }: Props) {
     getRelatedTrips(trip._id, trip.destination, 3),
   ]);
 
-  const customDate = isCustomDateTripCategory(trip.category);
+  const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
   const { label: duration } = tripDuration(trip.startDate, trip.endDate);
   const scheduleLabel = customDate ? "Custom date" : duration;
 
@@ -130,6 +131,13 @@ export default async function TripDetailPage({ params }: Props) {
               </div>
             ) : null}
           </section>
+
+          {trip.packageOptions?.length ? (
+            <section>
+              <h2 className="mb-3 text-xl font-semibold">Package options</h2>
+              <PackageOptionsList options={trip.packageOptions} />
+            </section>
+          ) : null}
 
           {/* Itinerary */}
           {trip.itinerary?.length ? (
@@ -223,7 +231,7 @@ export default async function TripDetailPage({ params }: Props) {
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                No reviews yet — be the first to travel and review this trip!
+                No reviews yet — be the first to travel and review this package!
               </p>
             )}
           </section>

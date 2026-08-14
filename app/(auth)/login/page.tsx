@@ -15,7 +15,7 @@ import { loginSchema, type LoginInput } from "@/lib/validations";
 import { appConfig } from "@/app/app,config";
 
 function dashboardPath(role?: string) {
-  if (role === "admin") return "/admin";
+  if (role === "admin" || role === "employee") return "/admin";
   if (role === "partner") return "/partner";
   return "/traveler";
 }

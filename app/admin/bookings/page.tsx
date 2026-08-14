@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { BookingStatusSelect } from "@/components/admin/booking-status-select";
+import { EditBookingDrawer } from "@/components/admin/edit-booking-drawer";
 import { ManualBookingDrawer } from "@/components/admin/manual-booking-drawer";
 import { listAdminBookings, listAdminBookableTrips } from "@/lib/dashboard";
 import { formatINR, formatDate } from "@/lib/utils";
@@ -13,7 +14,7 @@ interface Row {
   trip?: { title: string; destination: string };
   traveler?: { name: string; email: string };
   partner?: { businessName: string } | null;
-  travelerDetails: { mobile: string };
+  travelerDetails: { name?: string; email?: string; mobile: string; travellers?: number; notes?: string };
   seats: number;
   totalAmount: number;
   partnerEarnings: number;
@@ -45,13 +46,14 @@ export default async function AdminBookingsPage() {
               <thead>
                 <tr className="border-b border-border text-left text-muted-foreground">
                   <th className="p-4 font-medium">Booking</th>
-                  <th className="p-4 font-medium">Trip</th>
+                  <th className="p-4 font-medium">Package</th>
                   <th className="p-4 font-medium">Traveler</th>
                   <th className="p-4 font-medium">Source</th>
                   <th className="p-4 font-medium">Seats</th>
                   <th className="p-4 font-medium">Amount</th>
                   <th className="p-4 font-medium">Payment</th>
                   <th className="p-4 font-medium">Status</th>
+                  <th className="p-4 text-right font-medium">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -76,6 +78,7 @@ export default async function AdminBookingsPage() {
                     <td className="p-4 font-medium">{formatINR(b.totalAmount)}</td>
                     <td className="p-4"><StatusBadge status={b.paymentStatus} /></td>
                     <td className="p-4"><BookingStatusSelect id={b._id} status={b.status} /></td>
+                    <td className="p-4 text-right"><EditBookingDrawer booking={b} /></td>
                   </tr>
                 ))}
               </tbody>

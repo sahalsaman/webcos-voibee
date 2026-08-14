@@ -75,7 +75,7 @@ export function OfferCarousel({ offers }: { offers: OfferSlide[] }) {
                       </span>
                     ) : null}
                     <span className="inline-flex items-center gap-2 text-sm font-semibold">
-                      {offer.ctaLabel ?? "View trips"} <ArrowRight className="size-4" />
+                      {offer.ctaLabel ?? "View packages"} <ArrowRight className="size-4" />
                     </span>
                   </div>
                 </div>

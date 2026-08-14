@@ -10,9 +10,9 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.voibee.com";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: appUrl, changeFrequency: "daily", priority: 1 },
-    { url: `${appUrl}/trips`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${appUrl}/packages`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${appUrl}/strangers-camps`, changeFrequency: "daily", priority: 0.85 },
     { url: `${appUrl}/destinations`, changeFrequency: "daily", priority: 0.85 },
-    { url: `${appUrl}/visa`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${appUrl}/register`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${appUrl}/login`, changeFrequency: "monthly", priority: 0.3 },
   ];
@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]);
 
     const tripRoutes: MetadataRoute.Sitemap = trips.map((t) => ({
-      url: `${appUrl}/trips/${t.slug}`,
+      url: `${appUrl}/packages/${t.slug}`,
       lastModified: t.updatedAt as Date,
       changeFrequency: "weekly",
       priority: 0.8,

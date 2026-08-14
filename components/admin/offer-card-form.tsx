@@ -20,8 +20,8 @@ export function OfferCardForm({ offer }: { offer?: OfferCardDTO }) {
   const [form, setForm] = useState({
     title: offer?.title ?? "",
     description: offer?.description ?? "",
-    href: offer?.href ?? "/trips",
-    ctaLabel: offer?.ctaLabel ?? "View trips",
+    href: offer?.href ?? "/packages",
+    ctaLabel: offer?.ctaLabel ?? "View packages",
     priceLabel: offer?.priceLabel ?? "",
     status: offer?.status ?? "active",
     featured: offer?.featured ?? false,
@@ -52,8 +52,8 @@ export function OfferCardForm({ offer }: { offer?: OfferCardDTO }) {
     const payload = {
       title: form.title,
       description: form.description,
-      href: form.href || "/trips",
-      ctaLabel: form.ctaLabel || "View trips",
+      href: form.href || "/packages",
+      ctaLabel: form.ctaLabel || "View packages",
       priceLabel: form.priceLabel,
       status: form.status,
       featured: form.featured,
@@ -96,7 +96,7 @@ export function OfferCardForm({ offer }: { offer?: OfferCardDTO }) {
           </div>
           <div>
             <Label className="mb-1.5 block">Link</Label>
-            <Input value={form.href} onChange={(e) => set("href", e.target.value)} placeholder="/trips?destination=Dubai" />
+            <Input value={form.href} onChange={(e) => set("href", e.target.value)} placeholder="/packages?destination=Dubai" />
           </div>
           <div>
             <Label className="mb-1.5 block">Button label</Label>

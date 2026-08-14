@@ -32,7 +32,7 @@ export function EventForm({ event }: { event?: EventDTO }) {
     startDate: dateValue(event?.startDate),
     endDate: dateValue(event?.endDate),
     priceLabel: event?.priceLabel ?? "",
-    href: event?.href ?? "/trips",
+    href: event?.href ?? "/packages",
     ctaLabel: event?.ctaLabel ?? "Explore packages",
     status: event?.status ?? "active",
     featured: event?.featured ?? false,
@@ -68,7 +68,7 @@ export function EventForm({ event }: { event?: EventDTO }) {
       startDate: form.startDate,
       endDate: form.endDate || undefined,
       priceLabel: form.priceLabel,
-      href: form.href || "/trips",
+      href: form.href || "/packages",
       ctaLabel: form.ctaLabel || "Explore packages",
       status: form.status,
       featured: form.featured,
@@ -140,7 +140,7 @@ export function EventForm({ event }: { event?: EventDTO }) {
           </div>
           <div>
             <Label className="mb-1.5 block">Link</Label>
-            <Input value={form.href} onChange={(e) => set("href", e.target.value)} placeholder="/trips?category=Festival" />
+            <Input value={form.href} onChange={(e) => set("href", e.target.value)} placeholder="/packages?category=Festival" />
           </div>
           <div>
             <Label className="mb-1.5 block">Button label</Label>

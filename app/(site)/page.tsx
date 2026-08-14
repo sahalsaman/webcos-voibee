@@ -27,7 +27,7 @@ import { formatCurrencyForCountry } from "@/lib/utils";
 import type { TripCategory } from "@/lib/constants";
 import type { DestinationDTO, OfferCardDTO } from "@/types";
 
-// Re-fetch featured trips from the DB at most once a minute.
+// Re-fetch featured packages from the DB at most once a minute.
 export const revalidate = 60;
 
 const HERO_BG = "/hero-experience.png";
@@ -35,11 +35,11 @@ const HERO_BG = "/hero-experience.png";
 const WHY = [
   {
     image: "/why-authentic.png",
-    title: "Enjoy authentic and unique trips you can't find anywhere else",
+    title: "Enjoy authentic and unique packages you can't find anywhere else",
   },
   {
     image: "/why-verified.png",
-    title: "Connect with verified trip leaders and TripMates",
+    title: "Connect with verified package experts and travel buddies",
   },
   {
     image: "/why-community.png",
@@ -54,7 +54,7 @@ const TESTIMONIALS = [
     date: "24 July, 2026",
     rating: "4.3/5",
     accent: "#0060e6",
-    text: "Booking was effortless and the trip exceeded expectations. The itinerary was clear, comfortable and exactly what we wanted.",
+    text: "Booking was effortless and the package exceeded expectations. The itinerary was clear, comfortable and exactly what we wanted.",
   },
   {
     name: "Neha Iyer",
@@ -62,7 +62,7 @@ const TESTIMONIALS = [
     date: "24 July, 2026",
     rating: "4.8/5",
     accent: "#0284c7",
-    text: "The whole trip felt smooth from the first search to the final day. Loved having support whenever we needed it.",
+    text: "The whole package felt smooth from the first search to the final day. Loved having support whenever we needed it.",
   },
   {
     name: "Sara Khan",
@@ -131,12 +131,12 @@ export default async function HomePage({
   const offers: OfferSlide[] = offerCards.length > 0
     ? offerCards.map((offer) => toOfferSlide(offer, country))
     : offerDestinations.slice(0, 4).map((d) => ({
-      title: `${d.title} trip deals`,
+      title: `${d.title} package deals`,
       description: `Book curated ${d.title} packages with verified stays, flexible plans and smooth support.`,
       image: d.images[0] || destinationImage(d.title),
-      href: hrefWithCountry(`/trips?destination=${encodeURIComponent(d.title)}`, country),
+      href: hrefWithCountry(`/packages?destination=${encodeURIComponent(d.title)}`, country),
       price: `From ${formatCurrencyForCountry(d.basePrice, country)}`,
-      ctaLabel: "View trips",
+      ctaLabel: "View packages",
     }));
 
   return (
@@ -172,7 +172,7 @@ export default async function HomePage({
 
             <div className="mt-6 flex flex-wrap gap-2">
               {heroDestinations.map((d) => (
-                <Link key={d._id} href={hrefWithCountry(`/trips?destination=${encodeURIComponent(d.title)}`, country)}>
+                <Link key={d._id} href={hrefWithCountry(`/packages?destination=${encodeURIComponent(d.title)}`, country)}>
                   <Badge variant="glass" className="border-primary/15 bg-card/90 shadow-sm hover:border-primary/35 hover:text-primary">
                     {d.title}
                   </Badge>
@@ -224,7 +224,7 @@ export default async function HomePage({
         </div>
       </section>
 
-      {/* ---------------- Trip themes ---------------- */}
+      {/* ---------------- Package themes ---------------- */}
       <section className="bg-secondary/40 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
@@ -238,7 +238,7 @@ export default async function HomePage({
               return (
                 <Link
                   key={theme.name}
-                  href={hrefWithCountry(`/trips?category=${encodeURIComponent(theme.name)}`, country)}
+                  href={hrefWithCountry(`/packages?category=${encodeURIComponent(theme.name)}`, country)}
                   className="group flex min-h-28 flex-col items-center justify-center rounded-xl border border-border bg-card p-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10"
                 >
                   <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
@@ -252,18 +252,18 @@ export default async function HomePage({
         </div>
       </section>
 
-      {/* ---------------- Featured trips ---------------- */}
+      {/* ---------------- Featured packages ---------------- */}
       <section className="bg-secondary/40 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between">
             <SectionHeading
               eyebrow="Featured"
-              title="Trending trips this season"
+              title="Trending packages this season"
               subtitle="Our most-loved packages, ready to book."
               align="left"
             />
             <Button asChild variant="outline" className="hidden sm:flex">
-              <Link href="/trips">
+              <Link href="/packages">
                 View all <ArrowRight className="size-4" />
               </Link>
             </Button>
@@ -278,11 +278,11 @@ export default async function HomePage({
           ) : (
             <EmptyState
               icon={Compass}
-              title="No trips published yet"
-              description="Once the operator publishes trips (or you run the seed script), they'll appear here."
+              title="No packages published yet"
+              description="Once the operator publishes packages (or you run the seed script), they'll appear here."
               action={
                 <Button asChild variant="gradient">
-                  <Link href="/trips">Browse trips</Link>
+                  <Link href="/packages">Browse packages</Link>
                 </Button>
               }
             />
@@ -297,7 +297,7 @@ export default async function HomePage({
             <SectionHeading
               eyebrow="Join our travel community"
               title="Moments from the road"
-              description="Check out special moments from our travel buddies who share the same passion for adventures and expertly-designed trips."
+              description="Check out special moments from our travel buddies who share the same passion for adventures and expertly-designed packages."
               align="left"
               titleSize="lg"
             />
@@ -412,11 +412,11 @@ export default async function HomePage({
               Start traveling together
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-              Join group trips, choose custom-date experiences, or plan your own escape with like-minded TripMates.
+              Join group packages, choose custom-date experiences, or plan your own escape with like-minded TripMates.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Button asChild size="lg" variant="gradient">
-                <Link href={hrefWithCountry("/trips", country)}>
+                <Link href={hrefWithCountry("/packages", country)}>
                   Join the community <ArrowRight className="size-4" />
                 </Link>
               </Button>
@@ -554,7 +554,7 @@ function DestinationGrid({
       <div className="mb-4 flex items-center justify-between gap-4">
         <h3 className="text-lg font-semibold">{title}</h3>
         <Button asChild variant="outline" size="sm">
-          <Link href={hrefWithCountry("/trips", country)}>
+          <Link href={hrefWithCountry("/packages", country)}>
             Explore <ArrowRight className="size-4" />
           </Link>
         </Button>
@@ -563,7 +563,7 @@ function DestinationGrid({
         {destinations.map((d) => (
           <Link
             key={d._id}
-            href={hrefWithCountry(`/trips?destination=${encodeURIComponent(d.title)}`, country)}
+            href={hrefWithCountry(`/packages?destination=${encodeURIComponent(d.title)}`, country)}
             className="group relative aspect-[3/4] overflow-hidden rounded-xl"
           >
             <Image
@@ -592,8 +592,8 @@ function toOfferSlide(offer: OfferCardDTO, country?: string): OfferSlide {
     title: offer.title,
     description: offer.description,
     image: offer.images[0] || destinationImage(offer.title),
-    href: hrefWithCountry(offer.href || "/trips", country),
+    href: hrefWithCountry(offer.href || "/packages", country),
     price: offer.priceLabel || undefined,
-    ctaLabel: offer.ctaLabel || "View trips",
+    ctaLabel: offer.ctaLabel || "View packages",
   };
 }

@@ -46,7 +46,7 @@ export default async function PartnerLinksPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-muted-foreground">
-                  <th className="p-4 font-medium">Trip</th>
+                  <th className="p-4 font-medium">Package</th>
                   <th className="p-4 font-medium">Commission</th>
                   <th className="p-4 font-medium">Selling price</th>
                   <th className="p-4 font-medium">Clicks</th>
@@ -95,7 +95,7 @@ export default async function PartnerLinksPage() {
           description="Create your first white-label link to start earning commissions."
           action={
             <Button asChild variant="gradient">
-              <Link href="/partner/browse">Browse trips</Link>
+              <Link href="/partner/browse">Browse packages</Link>
             </Button>
           }
         />

@@ -43,8 +43,8 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <StatCard label="Total Trips" value={stats.trips} icon={Plane} hint={`${stats.activeTrips} active`} />
-        <StatCard label="Active Trips" value={stats.activeTrips} icon={PlaneTakeoff} accent="success" />
+        <StatCard label="Total Packages" value={stats.trips} icon={Plane} hint={`${stats.activeTrips} active`} />
+        <StatCard label="Active Packages" value={stats.activeTrips} icon={PlaneTakeoff} accent="success" />
         <StatCard label="Total Bookings" value={stats.bookings} icon={CalendarCheck} accent="accent" />
         <StatCard label="Gross Revenue" value={formatINR(stats.revenue)} icon={IndianRupee} accent="success" hint={`${formatINR(stats.adminRevenue)} to operator`} />
         <StatCard label="Partners" value={stats.partners} icon={Users} accent="primary" />
@@ -57,7 +57,7 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <BarRankChart title="Top Selling Trips" data={charts.topTrips} xKey="name" yKey="bookings" />
+        <BarRankChart title="Top Selling Packages" data={charts.topTrips} xKey="name" yKey="bookings" />
         <BarRankChart title="Partner Performance" data={charts.topPartners} xKey="name" yKey="earnings" currency />
       </div>
 
@@ -75,7 +75,7 @@ export default async function AdminDashboard() {
                 <thead>
                   <tr className="border-b border-border text-left text-muted-foreground">
                     <th className="pb-2 font-medium">Booking</th>
-                    <th className="pb-2 font-medium">Trip</th>
+                    <th className="pb-2 font-medium">Package</th>
                     <th className="pb-2 font-medium">Traveler</th>
                     <th className="pb-2 font-medium">Source</th>
                     <th className="pb-2 font-medium">Amount</th>
@@ -104,7 +104,7 @@ export default async function AdminDashboard() {
             <EmptyState
               icon={CalendarCheck}
               title="No bookings yet"
-              description="Bookings will appear here once travelers start booking trips."
+              description="Bookings will appear here once travelers start booking packages."
             />
           )}
         </CardContent>

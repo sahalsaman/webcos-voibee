@@ -63,7 +63,7 @@ export default async function PartnerEarningsPage() {
               <thead>
                 <tr className="border-b border-border text-left text-muted-foreground">
                   <th className="p-2 font-medium">Booking</th>
-                  <th className="p-2 font-medium">Trip</th>
+                  <th className="p-2 font-medium">Package</th>
                   <th className="p-2 font-medium">Amount</th>
                   <th className="p-2 font-medium">Status</th>
                   <th className="p-2 font-medium">Date</th>

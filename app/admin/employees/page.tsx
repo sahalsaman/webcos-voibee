@@ -30,6 +30,7 @@ export default async function AdminEmployeesPage() {
                 <tr className="border-b border-border text-left text-muted-foreground">
                   <th className="p-4 font-medium">Employee</th>
                   <th className="p-4 font-medium">Role</th>
+                  <th className="p-4 font-medium">Portal</th>
                   <th className="p-4 font-medium">Salary</th>
                   <th className="p-4 font-medium">Joined</th>
                   <th className="p-4 font-medium">Status</th>
@@ -41,6 +42,10 @@ export default async function AdminEmployeesPage() {
                   <tr key={employee._id} className="border-b border-border/50 hover:bg-secondary/40">
                     <td className="p-4"><p className="font-medium">{employee.name}</p><p className="text-xs text-muted-foreground">{employee.email} · {employee.mobile || "no mobile"}</p></td>
                     <td className="p-4"><p>{employee.designation}</p><p className="text-xs text-muted-foreground">{employee.department}</p></td>
+                    <td className="p-4">
+                      <p className="font-medium">{employee.portalAccess ? "Enabled" : "No access"}</p>
+                      <p className="text-xs text-muted-foreground">{employee.portalAccess ? `${employee.portalPages?.length || 0} pages` : "-"}</p>
+                    </td>
                     <td className="p-4 font-medium">{formatINR(employee.salary)}</td>
                     <td className="p-4 text-muted-foreground">{employee.joinedAt ? formatDate(employee.joinedAt) : "-"}</td>
                     <td className="p-4"><StatusBadge status={employee.status} /></td>

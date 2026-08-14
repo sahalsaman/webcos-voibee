@@ -68,7 +68,7 @@ export default async function AdminDestinationsPage() {
         <EmptyState
           icon={Globe2}
           title="No destinations yet"
-          description="Add domestic and international destinations for website filters and trip forms."
+          description="Add domestic and international destinations for website filters and package forms."
           action={<Button asChild variant="gradient"><Link href="/admin/destinations/new"><Plus className="size-4" /> New Destination</Link></Button>}
         />
       )}

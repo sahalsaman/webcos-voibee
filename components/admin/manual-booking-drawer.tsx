@@ -21,10 +21,27 @@ interface BookableTrip {
   totalSeats: number;
 }
 
+type ManualBookingField = "tripId" | "seats" | "name" | "email" | "mobile" | "status" | "paymentStatus";
+type FieldErrors = Partial<Record<ManualBookingField, string>>;
+
+function RequiredLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <Label>
+      {children} <span className="text-destructive">*</span>
+    </Label>
+  );
+}
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="text-xs font-medium text-destructive">{message}</p>;
+}
+
 export function ManualBookingDrawer({ trips }: { trips: BookableTrip[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<FieldErrors>({});
   const [form, setForm] = useState({
     tripId: trips[0]?._id ?? "",
     seats: 1,
@@ -44,6 +61,33 @@ export function ManualBookingDrawer({ trips }: { trips: BookableTrip[] }) {
 
   function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((current) => ({ ...current, [key]: value }));
+    setErrors((current) => {
+      const field = key as ManualBookingField;
+      if (!current[field]) return current;
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+  }
+
+  function validateForm() {
+    const next: FieldErrors = {};
+    const seats = Number(form.seats);
+
+    if (!form.tripId || !selectedTrip) next.tripId = "Select a package";
+    if (!Number.isInteger(seats) || seats < 1) {
+      next.seats = "Enter at least 1 seat";
+    } else if (selectedTrip && seats > selectedTrip.availableSeats) {
+      next.seats = `Only ${selectedTrip.availableSeats} seat(s) left`;
+    }
+    if (form.name.trim().length < 2) next.name = "Enter traveler name";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) next.email = "Enter a valid email address";
+    if (!/^[6-9]\d{9}$/.test(form.mobile.trim())) next.mobile = "Enter a valid 10-digit mobile number";
+    if (!form.status) next.status = "Select booking status";
+    if (!form.paymentStatus) next.paymentStatus = "Select payment status";
+
+    setErrors(next);
+    return Object.keys(next).length === 0;
   }
 
   function close() {
@@ -52,12 +96,8 @@ export function ManualBookingDrawer({ trips }: { trips: BookableTrip[] }) {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!selectedTrip) {
-      toast.error("Select a trip");
-      return;
-    }
-    if (form.seats > selectedTrip.availableSeats) {
-      toast.error(`Only ${selectedTrip.availableSeats} seat(s) left`);
+    if (!validateForm()) {
+      toast.error("Please fix the highlighted fields");
       return;
     }
 
@@ -81,9 +121,15 @@ export function ManualBookingDrawer({ trips }: { trips: BookableTrip[] }) {
         }),
       });
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.message || "Booking failed");
+      if (!res.ok || !data.success) {
+        const firstError = data.errors
+          ? Object.values(data.errors).flat().filter(Boolean)[0]
+          : null;
+        throw new Error(String(firstError || data.message || "Booking failed"));
+      }
       toast.success(`Booking ${data.data.bookingNumber} created`);
       setOpen(false);
+      setErrors({});
       setForm({
         tripId: trips[0]?._id ?? "",
         seats: 1,
@@ -130,11 +176,13 @@ export function ManualBookingDrawer({ trips }: { trips: BookableTrip[] }) {
             <form onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col">
               <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5">
                 <div className="space-y-1.5">
-                  <Label>Trip</Label>
+                  <RequiredLabel>Package</RequiredLabel>
                   <Select
                     value={form.tripId}
                     onChange={(e) => set("tripId", e.target.value)}
                     required
+                    aria-invalid={Boolean(errors.tripId)}
+                    className={errors.tripId ? "border-destructive" : undefined}
                   >
                     {trips.map((trip) => (
                       <option key={trip._id} value={trip._id}>
@@ -142,11 +190,12 @@ export function ManualBookingDrawer({ trips }: { trips: BookableTrip[] }) {
                       </option>
                     ))}
                   </Select>
+                  <FieldError message={errors.tripId} />
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <Label>Seats</Label>
+                    <RequiredLabel>Seats</RequiredLabel>
                     <Input
                       type="number"
                       min={1}
@@ -154,45 +203,85 @@ export function ManualBookingDrawer({ trips }: { trips: BookableTrip[] }) {
                       value={form.seats}
                       onChange={(e) => set("seats", Number(e.target.value))}
                       required
+                      aria-invalid={Boolean(errors.seats)}
+                      className={errors.seats ? "border-destructive" : undefined}
                     />
+                    <FieldError message={errors.seats} />
                   </div>
                   <div className="space-y-1.5">
                     <Label>Total amount</Label>
-                    <Input value={formatINR(totalAmount)} readOnly />
+                    <Input value={formatINR(totalAmount)}  />
                   </div>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5 sm:col-span-2">
-                    <Label>Traveler name</Label>
-                    <Input value={form.name} onChange={(e) => set("name", e.target.value)} required />
+                    <RequiredLabel>Traveler name</RequiredLabel>
+                    <Input
+                      value={form.name}
+                      onChange={(e) => set("name", e.target.value)}
+                      required
+                      aria-invalid={Boolean(errors.name)}
+                      className={errors.name ? "border-destructive" : undefined}
+                    />
+                    <FieldError message={errors.name} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Email</Label>
-                    <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} required />
+                    <RequiredLabel>Email</RequiredLabel>
+                    <Input
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => set("email", e.target.value)}
+                      required
+                      aria-invalid={Boolean(errors.email)}
+                      className={errors.email ? "border-destructive" : undefined}
+                    />
+                    <FieldError message={errors.email} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Mobile</Label>
-                    <Input value={form.mobile} onChange={(e) => set("mobile", e.target.value)} placeholder="10 digit mobile" required />
+                    <RequiredLabel>Mobile</RequiredLabel>
+                    <Input
+                      value={form.mobile}
+                      onChange={(e) => set("mobile", e.target.value.replace(/\D/g, ""))}
+                      placeholder="10 digit mobile"
+                      required
+                      maxLength={10}
+                      minLength={10}
+                      aria-invalid={Boolean(errors.mobile)}
+                      className={errors.mobile ? "border-destructive" : undefined}
+                    />
+                    <FieldError message={errors.mobile} />
                   </div>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <Label>Booking status</Label>
-                    <Select value={form.status} onChange={(e) => set("status", e.target.value)}>
+                    <RequiredLabel>Booking status</RequiredLabel>
+                    <Select
+                      value={form.status}
+                      onChange={(e) => set("status", e.target.value)}
+                      aria-invalid={Boolean(errors.status)}
+                      className={errors.status ? "border-destructive" : undefined}
+                    >
                       {BOOKING_STATUSES.map((status) => (
                         <option key={status} value={status}>{status}</option>
                       ))}
                     </Select>
+                    <FieldError message={errors.status} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Payment status</Label>
-                    <Select value={form.paymentStatus} onChange={(e) => set("paymentStatus", e.target.value)}>
+                    <RequiredLabel>Payment status</RequiredLabel>
+                    <Select
+                      value={form.paymentStatus}
+                      onChange={(e) => set("paymentStatus", e.target.value)}
+                      aria-invalid={Boolean(errors.paymentStatus)}
+                      className={errors.paymentStatus ? "border-destructive" : undefined}
+                    >
                       {PAYMENT_STATUSES.map((status) => (
                         <option key={status} value={status}>{status}</option>
                       ))}
                     </Select>
+                    <FieldError message={errors.paymentStatus} />
                   </div>
                 </div>
 

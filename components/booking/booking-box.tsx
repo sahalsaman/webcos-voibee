@@ -109,7 +109,7 @@ export function BookingBox({
         amount: amount * 100,
         currency: "INR",
         name: appConfig.appName,
-        description: "Trip booking",
+        description: "Package booking",
         order_id: razorpayOrderId,
         prefill: { name: form.name, email: form.email, contact: form.mobile },
         theme: { color: "#0060E6" },

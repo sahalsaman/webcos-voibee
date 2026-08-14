@@ -10,11 +10,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { EMPLOYEE_STATUSES } from "@/lib/constants";
+import { ADMIN_PORTAL_PAGES, EMPLOYEE_STATUSES, suggestedEmployeePortalPages, type AdminPortalPageKey } from "@/lib/constants";
 import type { EmployeeDTO } from "@/types";
 
 function toDateInput(value?: string) {
   return value ? new Date(value).toISOString().slice(0, 10) : "";
+}
+
+function RequiredMark() {
+  return <span className="text-destructive">*</span>;
 }
 
 export function EmployeeForm({ employee }: { employee?: EmployeeDTO }) {
@@ -30,6 +34,9 @@ export function EmployeeForm({ employee }: { employee?: EmployeeDTO }) {
     status: employee?.status ?? "active",
     salary: employee?.salary ?? 0,
     joinedAt: toDateInput(employee?.joinedAt),
+    portalAccess: Boolean(employee?.portalAccess),
+    portalPassword: "",
+    portalPages: employee?.portalPages ?? ["dashboard" as AdminPortalPageKey],
     notes: employee?.notes ?? "",
   });
 
@@ -37,17 +44,50 @@ export function EmployeeForm({ employee }: { employee?: EmployeeDTO }) {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
+  function onDesignationBlur() {
+    if (!form.portalAccess || employee?.portalPages?.length) return;
+    set("portalPages", suggestedEmployeePortalPages(form.designation) as AdminPortalPageKey[]);
+  }
+
+  function togglePage(page: AdminPortalPageKey) {
+    setForm((current) => {
+      const pages = new Set(current.portalPages);
+      if (pages.has(page)) pages.delete(page);
+      else pages.add(page);
+      return { ...current, portalPages: [...pages] as AdminPortalPageKey[] };
+    });
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (form.portalAccess && form.portalPages.length === 0) {
+      toast.error("Select at least one portal page");
+      return;
+    }
+    if (form.portalAccess && !editing && form.portalPassword.length < 6) {
+      toast.error("Portal password must be at least 6 characters");
+      return;
+    }
+    if (form.portalPassword && form.portalPassword.length < 6) {
+      toast.error("Portal password must be at least 6 characters");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch(editing ? `/api/admin/employees/${employee!._id}` : "/api/admin/employees", {
         method: editing ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, salary: Number(form.salary) || 0 }),
+        body: JSON.stringify({
+          ...form,
+          salary: Number(form.salary) || 0,
+          portalPages: form.portalAccess ? form.portalPages : [],
+          portalPassword: form.portalPassword || undefined,
+        }),
       });
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.message || "Save failed");
+      const firstError = data.errors ? Object.values(data.errors).flat().filter(Boolean)[0] : null;
+      if (!res.ok || !data.success) throw new Error(String(firstError || data.message || "Save failed"));
       toast.success(editing ? "Employee updated" : "Employee added");
       router.push("/admin/employees");
       router.refresh();
@@ -62,11 +102,11 @@ export function EmployeeForm({ employee }: { employee?: EmployeeDTO }) {
       <Card>
         <CardContent className="grid gap-4 p-6 sm:grid-cols-2">
           <div>
-            <Label className="mb-1.5 block">Name</Label>
+            <Label className="mb-1.5 block">Name <RequiredMark /></Label>
             <Input value={form.name} onChange={(e) => set("name", e.target.value)} required />
           </div>
           <div>
-            <Label className="mb-1.5 block">Email</Label>
+            <Label className="mb-1.5 block">Email <RequiredMark /></Label>
             <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} required />
           </div>
           <div>
@@ -74,8 +114,8 @@ export function EmployeeForm({ employee }: { employee?: EmployeeDTO }) {
             <Input value={form.mobile} onChange={(e) => set("mobile", e.target.value)} />
           </div>
           <div>
-            <Label className="mb-1.5 block">Designation</Label>
-            <Input value={form.designation} onChange={(e) => set("designation", e.target.value)} required />
+            <Label className="mb-1.5 block">Designation <RequiredMark /></Label>
+            <Input value={form.designation} onChange={(e) => set("designation", e.target.value)} onBlur={onDesignationBlur} required />
           </div>
           <div>
             <Label className="mb-1.5 block">Department</Label>
@@ -95,6 +135,70 @@ export function EmployeeForm({ employee }: { employee?: EmployeeDTO }) {
             <Label className="mb-1.5 block">Joined date</Label>
             <Input type="date" value={form.joinedAt} onChange={(e) => set("joinedAt", e.target.value)} />
           </div>
+          <div className="sm:col-span-2">
+            <Label className="mb-1.5 flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={form.portalAccess}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setForm((current) => ({
+                    ...current,
+                    portalAccess: checked,
+                    portalPages: checked && current.portalPages.length === 0
+                      ? suggestedEmployeePortalPages(current.designation) as AdminPortalPageKey[]
+                      : current.portalPages,
+                  }));
+                }}
+                className="size-4 rounded border-input"
+              />
+              Portal access
+            </Label>
+            <p className="text-xs text-muted-foreground">Allow this employee to log in and open selected admin portal pages.</p>
+          </div>
+
+          {form.portalAccess ? (
+            <>
+              <div className="sm:col-span-2">
+                <Label className="mb-1.5 block">Portal password {!editing ? <RequiredMark /> : null}</Label>
+                <Input
+                  type="password"
+                  value={form.portalPassword}
+                  onChange={(e) => set("portalPassword", e.target.value)}
+                  placeholder={editing ? "Leave blank to keep current password" : "Minimum 6 characters"}
+                  minLength={form.portalPassword ? 6 : undefined}
+                  required={!editing}
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                  <Label>Page access <RequiredMark /></Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => set("portalPages", suggestedEmployeePortalPages(form.designation) as AdminPortalPageKey[])}
+                  >
+                    Suggest from designation
+                  </Button>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  {ADMIN_PORTAL_PAGES.map((page) => (
+                    <label key={page.key} className="flex items-center gap-2 rounded-md border border-border p-3 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={form.portalPages.includes(page.key)}
+                        onChange={() => togglePage(page.key)}
+                        className="size-4 rounded border-input"
+                      />
+                      {page.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : null}
+
           <div className="sm:col-span-2">
             <Label className="mb-1.5 block">Notes</Label>
             <Textarea value={form.notes} onChange={(e) => set("notes", e.target.value)} className="min-h-24" />

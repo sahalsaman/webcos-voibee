@@ -1,8 +1,9 @@
 import { Schema, model, models, type InferSchemaType } from "mongoose";
-import { EMPLOYEE_STATUSES } from "@/lib/constants";
+import { ADMIN_PORTAL_PAGE_KEYS, EMPLOYEE_STATUSES } from "@/lib/constants";
 
 const EmployeeSchema = new Schema(
   {
+    user: { type: Schema.Types.ObjectId, ref: "User", default: null, index: true },
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
     mobile: { type: String, trim: true },
@@ -11,6 +12,8 @@ const EmployeeSchema = new Schema(
     status: { type: String, enum: EMPLOYEE_STATUSES, default: "active", index: true },
     salary: { type: Number, default: 0, min: 0 },
     joinedAt: { type: Date },
+    portalAccess: { type: Boolean, default: false, index: true },
+    portalPages: { type: [String], enum: ADMIN_PORTAL_PAGE_KEYS, default: [] },
     notes: { type: String, default: "" },
   },
   { timestamps: true },

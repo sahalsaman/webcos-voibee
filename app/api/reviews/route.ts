@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       traveler: user.id,
       paymentStatus: "paid",
     });
-    if (!booked) return fail("You can only review trips you've booked", 403);
+    if (!booked) return fail("You can only review packages you've booked", 403);
 
     await Review.findOneAndUpdate(
       { trip: tripId, user: user.id },

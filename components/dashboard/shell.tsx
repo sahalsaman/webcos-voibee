@@ -11,11 +11,13 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { appConfig } from "@/app/app,config";
+import Image from "next/image";
 
 export interface NavItem {
   href: string;
   label: string;
   icon: LucideIcon;
+  accessKey?: string;
 }
 
 export function DashboardShell({
@@ -31,6 +33,7 @@ export function DashboardShell({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+const app_logo = "/voibee-logo-with-name.png"
 
   const isActive = (href: string) =>
     pathname === href || (href !== nav[0]?.href && pathname.startsWith(href));
@@ -38,10 +41,7 @@ export function DashboardShell({
   const SidebarContent = (
     <div className="flex h-full flex-col">
       <Link href="/" className="flex items-center gap-2 px-5 py-5 font-bold text-lg">
-        <span className="flex size-9 items-center justify-center rounded-xl bg-brand-gradient text-white">
-          <Compass className="size-5" />
-        </span>
-        {appConfig.appNameCap}
+          <Image src={app_logo} alt="Voibee" width={112} height={40} />
       </Link>
       <div className="px-5 pb-3">
         <Badge variant="secondary">{roleLabel}</Badge>

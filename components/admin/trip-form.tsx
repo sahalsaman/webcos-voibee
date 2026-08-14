@@ -10,11 +10,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { COUNTRY_OPTIONS, TRIP_CATEGORIES, TRIP_STATUSES, isFixedDepartureTripCategory, type TripCategory } from "@/lib/constants";
+import { COUNTRY_OPTIONS, TRIP_CATEGORIES, TRIP_STATUSES, type TripCategory } from "@/lib/constants";
 import type { DestinationDTO, TripDTO } from "@/types";
 
 type ItineraryItem = { day: number; title: string; description: string };
-
 function toDateInput(d?: string) {
   return d ? new Date(d).toISOString().slice(0, 10) : "";
 }
@@ -26,6 +25,10 @@ function dateToInput(date: Date) {
 
 function todayInput() {
   return dateToInput(new Date());
+}
+
+function RequiredMark() {
+  return <span className="text-destructive">*</span>;
 }
 
 function normalizeTripCategory(category?: string): TripCategory {
@@ -50,6 +53,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
 
   const [form, setForm] = useState({
     title: trip?.title ?? "",
+    holidayGroup: trip?.holidayGroup ?? "",
     destination: trip?.destination ?? destinations[0]?.title ?? "",
     country: trip?.country ?? destinations.find((destination) => destination.title === trip?.destination)?.country ?? "India",
     description: trip?.description ?? "",
@@ -66,13 +70,17 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
     inclusions: (trip?.inclusions ?? []).join("\n"),
     exclusions: (trip?.exclusions ?? []).join("\n"),
     tags: (trip?.tags ?? []).join(", "),
+    holidayPackage: trip?.holidayPackage ?? true,
   });
   const [itinerary, setItinerary] = useState<ItineraryItem[]>(
     trip?.itinerary?.length
       ? trip.itinerary
       : [{ day: 1, title: "", description: "" }],
   );
-  const needsDateAndSeats = isFixedDepartureTripCategory(form.category);
+  const [packageDuration, setPackageDuration] = useState(
+    trip?.packageOptions?.[0]?.label ?? "3D/2N",
+  );
+  const showDateAndSeats = !form.holidayPackage;
 
   function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -92,12 +100,13 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const startDate = needsDateAndSeats ? form.startDate : form.startDate || todayInput();
-    const endDate = needsDateAndSeats ? form.endDate : form.endDate || startDate;
-    const totalSeats = needsDateAndSeats ? Number(form.totalSeats) : 999;
-    const availableSeats = needsDateAndSeats ? Number(form.availableSeats) || totalSeats : 999;
+    const startDate = showDateAndSeats ? form.startDate : form.startDate || todayInput();
+    const endDate = showDateAndSeats ? form.endDate : form.endDate || startDate;
+    const totalSeats = showDateAndSeats ? Number(form.totalSeats) : 999;
+    const availableSeats = showDateAndSeats ? Number(form.availableSeats) || totalSeats : 999;
     const payload = {
       title: form.title,
+      holidayGroup: form.holidayGroup,
       destination: form.destination,
       country: form.country,
       description: form.description,
@@ -113,6 +122,10 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       images: lines(form.images),
       inclusions: lines(form.inclusions),
       exclusions: lines(form.exclusions),
+      packageOptions: packageDuration.trim()
+        ? [{ label: packageDuration.trim(), price: Number(form.basePrice) || 0 }]
+        : [],
+      holidayPackage: form.holidayPackage,
       tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
       itinerary: itinerary
         .filter((i) => i.title)
@@ -121,7 +134,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
 
     try {
       const res = await fetch(
-        editing ? `/api/trips/${trip!._id}` : "/api/trips",
+        editing ? `/api/packages/${trip!._id}` : "/api/packages",
         {
           method: editing ? "PATCH" : "POST",
           headers: { "Content-Type": "application/json" },
@@ -130,8 +143,8 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       );
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || "Save failed");
-      toast.success(editing ? "Trip updated" : "Trip created");
-      router.push("/admin/trips");
+      toast.success(editing ? "Package updated" : "Package created");
+      router.push("/admin/packages");
       router.refresh();
     } catch (err) {
       toast.error((err as Error).message);
@@ -144,11 +157,11 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       <Card>
         <CardContent className="grid gap-4 p-6 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <Label className="mb-1.5 block">Trip name</Label>
+            <Label className="mb-1.5 block">Package name <RequiredMark /></Label>
             <Input value={form.title} onChange={(e) => set("title", e.target.value)} required />
           </div>
           <div>
-            <Label className="mb-1.5 block">Destination</Label>
+            <Label className="mb-1.5 block">Destination <RequiredMark /></Label>
             <Select value={form.destination} onChange={(e) => onDestinationChange(e.target.value)} required>
               {form.destination && !destinations.some((destination) => destination.title === form.destination) ? (
                 <option value={form.destination}>{form.destination}</option>
@@ -180,49 +193,54 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       </Card>
 
       <Card>
-        <CardContent className="grid gap-4 p-6 sm:grid-cols-3">
+        <CardContent className="space-y-4 p-6">
           <div>
-            <Label className="mb-1.5 block">Base price (₹)</Label>
-            <Input type="number" min={0} value={form.basePrice} onChange={(e) => set("basePrice", Number(e.target.value))} required />
+            <Label>Package price</Label>
+            <p className="mt-1 text-xs text-muted-foreground">One package can have one duration and one price.</p>
           </div>
+          <div className="grid gap-4 rounded-lg border border-border p-4 sm:grid-cols-2">
+            <div>
+              <Label className="mb-1.5 block">Duration <RequiredMark /></Label>
+              <Input
+                placeholder="3D/2N"
+                value={packageDuration}
+                onChange={(e) => setPackageDuration(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <Label className="mb-1.5 block">Price (₹) <RequiredMark /></Label>
+              <Input
+                type="number"
+                min={0}
+                value={form.basePrice}
+                onChange={(e) => set("basePrice", Number(e.target.value))}
+                required
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="grid gap-4 p-6 sm:grid-cols-3">
           <div>
             <Label className="mb-1.5 block">Category</Label>
             <Select value={form.category} onChange={(e) => set("category", e.target.value as typeof form.category)}>
               {TRIP_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </Select>
           </div>
-          {needsDateAndSeats ? (
-            <>
-              <div>
-                <Label className="mb-1.5 block">Total seats</Label>
-                <Input type="number" min={1} value={form.totalSeats} onChange={(e) => set("totalSeats", Number(e.target.value))} required />
-              </div>
-              <div>
-                <Label className="mb-1.5 block">Available seats</Label>
-                <Input type="number" min={0} value={form.availableSeats} onChange={(e) => set("availableSeats", Number(e.target.value))} required />
-              </div>
-              <div>
-                <Label className="mb-1.5 block">Start date</Label>
-                <Input type="date" value={form.startDate} onChange={(e) => set("startDate", e.target.value)} required />
-              </div>
-              <div>
-                <Label className="mb-1.5 block">End date</Label>
-                <Input type="date" value={form.endDate} onChange={(e) => set("endDate", e.target.value)} required />
-              </div>
-            </>
-          ) : (
-            <div className="rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4 text-sm text-muted-foreground sm:col-span-2">
-              <p className="font-medium text-foreground">Custom date package</p>
-              <p className="mt-1">Date and seats are handled per enquiry for this category.</p>
-            </div>
-          )}
           <div>
             <Label className="mb-1.5 block">Status</Label>
             <Select value={form.status} onChange={(e) => set("status", e.target.value as typeof form.status)}>
               {TRIP_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
             </Select>
           </div>
-          <div className="flex items-end">
+          <div>
+            <Label className="mb-1.5 block">Tags (comma separated)</Label>
+            <Input value={form.tags} onChange={(e) => set("tags", e.target.value)} placeholder="beach, luxury" />
+          </div>
+          <div className="flex items-center sm:pt-5">
             <label className="flex items-center gap-2 text-sm font-medium">
               <input
                 type="checkbox"
@@ -230,13 +248,45 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
                 onChange={(e) => set("featured", e.target.checked)}
                 className="size-4 accent-[var(--primary)]"
               />
-              Featured trip
+              Featured package
             </label>
           </div>
-          <div>
-            <Label className="mb-1.5 block">Tags (comma separated)</Label>
-            <Input value={form.tags} onChange={(e) => set("tags", e.target.value)} placeholder="beach, luxury" />
+          <div className="flex items-center sm:pt-5">
+            <label className="flex items-center gap-2 text-sm font-medium">
+              <input
+                type="checkbox"
+                checked={form.holidayPackage}
+                onChange={(e) => set("holidayPackage", e.target.checked)}
+                className="size-4 accent-[var(--primary)]"
+              />
+              Holiday package
+            </label>
           </div>
+          {showDateAndSeats ? (
+            <>
+              <div>
+                <Label className="mb-1.5 block">Total seats <RequiredMark /></Label>
+                <Input type="number" min={1} value={form.totalSeats} onChange={(e) => set("totalSeats", Number(e.target.value))} required />
+              </div>
+              <div>
+                <Label className="mb-1.5 block">Available seats <RequiredMark /></Label>
+                <Input type="number" min={0} value={form.availableSeats} onChange={(e) => set("availableSeats", Number(e.target.value))} required />
+              </div>
+              <div>
+                <Label className="mb-1.5 block">Start date <RequiredMark /></Label>
+                <Input type="date" value={form.startDate} onChange={(e) => set("startDate", e.target.value)} required />
+              </div>
+              <div>
+                <Label className="mb-1.5 block">End date <RequiredMark /></Label>
+                <Input type="date" value={form.endDate} onChange={(e) => set("endDate", e.target.value)} required />
+              </div>
+            </>
+          ) : (
+            <div className="rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4 text-sm text-muted-foreground sm:col-span-2">
+              <p className="font-medium text-foreground">Holiday package</p>
+              <p className="mt-1">Date and seats are handled per enquiry for this package.</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -323,7 +373,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
         </Button>
         <Button type="submit" variant="gradient" disabled={loading}>
           {loading ? <Loader2 className="size-4 animate-spin" /> : null}
-          {editing ? "Save changes" : "Create trip"}
+          {editing ? "Save changes" : "Create package"}
         </Button>
       </div>
     </form>

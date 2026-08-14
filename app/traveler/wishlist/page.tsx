@@ -15,7 +15,7 @@ export default async function TravelerWishlistPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Wishlist</h1>
-        <p className="text-muted-foreground">{wishlist.length} saved trip(s)</p>
+        <p className="text-muted-foreground">{wishlist.length} saved package(s)</p>
       </div>
 
       {wishlist.length ? (
@@ -28,10 +28,10 @@ export default async function TravelerWishlistPage() {
         <EmptyState
           icon={Heart}
           title="Your wishlist is empty"
-          description="Save trips you love to find them here later."
+          description="Save packages you love to find them here later."
           action={
             <Button asChild variant="gradient">
-              <Link href="/trips">Explore trips</Link>
+              <Link href="/packages">Explore packages</Link>
             </Button>
           }
         />

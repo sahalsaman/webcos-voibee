@@ -8,7 +8,7 @@ import Partner from "@/models/Partner";
 import Trip from "@/models/Trip";
 import PartnerTrip from "@/models/PartnerTrip";
 
-/** Partner: create or update a white-label listing for a trip. */
+/** Partner: create or update a white-label listing for a package. */
 export async function POST(request: Request) {
   try {
     const user = await requireApiRole(["partner"]);
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
     const trip = await Trip.findById(tripId);
     if (!trip || trip.status !== "active") {
-      return fail("Trip is not available for reselling", 404);
+      return fail("Package is not available for reselling", 404);
     }
 
     const price = sellingPrice(trip.basePrice, commission);

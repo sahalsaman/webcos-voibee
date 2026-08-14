@@ -10,6 +10,7 @@ import type {
   OFFER_CARD_STATUSES,
   EVENT_STATUSES,
   EmployeeStatus,
+  AdminPortalPageKey,
 } from "@/lib/constants";
 
 /** Plain (serialized) shapes returned to client components. */
@@ -18,6 +19,11 @@ export interface ItineraryItem {
   day: number;
   title: string;
   description: string;
+}
+
+export interface PackageOption {
+  label: string;
+  price: number;
 }
 
 export interface TripDTO {
@@ -32,6 +38,9 @@ export interface TripDTO {
   itinerary: ItineraryItem[];
   inclusions: string[];
   exclusions: string[];
+  packageOptions: PackageOption[];
+  holidayPackage?: boolean;
+  holidayGroup?: string;
   basePrice: number;
   totalSeats: number;
   availableSeats: number;
@@ -123,6 +132,8 @@ export interface EmployeeDTO {
   status: EmployeeStatus;
   salary: number;
   joinedAt?: string;
+  portalAccess?: boolean;
+  portalPages?: AdminPortalPageKey[];
   notes?: string;
   createdAt: string;
 }

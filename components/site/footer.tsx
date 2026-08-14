@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import type { DestinationDTO } from "@/types";
 import { appConfig } from "@/app/app,config";
 
-const app_logo = "/voibee-logo.png"
+const app_logo = "/voibee-logo-with-name.png"
 
 export function Footer() {
   const params = useSearchParams();
@@ -40,22 +40,21 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
         <div className="md:col-span-1">
           <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-            <Image src={app_logo} alt="Logo" width={32} height={32} />
-             {appConfig.appNameCap}
+            <Image src={app_logo} alt="Voibee" width={112} height={40} />
           </Link>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">
-            Curated trips for explorers who want clear plans, verified stays and
+            Curated packages for explorers who want clear plans, verified stays and
             smooth support.
           </p>
         </div>
 
         <div>
-          <h4 className="mb-3 text-sm font-semibold">Trip themes</h4>
+          <h4 className="mb-3 text-sm font-semibold">Package themes</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link className="hover:text-foreground" href={withCountry("/trips")}>All trips</Link></li>
+            <li><Link className="hover:text-foreground" href={withCountry("/packages")}>All packages</Link></li>
             {TRIP_CATEGORIES.slice(0, 4).map((theme) => (
               <li key={theme}>
-                <Link className="hover:text-foreground" href={withCountry(`/trips?category=${encodeURIComponent(theme)}`)}>
+                <Link className="hover:text-foreground" href={withCountry(`/packages?category=${encodeURIComponent(theme)}`)}>
                   {theme}
                 </Link>
               </li>
@@ -69,7 +68,7 @@ export function Footer() {
             <li className="col-span-2"><Link className="font-medium text-primary hover:underline" href={withCountry("/destinations")}>View all destinations</Link></li>
             {destinations.map((d) => (
               <li key={d._id}>
-                <Link className="hover:text-foreground" href={withCountry(`/trips?destination=${encodeURIComponent(d.title)}`)}>
+                <Link className="hover:text-foreground" href={withCountry(`/packages?destination=${encodeURIComponent(d.title)}`)}>
                   {d.title}
                 </Link>
               </li>
@@ -80,8 +79,8 @@ export function Footer() {
         <div>
           <h4 className="mb-3 text-sm font-semibold">Company</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link className="hover:text-foreground" href="/#why">Why Voibee</Link></li>
-            <li><Link className="hover:text-foreground" href="/visa">Visa Assistance</Link></li>
+            <li><Link className="hover:text-foreground" href="/packages">Explore Packages</Link></li>
+            <li><Link className="hover:text-foreground" href="/destinations">Destinations</Link></li>
             <li><Link className="hover:text-foreground" href="/login">Traveler Login</Link></li>
             <li><Link className="hover:text-foreground" href="/register">Create Account</Link></li>
           </ul>

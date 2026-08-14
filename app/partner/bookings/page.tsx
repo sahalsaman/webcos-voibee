@@ -40,7 +40,7 @@ export default async function PartnerBookingsPage() {
               <thead>
                 <tr className="border-b border-border text-left text-muted-foreground">
                   <th className="p-4 font-medium">Booking</th>
-                  <th className="p-4 font-medium">Trip</th>
+                  <th className="p-4 font-medium">Package</th>
                   <th className="p-4 font-medium">Customer</th>
                   <th className="p-4 font-medium">Seats</th>
                   <th className="p-4 font-medium">Sale</th>

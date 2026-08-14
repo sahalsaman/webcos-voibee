@@ -21,7 +21,7 @@ export default async function ReportsPage() {
 
   const bookingRows = (bookings as any[]).map((b) => ({
     Booking: b.bookingNumber,
-    Trip: b.trip?.title ?? "",
+    Package: b.trip?.title ?? "",
     Traveler: b.traveler?.name ?? "",
     Source: b.partner?.businessName ?? "Direct",
     Seats: b.seats,
@@ -55,7 +55,7 @@ export default async function ReportsPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Reports</h1>
-          <p className="text-muted-foreground">Export revenue, bookings, trips & partners</p>
+          <p className="text-muted-foreground">Export revenue, bookings, packages & partners</p>
         </div>
         <PrintButton />
       </div>
@@ -63,7 +63,7 @@ export default async function ReportsPage() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Gross Revenue" value={formatINR(stats.revenue)} icon={IndianRupee} accent="success" />
         <StatCard label="Bookings" value={stats.bookings} icon={CalendarCheck} accent="accent" />
-        <StatCard label="Trips" value={stats.trips} icon={Plane} />
+        <StatCard label="Packages" value={stats.trips} icon={Plane} />
         <StatCard label="Partners" value={stats.partners} icon={Users} accent="warning" />
       </div>
 
@@ -73,7 +73,7 @@ export default async function ReportsPage() {
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
           <CsvExportButton rows={bookingRows} filename="voibee-bookings.csv" label="Revenue & Bookings" />
-          <CsvExportButton rows={tripRows} filename="voibee-trips.csv" label="Trips" />
+          <CsvExportButton rows={tripRows} filename="voibee-packages.csv" label="Packages" />
           <CsvExportButton rows={partnerRows} filename="voibee-partners.csv" label="Partners" />
         </CardContent>
       </Card>
@@ -87,7 +87,7 @@ export default async function ReportsPage() {
             <thead>
               <tr className="border-b border-border text-left text-muted-foreground">
                 <th className="p-2 font-medium">Booking</th>
-                <th className="p-2 font-medium">Trip</th>
+                <th className="p-2 font-medium">Package</th>
                 <th className="p-2 font-medium">Source</th>
                 <th className="p-2 font-medium">Amount</th>
                 <th className="p-2 font-medium">Status</th>
@@ -98,7 +98,7 @@ export default async function ReportsPage() {
               {bookingRows.slice(0, 25).map((r, i) => (
                 <tr key={i} className="border-b border-border/50">
                   <td className="p-2 font-mono text-xs">{r.Booking}</td>
-                  <td className="p-2">{r.Trip}</td>
+                  <td className="p-2">{r.Package}</td>
                   <td className="p-2 text-muted-foreground">{r.Source}</td>
                   <td className="p-2">{formatINR(Number(r.Amount))}</td>
                   <td className="p-2 capitalize">{r.Status}</td>

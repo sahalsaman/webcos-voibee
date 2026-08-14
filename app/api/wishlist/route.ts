@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     if (!user) return fail("Please log in", 401);
 
     const { tripId } = await request.json();
-    if (!tripId) return fail("Trip is required", 400);
+    if (!tripId) return fail("Package is required", 400);
 
     await connectDB();
     const wl = await Wishlist.findOne({ user: user.id });

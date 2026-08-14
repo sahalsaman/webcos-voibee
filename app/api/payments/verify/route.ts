@@ -117,7 +117,7 @@ export async function POST(request: Request) {
         user: booking.traveler,
         type: "booking",
         title: "Booking confirmed",
-        message: `Your booking ${booking.bookingNumber} for "${trip?.title ?? "your trip"}" is confirmed.`,
+        message: `Your booking ${booking.bookingNumber} for "${trip?.title ?? "your package"}" is confirmed.`,
       });
     }
 

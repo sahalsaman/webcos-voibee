@@ -3,8 +3,7 @@ import Image from "next/image";
 import { Compass, Quote } from "lucide-react";
 import { appConfig } from "../app,config";
 
-const SIDE_IMG =
-  "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=70";
+const SIDE_IMG = "/login-experience.png";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,8 +11,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {/* Brand panel */}
       <div className="relative hidden lg:block">
         <Image src={SIDE_IMG} alt="" fill priority className="object-cover" />
-        <div className="absolute inset-0 bg-brand-gradient/85 mix-blend-multiply" />
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-brand-gradient/55 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-slate-950/15" />
         <div className="relative flex h-full flex-col justify-between p-12 text-white">
           <Link href="/" className="flex items-center gap-2 text-xl font-bold">
             <span className="flex size-10 items-center justify-center rounded-xl bg-white/20">

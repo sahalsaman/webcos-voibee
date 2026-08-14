@@ -5,6 +5,7 @@ import {
   Plane,
   CalendarCheck,
   CalendarDays,
+  CalendarRange,
   Users,
   UsersRound,
   Settings,
@@ -15,34 +16,33 @@ import {
   Heart,
   UserCircle,
   ShoppingBag,
-  Megaphone,
   Globe2,
 } from "lucide-react";
 import { DashboardShell, type NavItem } from "@/components/dashboard/shell";
+import type { AdminPortalPageKey } from "@/lib/constants";
 
 const NAVS: Record<string, { label: string; items: NavItem[] }> = {
   admin: {
     label: "Admin",
     items: [
-      { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-      { href: "/admin/trips", label: "Trips", icon: Plane },
-      { href: "/admin/destinations", label: "Destinations", icon: Globe2 },
-      { href: "/admin/offers", label: "Offer Cards", icon: Megaphone },
-      { href: "/admin/events", label: "Major Events", icon: CalendarDays },
-      { href: "/admin/bookings", label: "Bookings", icon: CalendarCheck },
-      { href: "/admin/travelers", label: "Travelers", icon: Users },
-      { href: "/admin/partners", label: "Partners", icon: UsersRound },
-      { href: "/admin/finance", label: "Finance", icon: Wallet },
-      { href: "/admin/employees", label: "Employees", icon: UsersRound },
-      { href: "/admin/reports", label: "Reports", icon: FileBarChart },
-      { href: "/admin/settings", label: "Settings", icon: Settings },
+      { href: "/admin", label: "Dashboard", icon: LayoutDashboard, accessKey: "dashboard" },
+      { href: "/admin/calendar", label: "Calendar", icon: CalendarRange, accessKey: "calendar" },
+      { href: "/admin/destinations", label: "Holiday Destinations", icon: Globe2, accessKey: "destinations" },
+      { href: "/admin/packages", label: "Holiday Packages", icon: Plane, accessKey: "trips" },
+      { href: "/admin/events", label: "Major Events", icon: CalendarDays, accessKey: "events" },
+      { href: "/admin/bookings", label: "Bookings", icon: CalendarCheck, accessKey: "bookings" },
+      { href: "/admin/travelers", label: "Travelers", icon: Users, accessKey: "travelers" },
+      { href: "/admin/partners", label: "Partners", icon: UsersRound, accessKey: "partners" },
+      { href: "/admin/finance", label: "Finance", icon: Wallet, accessKey: "finance" },
+      { href: "/admin/reports", label: "Reports", icon: FileBarChart, accessKey: "reports" },
+      { href: "/admin/settings", label: "Settings", icon: Settings, accessKey: "settings" },
     ],
   },
   partner: {
     label: "Partner",
     items: [
       { href: "/partner", label: "Dashboard", icon: LayoutDashboard },
-      { href: "/partner/browse", label: "Browse Trips", icon: Compass },
+      { href: "/partner/browse", label: "Browse Packages", icon: Compass },
       { href: "/partner/links", label: "My Links", icon: Link2 },
       { href: "/partner/bookings", label: "Bookings", icon: CalendarCheck },
       { href: "/partner/earnings", label: "Earnings", icon: Wallet },
@@ -63,14 +63,23 @@ export function RoleShell({
   role,
   user,
   children,
+  accessPages,
+  roleLabel,
 }: {
-  role: "admin" | "partner" | "traveler";
+  role: "admin" | "employee" | "partner" | "traveler";
   user: { name?: string | null; email?: string | null; image?: string | null };
   children: React.ReactNode;
+  accessPages?: AdminPortalPageKey[];
+  roleLabel?: string;
 }) {
-  const cfg = NAVS[role];
+  const cfg = role === "employee" ? NAVS.admin : NAVS[role];
+  const allowed = accessPages ? new Set(accessPages) : null;
+  const items = allowed
+    ? cfg.items.filter((item) => !item.accessKey || allowed.has(item.accessKey as AdminPortalPageKey))
+    : cfg.items;
+
   return (
-    <DashboardShell nav={cfg.items} roleLabel={cfg.label} user={user}>
+    <DashboardShell nav={items} roleLabel={roleLabel || cfg.label} user={user}>
       {children}
     </DashboardShell>
   );
