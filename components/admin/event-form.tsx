@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -18,7 +17,7 @@ function dateValue(value?: string | null) {
   return new Date(value).toISOString().slice(0, 10);
 }
 
-export function EventForm({ event }: { event?: EventDTO }) {
+export function EventForm({ event, onSaved, onCancel }: { event?: EventDTO; onSaved?: () => void; onCancel?: () => void }) {
   const router = useRouter();
   const editing = Boolean(event);
   const [loading, setLoading] = useState(false);
@@ -86,7 +85,8 @@ export function EventForm({ event }: { event?: EventDTO }) {
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || "Save failed");
       toast.success(editing ? "Event updated" : "Event created");
-      router.push("/admin/events");
+      if (onSaved) onSaved();
+      else router.push("/admin/inventory/events");
       router.refresh();
     } catch (err) {
       toast.error((err as Error).message);
@@ -96,10 +96,9 @@ export function EventForm({ event }: { event?: EventDTO }) {
 
   return (
     <form onSubmit={onSubmit} className="space-y-6">
-      <Card>
-        <CardContent className="grid gap-4 p-6 sm:grid-cols-2">
+      <div className="grid items-start gap-x-4 gap-y-5 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <Label className="mb-1.5 block">Event title</Label>
+            <Label className="mb-1.5 block">Event title <span className="text-destructive">*</span></Label>
             <Input value={form.title} onChange={(e) => set("title", e.target.value)} required />
           </div>
           <div className="sm:col-span-2">
@@ -111,7 +110,7 @@ export function EventForm({ event }: { event?: EventDTO }) {
             <Input value={form.venue} onChange={(e) => set("venue", e.target.value)} placeholder="Festival ground, beach, stadium" />
           </div>
           <div>
-            <Label className="mb-1.5 block">City / place</Label>
+            <Label className="mb-1.5 block">City / place <span className="text-destructive">*</span></Label>
             <Input value={form.city} onChange={(e) => set("city", e.target.value)} required />
           </div>
           <div>
@@ -127,7 +126,7 @@ export function EventForm({ event }: { event?: EventDTO }) {
             <Input value={form.countryCode} readOnly />
           </div>
           <div>
-            <Label className="mb-1.5 block">Start date</Label>
+            <Label className="mb-1.5 block">Start date <span className="text-destructive">*</span></Label>
             <Input type="date" value={form.startDate} onChange={(e) => set("startDate", e.target.value)} required />
           </div>
           <div>
@@ -177,14 +176,13 @@ export function EventForm({ event }: { event?: EventDTO }) {
             <Label className="mb-1.5 block">Tags (comma separated)</Label>
             <Input value={form.tags} onChange={(e) => set("tags", e.target.value)} placeholder="festival, music, kerala, beach" />
           </div>
-        </CardContent>
-      </Card>
+      </div>
 
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={() => router.push("/admin/events")}>
+      <div className="sticky bottom-0 z-10 -mx-5 -mb-5 flex flex-col-reverse gap-2 border-t border-border bg-background/95 px-5 py-4 backdrop-blur sm:flex-row sm:justify-end">
+        <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={onCancel ?? (() => router.push("/admin/inventory/events"))}>
           Cancel
         </Button>
-        <Button type="submit" variant="gradient" disabled={loading}>
+        <Button type="submit" variant="gradient" className="w-full sm:w-auto" disabled={loading}>
           {loading ? <Loader2 className="size-4 animate-spin" /> : null}
           {editing ? "Save event" : "Create event"}
         </Button>

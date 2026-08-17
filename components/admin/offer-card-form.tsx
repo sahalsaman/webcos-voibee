@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -13,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { COUNTRY_OPTIONS, OFFER_CARD_STATUSES } from "@/lib/constants";
 import type { OfferCardDTO } from "@/types";
 
-export function OfferCardForm({ offer }: { offer?: OfferCardDTO }) {
+export function OfferCardForm({ offer, onSaved, onCancel }: { offer?: OfferCardDTO; onSaved?: () => void; onCancel?: () => void }) {
   const router = useRouter();
   const editing = Boolean(offer);
   const [loading, setLoading] = useState(false);
@@ -74,7 +73,8 @@ export function OfferCardForm({ offer }: { offer?: OfferCardDTO }) {
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || "Save failed");
       toast.success(editing ? "Offer card updated" : "Offer card created");
-      router.push("/admin/offers");
+      if (onSaved) onSaved();
+      else router.push("/admin/settings?section=offers");
       router.refresh();
     } catch (err) {
       toast.error((err as Error).message);
@@ -84,10 +84,9 @@ export function OfferCardForm({ offer }: { offer?: OfferCardDTO }) {
 
   return (
     <form onSubmit={onSubmit} className="space-y-6">
-      <Card>
-        <CardContent className="grid gap-4 p-6 sm:grid-cols-2">
+      <div className="grid items-start gap-x-4 gap-y-5 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <Label className="mb-1.5 block">Offer title</Label>
+            <Label className="mb-1.5 block">Offer title <span className="text-destructive">*</span></Label>
             <Input value={form.title} onChange={(e) => set("title", e.target.value)} required />
           </div>
           <div className="sm:col-span-2">
@@ -142,21 +141,20 @@ export function OfferCardForm({ offer }: { offer?: OfferCardDTO }) {
             </label>
           </div>
           <div className="sm:col-span-2">
-            <Label className="mb-1.5 block">Image URLs (one per line)</Label>
+            <Label className="mb-1.5 block">Image URLs (one per line) <span className="text-destructive">*</span></Label>
             <Textarea value={form.images} onChange={(e) => set("images", e.target.value)} className="min-h-24 font-mono text-xs" required />
           </div>
           <div className="sm:col-span-2">
             <Label className="mb-1.5 block">Tags (comma separated)</Label>
             <Input value={form.tags} onChange={(e) => set("tags", e.target.value)} placeholder="summer, Dubai, family" />
           </div>
-        </CardContent>
-      </Card>
+      </div>
 
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={() => router.push("/admin/offers")}>
+      <div className="sticky bottom-0 z-10 -mx-5 -mb-5 flex flex-col-reverse gap-2 border-t border-border bg-background/95 px-5 py-4 backdrop-blur sm:flex-row sm:justify-end">
+        <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={onCancel ?? (() => router.push("/admin/settings?section=offers"))}>
           Cancel
         </Button>
-        <Button type="submit" variant="gradient" disabled={loading}>
+        <Button type="submit" variant="gradient" className="w-full sm:w-auto" disabled={loading}>
           {loading ? <Loader2 className="size-4 animate-spin" /> : null}
           {editing ? "Save offer" : "Create offer"}
         </Button>

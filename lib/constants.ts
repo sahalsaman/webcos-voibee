@@ -20,19 +20,45 @@ export const DESTINATION_STATUSES = ["active", "inactive"] as const;
 export const OFFER_CARD_STATUSES = ["active", "inactive"] as const;
 export const EVENT_STATUSES = ["draft", "active", "inactive"] as const;
 export const EMPLOYEE_STATUSES = ["active", "inactive"] as const;
+export const SUPPLIER_STATUSES = ["active", "inactive"] as const;
+export const SUPPLIER_TYPES = [
+  "Hotel",
+  "Transport",
+  "Activity",
+  "Restaurant",
+  "Guide",
+  "Visa",
+  "Insurance",
+  "Other",
+] as const;
+export const CAMPAIGN_STATUSES = ["draft", "scheduled", "active", "paused", "completed"] as const;
+export const CAMPAIGN_CHANNELS = [
+  "Email",
+  "Social Media",
+  "WhatsApp",
+  "SMS",
+  "Search Ads",
+  "Display Ads",
+  "Influencer",
+  "Other",
+] as const;
+export const PAYROLL_STATUSES = ["draft", "processed", "paid"] as const;
+export const QUOTATION_STATUSES = ["draft", "sent", "accepted", "rejected", "expired"] as const;
+export const LEAD_STATUSES = ["new", "contacted", "qualified", "quoted", "won", "lost"] as const;
+export const LEAD_SOURCES = ["Marketing Campaign", "Website", "WhatsApp", "Phone", "Referral", "Walk-in", "Other"] as const;
+export const VISA_STATUSES = ["documents_pending", "documents_received", "submitted", "under_review", "approved", "rejected", "completed"] as const;
+export const EXPENSE_STATUSES = ["pending", "approved", "paid", "cancelled"] as const;
+export const INVOICE_STATUSES = ["draft", "sent", "paid", "overdue", "cancelled"] as const;
 
 export const ADMIN_PORTAL_PAGES = [
   { key: "dashboard", label: "Dashboard", href: "/admin" },
-  { key: "calendar", label: "Calendar", href: "/admin/calendar" },
-  { key: "trips", label: "Packages", href: "/admin/packages" },
-  { key: "destinations", label: "Destinations", href: "/admin/destinations" },
-  { key: "offers", label: "Offer Cards", href: "/admin/offers" },
-  { key: "events", label: "Major Events", href: "/admin/events" },
   { key: "bookings", label: "Bookings", href: "/admin/bookings" },
-  { key: "travelers", label: "Travelers", href: "/admin/travelers" },
-  { key: "partners", label: "Partners", href: "/admin/partners" },
+  { key: "lms", label: "LMS", href: "/admin/lms" },
+  { key: "campaigns", label: "Marketing Campaigns", href: "/admin/campaigns" },
+  { key: "visas", label: "Visa Tracking", href: "/admin/visas" },
+  { key: "users", label: "Users", href: "/admin/users" },
+  { key: "inventory", label: "Inventory", href: "/admin/inventory" },
   { key: "finance", label: "Finance", href: "/admin/finance" },
-  { key: "employees", label: "Employees", href: "/admin/employees" },
   { key: "reports", label: "Reports", href: "/admin/reports" },
   { key: "settings", label: "Settings", href: "/admin/settings" },
 ] as const;
@@ -49,16 +75,27 @@ export function adminPortalPageKeyForPath(pathname: string) {
 
 export function suggestedEmployeePortalPages(designation: string) {
   const text = designation.toLowerCase();
-  if (text.includes("finance") || text.includes("account")) return ["dashboard", "calendar", "bookings", "finance", "reports"];
-  if (text.includes("sales") || text.includes("booking")) return ["dashboard", "calendar", "bookings", "travelers", "partners"];
-  if (text.includes("content") || text.includes("marketing")) return ["dashboard", "calendar", "destinations", "offers", "events", "reports"];
-  if (text.includes("operation") || text.includes("trip") || text.includes("package")) return ["dashboard", "calendar", "trips", "destinations", "bookings", "travelers"];
-  if (text.includes("hr") || text.includes("human")) return ["dashboard", "calendar", "employees", "reports"];
+  if (text.includes("finance") || text.includes("account")) return ["dashboard", "bookings", "users", "finance", "reports"];
+  if (text.includes("sales") || text.includes("booking")) return ["dashboard", "bookings", "lms", "users"];
+  if (text.includes("content") || text.includes("marketing")) return ["dashboard", "inventory", "campaigns", "lms", "reports"];
+  if (text.includes("operation") || text.includes("trip") || text.includes("package")) return ["dashboard", "inventory", "bookings", "visas", "users"];
+  if (text.includes("hr") || text.includes("human")) return ["dashboard", "settings", "reports"];
   return ["dashboard"];
 }
 export type TripStatus = (typeof TRIP_STATUSES)[number];
 export type EventStatus = (typeof EVENT_STATUSES)[number];
 export type EmployeeStatus = (typeof EMPLOYEE_STATUSES)[number];
+export type SupplierStatus = (typeof SUPPLIER_STATUSES)[number];
+export type SupplierType = (typeof SUPPLIER_TYPES)[number];
+export type CampaignStatus = (typeof CAMPAIGN_STATUSES)[number];
+export type CampaignChannel = (typeof CAMPAIGN_CHANNELS)[number];
+export type PayrollStatus = (typeof PAYROLL_STATUSES)[number];
+export type QuotationStatus = (typeof QUOTATION_STATUSES)[number];
+export type LeadStatus = (typeof LEAD_STATUSES)[number];
+export type LeadSource = (typeof LEAD_SOURCES)[number];
+export type VisaStatus = (typeof VISA_STATUSES)[number];
+export type ExpenseStatus = (typeof EXPENSE_STATUSES)[number];
+export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
 
 export const COUNTRY_OPTIONS = [
   { name: "India", code: "IN", currency: "INR", symbol: "₹" },
@@ -114,6 +151,7 @@ export function isCustomDateTripCategory(category?: string) {
 
 export const BOOKING_STATUSES = [
   "pending",
+  "advanced",
   "confirmed",
   "cancelled",
   "completed",
@@ -122,6 +160,7 @@ export type BookingStatus = (typeof BOOKING_STATUSES)[number];
 
 export const PAYMENT_STATUSES = [
   "created",
+  "processing",
   "paid",
   "failed",
   "refunded",

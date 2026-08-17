@@ -210,7 +210,7 @@ export function ManualBookingDrawer({ trips }: { trips: BookableTrip[] }) {
                   </div>
                   <div className="space-y-1.5">
                     <Label>Total amount</Label>
-                    <Input value={formatINR(totalAmount)}  />
+                    <Input value={formatINR(totalAmount)} readOnly aria-readonly="true" className="bg-secondary/40" />
                   </div>
                 </div>
 

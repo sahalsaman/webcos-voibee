@@ -149,7 +149,7 @@ export function AdminTripCalendar({ trips }: { trips: CalendarTrip[] }) {
                         return (
                           <Link
                             key={trip._id}
-                            href={`/admin/packages/${trip._id}/edit`}
+                            href={`/admin/inventory/itinerary/${trip._id}/edit`}
                             className={cn("block rounded-md border px-2 py-1.5 text-xs transition hover:brightness-95", stateStyles[state])}
                           >
                             <span className="block truncate font-semibold">{trip.title}</span>

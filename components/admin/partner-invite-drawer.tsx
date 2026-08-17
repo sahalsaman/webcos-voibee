@@ -186,7 +186,7 @@ Partner link: /p/${result.slug}`;
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <Label>{label}</Label>
+      <Label>{label} <span className="text-destructive">*</span></Label>
       {children}
     </div>
   );

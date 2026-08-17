@@ -7,6 +7,7 @@ import Booking from "@/models/Booking";
 import Payment from "@/models/Payment";
 import Trip from "@/models/Trip";
 import User from "@/models/User";
+import { isCustomDateTripCategory } from "@/lib/constants";
 
 export async function POST(request: Request) {
   try {
@@ -16,6 +17,9 @@ export async function POST(request: Request) {
 
     const trip = await Trip.findById(body.tripId);
     if (!trip || trip.status !== "active") return fail("This package is not available for booking", 404);
+    if (trip.holidayPackage ?? isCustomDateTripCategory(trip.category)) {
+      return fail("Custom-date bookings must be created through the customer booking flow", 400);
+    }
     if (trip.availableSeats < body.seats) {
       return fail(`Only ${trip.availableSeats} seat(s) left`, 409);
     }
@@ -48,6 +52,8 @@ export async function POST(request: Request) {
         travellers: body.travelerDetails.travellers || body.seats,
       },
       seats: body.seats,
+      travelStartDate: trip.startDate,
+      travelEndDate: trip.endDate,
       basePrice: trip.basePrice,
       commission: 0,
       platformFee: 0,

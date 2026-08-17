@@ -15,7 +15,6 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { appConfig } from "@/app/app,config";
 import { destinationImage } from "@/lib/images";
 import type { DestinationDTO } from "@/types";
 
@@ -31,7 +30,7 @@ function dashboardPath(role?: string) {
   return "/traveler";
 }
 
-const app_logo = "/voibee-logo-with-name.png"
+const appLogo = "/voibee-logo-with-name.png";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -73,7 +72,7 @@ export function Navbar() {
       <div className="glass border-b border-border/70 bg-card/90">
         <nav className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 font-extrabold text-2xl text-[#1261e0]">
-            <Image src={app_logo} alt="Voibee" width={112} height={40} />
+            <Image src={appLogo} alt="Voibee" width={112} height={40} />
           </Link>
 
           <div className="hidden items-center gap-1 md:flex">

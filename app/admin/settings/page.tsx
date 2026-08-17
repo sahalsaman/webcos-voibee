@@ -1,21 +1,23 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Megaphone, Plus, Settings, UserRound, UsersRound } from "lucide-react";
+import { Megaphone, Settings, UserRound, UsersRound, WalletCards } from "lucide-react";
 import { connectDB } from "@/lib/db";
 import { getSettings } from "@/models/Settings";
 import { formatDate, formatINR, serialize } from "@/lib/utils";
 import { SettingsForm } from "@/components/admin/settings-form";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { OfferCardRowActions } from "@/components/admin/offer-card-row-actions";
 import { EmployeeRowActions } from "@/components/admin/employee-row-actions";
+import { OfferCardDrawer } from "@/components/admin/offer-card-drawer";
+import { EmployeeDrawer } from "@/components/admin/employee-drawer";
 import { ChangePasswordForm } from "@/components/admin/change-password-form";
+import { PayrollSection } from "@/components/admin/payroll-section";
 import { DEFAULT_SETTINGS } from "@/lib/constants";
 import { getCurrentUser } from "@/lib/session";
-import { listAdminEmployees, listAdminOfferCards } from "@/lib/dashboard";
-import type { EmployeeDTO, OfferCardDTO } from "@/types";
+import { listAdminEmployees, listAdminOfferCards, listAdminPayroll } from "@/lib/dashboard";
+import type { EmployeeDTO, OfferCardDTO, PayrollDTO } from "@/types";
 
 const OFFER_FALLBACK = "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=200&q=60";
 
@@ -23,6 +25,7 @@ const SETTINGS_SECTIONS = [
   { key: "platform", label: "Platform Configuration", icon: Settings },
   { key: "offers", label: "Offer Cards", icon: Megaphone },
   { key: "employees", label: "Employees", icon: UsersRound },
+  { key: "payroll", label: "Employee Payroll", icon: WalletCards },
   { key: "profile", label: "Profile", icon: UserRound },
 ] as const;
 
@@ -57,9 +60,10 @@ export default async function AdminSettingsPage({
     /* fall back to defaults if DB unavailable */
   }
 
-  const [offers, employees] = await Promise.all([
+  const [offers, employees, payroll] = await Promise.all([
     activeSection === "offers" ? listAdminOfferCards() : Promise.resolve([]),
-    activeSection === "employees" ? listAdminEmployees() : Promise.resolve([]),
+    activeSection === "employees" || activeSection === "payroll" ? listAdminEmployees() : Promise.resolve([]),
+    activeSection === "payroll" ? listAdminPayroll() : Promise.resolve([]),
   ]);
 
   return (
@@ -86,6 +90,8 @@ export default async function AdminSettingsPage({
       {activeSection === "offers" ? <OfferCardsSection offers={offers as OfferCardDTO[]} /> : null}
 
       {activeSection === "employees" ? <EmployeesSection employees={employees as EmployeeDTO[]} /> : null}
+
+      {activeSection === "payroll" ? <PayrollSection payroll={payroll as PayrollDTO[]} employees={employees as EmployeeDTO[]} /> : null}
 
       {activeSection === "profile" ? <ChangePasswordForm email={user?.email} /> : null}
     </div>
@@ -129,9 +135,7 @@ function OfferCardsSection({ offers }: { offers: OfferCardDTO[] }) {
           <h2 className="text-xl font-bold">Offer Cards</h2>
           <p className="text-muted-foreground">Manage homepage carousel banners</p>
         </div>
-        <Button asChild variant="gradient">
-          <Link href="/admin/offers/new"><Plus className="size-4" /> New Offer</Link>
-        </Button>
+        <OfferCardDrawer />
       </div>
 
       {offers.length ? (
@@ -168,7 +172,7 @@ function OfferCardsSection({ offers }: { offers: OfferCardDTO[] }) {
                     <td className="p-4 text-muted-foreground">{offer.countryCode} · {offer.href}</td>
                     <td className="p-4">{offer.sortOrder}</td>
                     <td className="p-4"><StatusBadge status={offer.status} /></td>
-                    <td className="p-4"><OfferCardRowActions id={offer._id} /></td>
+                    <td className="p-4"><OfferCardRowActions offer={offer} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -180,11 +184,7 @@ function OfferCardsSection({ offers }: { offers: OfferCardDTO[] }) {
           icon={Megaphone}
           title="No offer cards yet"
           description="Create up to four active banners for the homepage carousel."
-          action={
-            <Button asChild variant="gradient">
-              <Link href="/admin/offers/new"><Plus className="size-4" /> New Offer</Link>
-            </Button>
-          }
+          action={<OfferCardDrawer />}
         />
       )}
     </div>
@@ -199,9 +199,7 @@ function EmployeesSection({ employees }: { employees: EmployeeDTO[] }) {
           <h2 className="text-xl font-bold">Employees</h2>
           <p className="text-muted-foreground">Manage internal team members, salaries and portal access</p>
         </div>
-        <Button asChild variant="gradient">
-          <Link href="/admin/employees/new"><Plus className="size-4" /> New Employee</Link>
-        </Button>
+        <EmployeeDrawer />
       </div>
 
       {employees.length ? (
@@ -237,7 +235,7 @@ function EmployeesSection({ employees }: { employees: EmployeeDTO[] }) {
                     <td className="p-4 font-medium">{formatINR(employee.salary)}</td>
                     <td className="p-4 text-muted-foreground">{employee.joinedAt ? formatDate(employee.joinedAt) : "-"}</td>
                     <td className="p-4"><StatusBadge status={employee.status} /></td>
-                    <td className="p-4"><EmployeeRowActions id={employee._id} /></td>
+                    <td className="p-4"><EmployeeRowActions employee={employee} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -249,11 +247,7 @@ function EmployeesSection({ employees }: { employees: EmployeeDTO[] }) {
           icon={UsersRound}
           title="No employees yet"
           description="Add employees to track team, salary and status."
-          action={
-            <Button asChild variant="gradient">
-              <Link href="/admin/employees/new"><Plus className="size-4" /> New Employee</Link>
-            </Button>
-          }
+          action={<EmployeeDrawer />}
         />
       )}
     </div>

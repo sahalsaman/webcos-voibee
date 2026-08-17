@@ -1,13 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Loader2, Pencil, Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { OfferCardDrawer } from "@/components/admin/offer-card-drawer";
+import type { OfferCardDTO } from "@/types";
 
-export function OfferCardRowActions({ id }: { id: string }) {
+export function OfferCardRowActions({ offer }: { offer: OfferCardDTO }) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
@@ -15,7 +16,7 @@ export function OfferCardRowActions({ id }: { id: string }) {
     if (!confirm("Delete this offer card?")) return;
     setDeleting(true);
     try {
-      const res = await fetch(`/api/admin/offers/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/offers/${offer._id}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || "Delete failed");
       toast.success("Offer card deleted");
@@ -28,11 +29,7 @@ export function OfferCardRowActions({ id }: { id: string }) {
 
   return (
     <div className="flex items-center justify-end gap-1">
-      <Button asChild variant="ghost" size="icon" aria-label="Edit">
-        <Link href={`/admin/offers/${id}/edit`}>
-          <Pencil className="size-4" />
-        </Link>
-      </Button>
+      <OfferCardDrawer offer={offer} />
       <Button variant="ghost" size="icon" aria-label="Delete" onClick={onDelete} disabled={deleting}>
         {deleting ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4 text-destructive" />}
       </Button>

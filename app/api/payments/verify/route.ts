@@ -1,6 +1,7 @@
 import { connectDB } from "@/lib/db";
 import { ok, fail, handleError, currentUser } from "@/lib/api";
-import { verifySignature, razorpayConfigured } from "@/lib/razorpay";
+import { verifySignature, razorpayConfigured, refundPayment } from "@/lib/razorpay";
+import { isCustomDateTripCategory } from "@/lib/constants";
 import "@/models";
 import Booking from "@/models/Booking";
 import Payment from "@/models/Payment";
@@ -62,6 +63,44 @@ export async function POST(request: Request) {
       }
     }
 
+    const claimed = await Booking.findOneAndUpdate(
+      { _id: booking._id, paymentStatus: { $nin: ["paid", "processing"] } },
+      { $set: { paymentStatus: "processing" } },
+      { returnDocument: "after" },
+    );
+    if (!claimed) {
+      const current = await Booking.findById(booking._id).select("paymentStatus bookingNumber");
+      if (current?.paymentStatus === "paid") return ok({ bookingNumber: current.bookingNumber, alreadyConfirmed: true });
+      return fail("Payment confirmation is already being processed", 409);
+    }
+
+    const trip = await Trip.findById(booking.trip).select("title category holidayPackage");
+    const customDate = trip?.holidayPackage ?? isCustomDateTripCategory(trip?.category);
+    if (!customDate) {
+      const inventory = await Trip.updateOne(
+        { _id: booking.trip, availableSeats: { $gte: booking.seats } },
+        { $inc: { availableSeats: -booking.seats } },
+      );
+      if (inventory.modifiedCount !== 1) {
+        const paymentId = typeof body.razorpay_payment_id === "string" ? body.razorpay_payment_id : payment?.razorpayPaymentId;
+        const refund: { id?: string } | null = !isMock && paymentId
+          ? await refundPayment(paymentId, booking.totalAmount).catch(() => null)
+          : null;
+        booking.status = "cancelled";
+        booking.paymentStatus = refund ? "refunded" : "failed";
+        await booking.save();
+        if (payment) {
+          payment.status = refund ? "refunded" : "failed";
+          if (refund) {
+            payment.refundId = refund.id || "refund-pending-reference";
+            payment.refundAmount = booking.totalAmount;
+          }
+          await payment.save();
+        }
+        return fail(refund ? "Seats sold out during payment. Your payment was refunded." : "Seats are no longer available. Please contact support with your payment reference.", 409);
+      }
+    }
+
     if (payment) {
       payment.status = "paid";
       await payment.save();
@@ -71,15 +110,9 @@ export async function POST(request: Request) {
     booking.status = "confirmed";
     await booking.save();
 
-    // Decrement seats atomically (best effort — never oversell silently).
-    await Trip.updateOne(
-      { _id: booking.trip, availableSeats: { $gte: booking.seats } },
-      { $inc: { availableSeats: -booking.seats } },
-    );
-
     // Partner commission ledger + earnings.
     if (booking.partner && booking.partnerEarnings > 0) {
-      await Commission.updateOne(
+      const ledger = await Commission.updateOne(
         { booking: booking._id },
         {
           $setOnInsert: {
@@ -93,25 +126,26 @@ export async function POST(request: Request) {
         },
         { upsert: true },
       );
-      await Partner.updateOne(
-        { _id: booking.partner },
-        {
-          $inc: {
-            totalEarnings: booking.partnerEarnings,
-            pendingEarnings: booking.partnerEarnings,
+      if (ledger.upsertedCount === 1) {
+        await Partner.updateOne(
+          { _id: booking.partner },
+          {
+            $inc: {
+              totalEarnings: booking.partnerEarnings,
+              pendingEarnings: booking.partnerEarnings,
+            },
           },
-        },
-      );
-      if (booking.partnerTrip) {
-        await PartnerTrip.updateOne(
-          { _id: booking.partnerTrip },
-          { $inc: { bookings: 1 } },
         );
+        if (booking.partnerTrip) {
+          await PartnerTrip.updateOne(
+            { _id: booking.partnerTrip },
+            { $inc: { bookings: 1 } },
+          );
+        }
       }
     }
 
     // Notifications (in-app) only apply to logged-in traveler bookings.
-    const trip = await Trip.findById(booking.trip).select("title").lean<{ title: string }>();
     if (booking.traveler) {
       await Notification.create({
         user: booking.traveler,

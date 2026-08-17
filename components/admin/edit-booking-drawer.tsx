@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Loader2, Pencil, X } from "lucide-react";
+import { Loader2, Pencil, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,8 @@ type EditableBooking = {
   _id: string;
   bookingNumber: string;
   seats: number;
+  totalAmount: number;
+  paymentStatus: string;
   traveler?: { name?: string; email?: string } | null;
   travelerDetails?: {
     name?: string;
@@ -23,7 +25,7 @@ type EditableBooking = {
   };
 };
 
-type BookingField = "name" | "email" | "mobile" | "travellers";
+type BookingField = "name" | "email" | "mobile" | "travellers" | "totalAmount";
 type FieldErrors = Partial<Record<BookingField, string>>;
 
 function RequiredLabel({ children }: { children: React.ReactNode }) {
@@ -50,12 +52,14 @@ export function EditBookingDrawer({ booking }: { booking: EditableBooking }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [refunding, setRefunding] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [form, setForm] = useState({
     name: booking.travelerDetails?.name || booking.traveler?.name || "",
     email: booking.travelerDetails?.email || booking.traveler?.email || "",
     mobile: booking.travelerDetails?.mobile || "",
     travellers: booking.travelerDetails?.travellers || booking.seats || 1,
+    totalAmount: booking.totalAmount,
     notes: booking.travelerDetails?.notes || "",
   });
 
@@ -73,10 +77,12 @@ export function EditBookingDrawer({ booking }: { booking: EditableBooking }) {
   function validateForm() {
     const next: FieldErrors = {};
     const travellers = Number(form.travellers);
+    const totalAmount = Number(form.totalAmount);
     if (form.name.trim().length < 2) next.name = "Enter traveler name";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) next.email = "Enter a valid email address";
     if (!/^[6-9]\d{9}$/.test(form.mobile.trim())) next.mobile = "Enter a valid 10-digit mobile number";
     if (!Number.isInteger(travellers) || travellers < 1) next.travellers = "Enter at least 1 traveler";
+    if (!Number.isFinite(totalAmount) || totalAmount < 0) next.totalAmount = "Enter a valid amount";
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -98,6 +104,7 @@ export function EditBookingDrawer({ booking }: { booking: EditableBooking }) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          totalAmount: Number(form.totalAmount),
           travelerDetails: {
             name: form.name.trim(),
             email: form.email.trim(),
@@ -118,6 +125,23 @@ export function EditBookingDrawer({ booking }: { booking: EditableBooking }) {
       toast.error((err as Error).message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function refundBooking() {
+    if (!window.confirm(`Refund ${booking.bookingNumber}? This will cancel the booking and reverse inventory and commission.`)) return;
+    setRefunding(true);
+    try {
+      const res = await fetch(`/api/admin/bookings/${booking._id}/refund`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || "Refund failed");
+      toast.success(data.alreadyRefunded ? "Booking was already refunded" : "Booking refunded and cancelled");
+      setOpen(false);
+      router.refresh();
+    } catch (error) {
+      toast.error((error as Error).message);
+    } finally {
+      setRefunding(false);
     }
   }
 
@@ -203,12 +227,33 @@ export function EditBookingDrawer({ booking }: { booking: EditableBooking }) {
                 </div>
 
                 <div className="space-y-1.5">
+                  <RequiredLabel>Booking amount</RequiredLabel>
+                  <Input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={form.totalAmount}
+                    onChange={(e) => set("totalAmount", Number(e.target.value))}
+                    required
+                    aria-invalid={Boolean(errors.totalAmount)}
+                    className={errors.totalAmount ? "border-destructive" : undefined}
+                  />
+                  <FieldError message={errors.totalAmount} />
+                </div>
+
+                <div className="space-y-1.5">
                   <Label>Notes</Label>
                   <Textarea value={form.notes} onChange={(e) => set("notes", e.target.value)} className="min-h-28" />
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 border-t border-border px-5 py-4">
+              <div className="flex flex-wrap justify-end gap-2 border-t border-border px-5 py-4">
+                {booking.paymentStatus === "paid" ? (
+                  <Button type="button" variant="destructive" onClick={refundBooking} disabled={loading || refunding} className="mr-auto">
+                    {refunding ? <Loader2 className="size-4 animate-spin" /> : <RotateCcw className="size-4" />}
+                    Refund
+                  </Button>
+                ) : null}
                 <Button type="button" variant="outline" onClick={close} disabled={loading}>
                   Cancel
                 </Button>

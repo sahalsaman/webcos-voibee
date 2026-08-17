@@ -55,15 +55,15 @@ function LoginForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="you@email.com" {...register("email")} />
+          <Label htmlFor="email">Email <span className="text-destructive">*</span></Label>
+          <Input id="email" type="email" placeholder="you@email.com" required {...register("email")} />
           {errors.email ? (
             <p className="text-xs text-destructive">{errors.email.message}</p>
           ) : null}
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" placeholder="••••••••" {...register("password")} />
+          <Label htmlFor="password">Password <span className="text-destructive">*</span></Label>
+          <Input id="password" type="password" placeholder="••••••••" required {...register("password")} />
           {errors.password ? (
             <p className="text-xs text-destructive">{errors.password.message}</p>
           ) : null}

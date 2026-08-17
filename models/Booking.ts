@@ -28,6 +28,10 @@ const BookingSchema = new Schema(
 
     travelerDetails: { type: TravelerDetailsSchema, required: true },
     seats: { type: Number, required: true, min: 1 },
+    // Optional at schema level so legacy bookings remain editable. All new
+    // booking entry points populate these snapshot dates.
+    travelStartDate: { type: Date, default: null },
+    travelEndDate: { type: Date, default: null },
 
     // Pricing snapshot at time of booking (per seat unless noted).
     basePrice: { type: Number, required: true },

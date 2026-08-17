@@ -59,20 +59,20 @@ function RegisterForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-5 space-y-4">
         <Field label="Full name" error={errors.name?.message}>
-          <Input placeholder="Your name" {...register("name")} />
+          <Input placeholder="Your name" required {...register("name")} />
         </Field>
 
         <div className="grid grid-cols-2 gap-3">
           <Field label="Mobile" error={errors.mobile?.message}>
-            <Input placeholder="10-digit" maxLength={10} {...register("mobile")} />
+            <Input placeholder="10-digit" maxLength={10} required {...register("mobile")} />
           </Field>
           <Field label="Email" error={errors.email?.message}>
-            <Input type="email" placeholder="you@email.com" {...register("email")} />
+            <Input type="email" placeholder="you@email.com" required {...register("email")} />
           </Field>
         </div>
 
         <Field label="Password" error={errors.password?.message}>
-          <Input type="password" placeholder="Min 6 characters" {...register("password")} />
+          <Input type="password" placeholder="Min 6 characters" minLength={6} required {...register("password")} />
         </Field>
 
         <Button type="submit" variant="gradient" size="lg" className="w-full" disabled={loading}>
@@ -98,7 +98,7 @@ function RegisterForm() {
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <Label>{label}</Label>
+      <Label>{label} <span className="text-destructive">*</span></Label>
       {children}
       {error ? <p className="text-xs text-destructive">{error}</p> : null}
     </div>

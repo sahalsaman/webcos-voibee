@@ -4,13 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Compass, Menu, X, LogOut, ExternalLink, type LucideIcon } from "lucide-react";
+import { Menu, X, LogOut, ExternalLink, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { appConfig } from "@/app/app,config";
 import Image from "next/image";
 
 export interface NavItem {
@@ -33,7 +32,7 @@ export function DashboardShell({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-const app_logo = "/voibee-logo-with-name.png"
+  const appLogo = "/voibee-logo-with-name.png";
 
   const isActive = (href: string) =>
     pathname === href || (href !== nav[0]?.href && pathname.startsWith(href));
@@ -41,7 +40,7 @@ const app_logo = "/voibee-logo-with-name.png"
   const SidebarContent = (
     <div className="flex h-full flex-col">
       <Link href="/" className="flex items-center gap-2 px-5 py-5 font-bold text-lg">
-          <Image src={app_logo} alt="Voibee" width={112} height={40} />
+          <Image src={appLogo} alt="Voibee" width={112} height={40} />
       </Link>
       <div className="px-5 pb-3">
         <Badge variant="secondary">{roleLabel}</Badge>

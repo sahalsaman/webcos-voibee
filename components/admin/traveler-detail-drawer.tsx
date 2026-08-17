@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { QuotationDrawer } from "@/components/admin/quotation-drawer";
 import { formatDate, formatINR } from "@/lib/utils";
+import type { TripDTO, UserDTO } from "@/types";
 
 type TravelerBooking = {
   _id: string;
@@ -16,11 +18,7 @@ type TravelerBooking = {
   createdAt: string;
 };
 
-type Traveler = {
-  _id: string;
-  name: string;
-  email: string;
-  mobile?: string;
+type Traveler = UserDTO & {
   createdAt?: string;
   bookingCount: number;
   paidAmount: number;
@@ -28,7 +26,7 @@ type Traveler = {
   bookings: TravelerBooking[];
 };
 
-export function TravelerDetailDrawer({ travelers }: { travelers: Traveler[] }) {
+export function TravelerDetailDrawer({ travelers, itineraries }: { travelers: Traveler[]; itineraries: TripDTO[] }) {
   const [selected, setSelected] = useState<Traveler | null>(null);
 
   return (
@@ -42,7 +40,7 @@ export function TravelerDetailDrawer({ travelers }: { travelers: Traveler[] }) {
               <th className="p-4 font-medium">Bookings</th>
               <th className="p-4 font-medium">Paid amount</th>
               <th className="p-4 font-medium">Last booking</th>
-              <th className="p-4 text-right font-medium">Detail</th>
+              <th className="p-4 text-right font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -56,7 +54,7 @@ export function TravelerDetailDrawer({ travelers }: { travelers: Traveler[] }) {
                 <td className="p-4">{traveler.bookingCount}</td>
                 <td className="p-4 font-medium">{formatINR(traveler.paidAmount)}</td>
                 <td className="p-4 text-muted-foreground">{traveler.lastBookingAt ? formatDate(traveler.lastBookingAt) : "-"}</td>
-                <td className="p-4 text-right"><Button variant="outline" size="sm" onClick={() => setSelected(traveler)}>View</Button></td>
+                <td className="p-4"><div className="flex justify-end gap-2"><QuotationDrawer customer={traveler} customers={travelers} itineraries={itineraries} /><Button variant="outline" size="sm" onClick={() => setSelected(traveler)}>View</Button></div></td>
               </tr>
             ))}
           </tbody>
@@ -78,6 +76,7 @@ export function TravelerDetailDrawer({ travelers }: { travelers: Traveler[] }) {
               <div><p className="text-muted-foreground">Bookings</p><p className="font-medium">{selected.bookingCount}</p></div>
               <div><p className="text-muted-foreground">Paid</p><p className="font-medium">{formatINR(selected.paidAmount)}</p></div>
             </div>
+            <div className="border-b border-border px-5 py-4"><QuotationDrawer customer={selected} customers={travelers} itineraries={itineraries} /></div>
             <div className="flex-1 overflow-y-auto p-5">
               <h3 className="mb-3 font-semibold">Booking history</h3>
               <div className="space-y-3">

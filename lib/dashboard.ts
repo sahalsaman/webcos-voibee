@@ -13,6 +13,14 @@ import Event from "@/models/Event";
 import Destination from "@/models/Destination";
 import Payment from "@/models/Payment";
 import Employee from "@/models/Employee";
+import Supplier from "@/models/Supplier";
+import Campaign from "@/models/Campaign";
+import Payroll from "@/models/Payroll";
+import Quotation from "@/models/Quotation";
+import Lead from "@/models/Lead";
+import VisaApplication from "@/models/VisaApplication";
+import Expense from "@/models/Expense";
+import Invoice from "@/models/Invoice";
 
 async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
@@ -297,6 +305,15 @@ export async function getAdminFinanceSummary() {
   }, { totals: { totalRevenue: 0, paidRevenue: 0, adminEarnings: 0, partnerEarnings: 0, bookings: 0 }, paymentsByStatus: [], commissionsByStatus: [], recentPayments: [] });
 }
 
+export async function listAdminEarnings() {
+  return safe(async () => serialize(await Booking.find({ paymentStatus: "paid" })
+    .sort({ createdAt: -1 })
+    .populate({ path: "trip", model: Trip, select: "title destination" })
+    .populate({ path: "partner", model: Partner, select: "businessName" })
+    .select("bookingNumber trip partner travelerDetails totalAmount partnerEarnings adminEarnings createdAt")
+    .lean()), []);
+}
+
 export async function listAdminEmployees() {
   return safe(async () => serialize(await Employee.find({}).sort({ createdAt: -1 }).lean()), []);
 }
@@ -329,6 +346,65 @@ export async function listAdminPartners() {
     return serialize(partners);
   }, []);
 }
+
+export async function listAdminSuppliers() {
+  return safe(async () => {
+    const suppliers = await Supplier.find({}).sort({ companyName: 1, createdAt: -1 }).lean();
+    return serialize(suppliers);
+  }, []);
+}
+
+export async function getAdminSupplierById(id: string) {
+  return safe(async () => {
+    const supplier = await Supplier.findById(id).lean();
+    return supplier ? serialize(supplier) : null;
+  }, null);
+}
+
+export async function listAdminCampaigns() {
+  return safe(async () => {
+    const campaigns = await Campaign.find({}).sort({ startDate: -1, createdAt: -1 }).lean();
+    const counts = await Lead.aggregate([{ $match: { campaign: { $ne: null } } }, { $group: { _id: "$campaign", count: { $sum: 1 } } }]);
+    const countMap = new Map(counts.map((item) => [String(item._id), item.count]));
+    return serialize(campaigns).map((campaign: Record<string, unknown>) => ({ ...campaign, leadCount: countMap.get(String(campaign._id)) ?? 0 }));
+  }, []);
+}
+
+export async function listAdminPayroll() {
+  return safe(async () => {
+    const payroll = await Payroll.find({})
+      .sort({ month: -1, createdAt: -1 })
+      .populate({ path: "employee", model: Employee, select: "name email designation department" })
+      .lean();
+    return serialize(payroll);
+  }, []);
+}
+
+export async function listAdminQuotations() {
+  return safe(async () => {
+    const quotations = await Quotation.find({}).sort({ createdAt: -1 })
+      .populate({ path: "lead", model: Lead, select: "leadNumber customerName" })
+      .populate({ path: "customer", model: User, select: "name email mobile" })
+      .populate({ path: "trip", model: Trip, select: "title destination basePrice" })
+      .lean();
+    return serialize(quotations);
+  }, []);
+}
+
+export async function listAdminLeads(campaignId?: string) {
+  return safe(async () => serialize(await Lead.find(campaignId ? { campaign: campaignId } : {})
+    .sort({ createdAt: -1 })
+    .populate({ path: "campaign", model: Campaign, select: "name channel" })
+    .populate({ path: "quotation", model: Quotation, select: "quotationNumber status totalAmount" })
+    .lean()), []);
+}
+
+export async function listAdminVisas() {
+  return safe(async () => serialize(await VisaApplication.find({}).sort({ createdAt: -1 }).lean()), []);
+}
+
+export async function listAdminExpenses() { return safe(async () => serialize(await Expense.find({}).sort({ expenseDate: -1, createdAt: -1 }).lean()), []); }
+export async function listAdminInvoices() { return safe(async () => serialize(await Invoice.find({}).sort({ issueDate: -1, createdAt: -1 }).lean()), []); }
 
 /* ----------------------------- PARTNER ----------------------------- */
 

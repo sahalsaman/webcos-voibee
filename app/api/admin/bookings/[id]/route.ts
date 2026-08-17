@@ -16,6 +16,9 @@ export async function PATCH(request: Request, { params }: Ctx) {
 
     const booking = await Booking.findById(id);
     if (!booking) return fail("Booking not found", 404);
+    if (data.totalAmount < Number(booking.partnerEarnings || 0)) {
+      return fail("Booking amount cannot be lower than the partner earnings", 400);
+    }
 
     const travelerEmail = data.travelerDetails.email.toLowerCase();
     const existingTraveler = await User.findOne({ email: travelerEmail });
@@ -43,6 +46,9 @@ export async function PATCH(request: Request, { params }: Ctx) {
       ...data.travelerDetails,
       email: travelerEmail,
     };
+    booking.totalAmount = data.totalAmount;
+    booking.sellingPrice = data.totalAmount / booking.seats;
+    booking.adminEarnings = data.totalAmount - Number(booking.partnerEarnings || 0);
     await booking.save();
 
     return ok({ id: String(booking._id), bookingNumber: booking.bookingNumber });

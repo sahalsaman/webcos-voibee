@@ -16,6 +16,7 @@ import Booking from "@/models/Booking";
 import Payment from "@/models/Payment";
 import User from "@/models/User";
 import { getSettings } from "@/models/Settings";
+import { isCustomDateTripCategory } from "@/lib/constants";
 
 export async function POST(request: Request) {
   try {
@@ -65,6 +66,13 @@ export async function POST(request: Request) {
       email: body.travelerDetails.email.toLowerCase(),
       travellers: body.travelerDetails.travellers || body.seats,
     };
+    const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
+    if (customDate && (!body.travelStartDate || !body.travelEndDate)) {
+      return fail("Travel start and end dates are required for this package", 422);
+    }
+    const travelStartDate = customDate ? new Date(body.travelStartDate!) : new Date(trip.startDate);
+    const travelEndDate = customDate ? new Date(body.travelEndDate!) : new Date(trip.endDate);
+    if (travelEndDate < travelStartDate) return fail("Travel end date must be on or after start date", 422);
 
     let travelerId: string;
     if (user?.role === "traveler") {
@@ -105,6 +113,8 @@ export async function POST(request: Request) {
       partnerTrip: partnerTripId,
       travelerDetails,
       seats: body.seats,
+      travelStartDate,
+      travelEndDate,
       basePrice: breakdown.basePrice,
       commission: breakdown.commission,
       platformFee: breakdown.platformFee,

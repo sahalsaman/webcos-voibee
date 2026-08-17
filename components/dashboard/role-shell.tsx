@@ -2,12 +2,8 @@
 
 import {
   LayoutDashboard,
-  Plane,
   CalendarCheck,
-  CalendarDays,
-  CalendarRange,
   Users,
-  UsersRound,
   Settings,
   FileBarChart,
   Wallet,
@@ -16,7 +12,10 @@ import {
   Heart,
   UserCircle,
   ShoppingBag,
-  Globe2,
+  Megaphone,
+  ContactRound,
+  Stamp,
+  Boxes,
 } from "lucide-react";
 import { DashboardShell, type NavItem } from "@/components/dashboard/shell";
 import type { AdminPortalPageKey } from "@/lib/constants";
@@ -26,13 +25,12 @@ const NAVS: Record<string, { label: string; items: NavItem[] }> = {
     label: "Admin",
     items: [
       { href: "/admin", label: "Dashboard", icon: LayoutDashboard, accessKey: "dashboard" },
-      { href: "/admin/calendar", label: "Calendar", icon: CalendarRange, accessKey: "calendar" },
-      { href: "/admin/destinations", label: "Holiday Destinations", icon: Globe2, accessKey: "destinations" },
-      { href: "/admin/packages", label: "Holiday Packages", icon: Plane, accessKey: "trips" },
-      { href: "/admin/events", label: "Major Events", icon: CalendarDays, accessKey: "events" },
       { href: "/admin/bookings", label: "Bookings", icon: CalendarCheck, accessKey: "bookings" },
-      { href: "/admin/travelers", label: "Travelers", icon: Users, accessKey: "travelers" },
-      { href: "/admin/partners", label: "Partners", icon: UsersRound, accessKey: "partners" },
+      { href: "/admin/lms", label: "LMS", icon: ContactRound, accessKey: "lms" },
+      { href: "/admin/campaigns", label: "Marketing Campaigns", icon: Megaphone, accessKey: "campaigns" },
+      { href: "/admin/visas", label: "Visa Tracking", icon: Stamp, accessKey: "visas" },
+      { href: "/admin/users", label: "Users", icon: Users, accessKey: "users" },
+      { href: "/admin/inventory", label: "Inventory", icon: Boxes, accessKey: "inventory" },
       { href: "/admin/finance", label: "Finance", icon: Wallet, accessKey: "finance" },
       { href: "/admin/reports", label: "Reports", icon: FileBarChart, accessKey: "reports" },
       { href: "/admin/settings", label: "Settings", icon: Settings, accessKey: "settings" },

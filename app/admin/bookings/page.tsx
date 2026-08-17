@@ -1,12 +1,14 @@
-import { CalendarCheck } from "lucide-react";
+import Link from "next/link";
+import { CalendarCheck, CalendarDays, List } from "lucide-react";
+import { AdminTripCalendar } from "@/components/admin/trip-calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { BookingStatusSelect } from "@/components/admin/booking-status-select";
 import { EditBookingDrawer } from "@/components/admin/edit-booking-drawer";
 import { ManualBookingDrawer } from "@/components/admin/manual-booking-drawer";
-import { listAdminBookings, listAdminBookableTrips } from "@/lib/dashboard";
-import { formatINR, formatDate } from "@/lib/utils";
+import { listAdminBookings, listAdminBookableTrips, listAdminTrips } from "@/lib/dashboard";
+import { cn, formatINR, formatDate } from "@/lib/utils";
 
 interface Row {
   _id: string;
@@ -23,10 +25,25 @@ interface Row {
   createdAt: string;
 }
 
-export default async function AdminBookingsPage() {
-  const [bookings, bookableTrips] = await Promise.all([
+type BookingsView = "list" | "calendar";
+
+export default async function AdminBookingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ c?: string | string[]; view?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  const view: BookingsView = params.view === "calendar" ? "calendar" : "list";
+  const country = typeof params.c === "string" ? params.c : undefined;
+  const viewHref = (nextView: BookingsView) => ({
+    pathname: "/admin/bookings",
+    query: { ...(country ? { c: country } : {}), view: nextView },
+  });
+
+  const [bookings, bookableTrips, trips] = await Promise.all([
     listAdminBookings() as Promise<Row[]>,
     listAdminBookableTrips(),
+    listAdminTrips(),
   ]);
 
   return (
@@ -36,10 +53,38 @@ export default async function AdminBookingsPage() {
           <h1 className="text-2xl font-bold">Bookings</h1>
           <p className="text-muted-foreground">{bookings.length} total</p>
         </div>
-        <ManualBookingDrawer trips={bookableTrips as Parameters<typeof ManualBookingDrawer>[0]["trips"]} />
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="inline-flex rounded-lg border border-border bg-muted/50 p-1" aria-label="Bookings view">
+            <Link
+              href={viewHref("list")}
+              aria-current={view === "list" ? "page" : undefined}
+              className={cn(
+                "inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors",
+                view === "list" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <List className="size-4" />
+              List
+            </Link>
+            <Link
+              href={viewHref("calendar")}
+              aria-current={view === "calendar" ? "page" : undefined}
+              className={cn(
+                "inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors",
+                view === "calendar" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <CalendarDays className="size-4" />
+              Calendar
+            </Link>
+          </div>
+          <ManualBookingDrawer trips={bookableTrips as Parameters<typeof ManualBookingDrawer>[0]["trips"]} />
+        </div>
       </div>
 
-      {bookings.length ? (
+      {view === "calendar" ? (
+        <AdminTripCalendar trips={trips as Parameters<typeof AdminTripCalendar>[0]["trips"]} />
+      ) : bookings.length ? (
         <Card>
           <CardContent className="overflow-x-auto p-0">
             <table className="w-full text-sm">

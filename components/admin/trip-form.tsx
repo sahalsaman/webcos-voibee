@@ -144,7 +144,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || "Save failed");
       toast.success(editing ? "Package updated" : "Package created");
-      router.push("/admin/packages");
+      router.push("/admin/inventory/itinerary");
       router.refresh();
     } catch (err) {
       toast.error((err as Error).message);

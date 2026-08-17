@@ -2,10 +2,9 @@
 
 import { useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CalendarDays, Loader2, MapPin, Search } from "lucide-react";
+import { Loader2, MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 const MONTH_OPTION_COUNT = 18;
@@ -61,7 +60,7 @@ export function SearchBar() {
   const requestRef = useRef(0);
 
   const [destination, setDestination] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedMonth] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);

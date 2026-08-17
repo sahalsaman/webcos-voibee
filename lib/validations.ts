@@ -5,11 +5,22 @@ import {
   OFFER_CARD_STATUSES,
   EVENT_STATUSES,
   BOOKING_STATUSES,
+  SUPPLIER_STATUSES,
+  SUPPLIER_TYPES,
+  CAMPAIGN_STATUSES,
+  CAMPAIGN_CHANNELS,
+  PAYROLL_STATUSES,
+  QUOTATION_STATUSES,
   PAYMENT_STATUSES,
   PARTNER_TYPES,
   DESTINATION_STATUSES,
   EMPLOYEE_STATUSES,
   ADMIN_PORTAL_PAGE_KEYS,
+  LEAD_SOURCES,
+  LEAD_STATUSES,
+  VISA_STATUSES,
+  EXPENSE_STATUSES,
+  INVOICE_STATUSES,
 } from "@/lib/constants";
 
 const mobile = z
@@ -188,6 +199,7 @@ export const adminManualBookingSchema = z.object({
 });
 
 export const adminBookingTravelerSchema = z.object({
+  totalAmount: z.number().nonnegative(),
   travelerDetails: z.object({
     name: z.string().trim().min(2),
     email: z.string().email(),
@@ -197,10 +209,139 @@ export const adminBookingTravelerSchema = z.object({
   }),
 });
 
+export const supplierSchema = z.object({
+  companyName: z.string().trim().min(2),
+  contactName: z.string().trim().default(""),
+  email: z.string().trim().email().optional().or(z.literal("")),
+  phone: z.string().trim().min(7),
+  type: z.enum(SUPPLIER_TYPES),
+  status: z.enum(SUPPLIER_STATUSES).default("active"),
+  country: z.string().trim().min(2),
+  countryCode: z.string().trim().length(2),
+  city: z.string().trim().default(""),
+  address: z.string().trim().default(""),
+  taxId: z.string().trim().default(""),
+  commissionRate: z.number().min(0).max(100).default(0),
+  notes: z.string().trim().default(""),
+});
+
+export const campaignSchema = z.object({
+  name: z.string().trim().min(2),
+  channel: z.enum(CAMPAIGN_CHANNELS),
+  status: z.enum(CAMPAIGN_STATUSES).default("draft"),
+  targetAudience: z.string().trim().min(2),
+  budget: z.number().nonnegative(),
+  spent: z.number().nonnegative().default(0),
+  startDate: z.string().trim().min(1),
+  endDate: z.string().trim().optional().or(z.literal("")),
+  owner: z.string().trim().default(""),
+  description: z.string().trim().default(""),
+  notes: z.string().trim().default(""),
+});
+
+export const payrollSchema = z.object({
+  employeeId: z.string().trim().min(1),
+  month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
+  basicSalary: z.number().nonnegative(),
+  allowances: z.number().nonnegative().default(0),
+  deductions: z.number().nonnegative().default(0),
+  status: z.enum(PAYROLL_STATUSES).default("draft"),
+  paymentDate: z.string().trim().optional().or(z.literal("")),
+  paymentReference: z.string().trim().default(""),
+  notes: z.string().trim().default(""),
+});
+
+export const quotationSchema = z.object({
+  leadId: z.string().trim().optional().or(z.literal("")),
+  customerId: z.string().trim().optional().or(z.literal("")),
+  itineraryId: z.string().trim().optional().or(z.literal("")),
+  customItinerary: z.array(z.object({ day: z.number().int().positive(), title: z.string().trim().min(1), description: z.string().trim().default("") })).default([]),
+  customerName: z.string().trim().min(2),
+  customerEmail: z.string().trim().email().optional().or(z.literal("")),
+  customerPhone: z.string().trim().min(7),
+  title: z.string().trim().min(2),
+  items: z.array(z.object({
+    description: z.string().trim().min(1),
+    quantity: z.number().positive(),
+    unitPrice: z.number().nonnegative(),
+  })).min(1),
+  discount: z.number().nonnegative().default(0),
+  taxRate: z.number().min(0).max(100).default(0),
+  validUntil: z.string().trim().min(1),
+  status: z.enum(QUOTATION_STATUSES).default("draft"),
+  notes: z.string().trim().default(""),
+  terms: z.string().trim().default(""),
+});
+
+export const leadSchema = z.object({
+  customerName: z.string().trim().min(2),
+  email: z.string().trim().email().optional().or(z.literal("")),
+  phone: z.string().trim().min(7),
+  destination: z.string().trim().default(""),
+  travelDate: z.string().trim().optional().or(z.literal("")),
+  travelers: z.number().int().positive().default(1),
+  budget: z.number().nonnegative().default(0),
+  source: z.enum(LEAD_SOURCES),
+  status: z.enum(LEAD_STATUSES).default("new"),
+  campaignId: z.string().trim().optional().or(z.literal("")),
+  assignedTo: z.string().trim().default(""),
+  notes: z.string().trim().default(""),
+}).superRefine((data, ctx) => {
+  if (data.source === "Marketing Campaign" && !data.campaignId) {
+    ctx.addIssue({ code: "custom", path: ["campaignId"], message: "Select the source campaign" });
+  }
+});
+
+export const visaSchema = z.object({
+  applicantName: z.string().trim().min(2),
+  phone: z.string().trim().min(7),
+  email: z.string().trim().email().optional().or(z.literal("")),
+  passportNumber: z.string().trim().min(4),
+  destinationCountry: z.string().trim().min(2),
+  visaType: z.string().trim().min(2),
+  status: z.enum(VISA_STATUSES).default("documents_pending"),
+  submittedAt: z.string().trim().optional().or(z.literal("")),
+  expectedAt: z.string().trim().optional().or(z.literal("")),
+  completedAt: z.string().trim().optional().or(z.literal("")),
+  bookingNumber: z.string().trim().default(""),
+  assignedTo: z.string().trim().default(""),
+  notes: z.string().trim().default(""),
+});
+
+export const expenseSchema = z.object({
+  title: z.string().trim().min(2),
+  category: z.string().trim().min(2),
+  vendor: z.string().trim().default(""),
+  amount: z.number().positive(),
+  expenseDate: z.string().trim().min(1),
+  status: z.enum(EXPENSE_STATUSES).default("pending"),
+  paymentReference: z.string().trim().default(""),
+  notes: z.string().trim().default(""),
+});
+
+export const invoiceSchema = z.object({
+  customerName: z.string().trim().min(2),
+  customerEmail: z.string().trim().email().optional().or(z.literal("")),
+  customerPhone: z.string().trim().default(""),
+  description: z.string().trim().min(2),
+  amount: z.number().positive(),
+  issueDate: z.string().trim().min(1),
+  dueDate: z.string().trim().min(1),
+  status: z.enum(INVOICE_STATUSES).default("draft"),
+  bookingNumber: z.string().trim().default(""),
+  notes: z.string().trim().default(""),
+}).superRefine((data, ctx) => {
+  if (data.issueDate && data.dueDate && data.dueDate < data.issueDate) {
+    ctx.addIssue({ code: "custom", path: ["dueDate"], message: "Due date cannot be before issue date" });
+  }
+});
+
 export const bookingSchema = z.object({
   tripId: z.string().min(1),
   partnerSlug: z.string().optional(),
   seats: z.number().int().positive().max(50),
+  travelStartDate: z.string().trim().optional().or(z.literal("")),
+  travelEndDate: z.string().trim().optional().or(z.literal("")),
   travelerDetails: z.object({
     name: z.string().trim().min(2),
     email: z.string().email(),

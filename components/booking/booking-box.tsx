@@ -60,6 +60,8 @@ export function BookingBox({
     email: session?.user?.email ?? "",
     mobile: "",
     notes: "",
+    travelStartDate: "",
+    travelEndDate: "",
   });
 
   const soldOut = customDate ? false : availableSeats <= 0;
@@ -75,6 +77,14 @@ export function BookingBox({
       toast.error("Please enter your name, email and a valid 10-digit mobile.");
       return;
     }
+    if (customDate && (!form.travelStartDate || !form.travelEndDate)) {
+      toast.error("Please select your travel start and end dates.");
+      return;
+    }
+    if (customDate && new Date(form.travelEndDate) < new Date(form.travelStartDate)) {
+      toast.error("Travel end date must be on or after the start date.");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -85,7 +95,15 @@ export function BookingBox({
           tripId,
           partnerSlug,
           seats,
-          travelerDetails: { ...form, travellers: seats },
+          travelStartDate: form.travelStartDate || undefined,
+          travelEndDate: form.travelEndDate || undefined,
+          travelerDetails: {
+            name: form.name,
+            email: form.email,
+            mobile: form.mobile,
+            notes: form.notes,
+            travellers: seats,
+          },
         }),
       });
       const data = await res.json();
@@ -216,9 +234,21 @@ export function BookingBox({
               </div>
             </div>
 
-            <div className="grid gap-3">
+          <div className="grid gap-3">
+              {customDate ? (
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="bk-start-date" className="mb-1 block">Start date <span className="text-destructive">*</span></Label>
+                    <Input id="bk-start-date" type="date" min={new Date().toISOString().slice(0, 10)} value={form.travelStartDate} onChange={(e) => setField("travelStartDate", e.target.value)} required />
+                  </div>
+                  <div>
+                    <Label htmlFor="bk-end-date" className="mb-1 block">End date <span className="text-destructive">*</span></Label>
+                    <Input id="bk-end-date" type="date" min={form.travelStartDate || new Date().toISOString().slice(0, 10)} value={form.travelEndDate} onChange={(e) => setField("travelEndDate", e.target.value)} required />
+                  </div>
+                </div>
+              ) : null}
               <div>
-                <Label htmlFor="bk-name" className="mb-1 block">Full name</Label>
+                <Label htmlFor="bk-name" className="mb-1 block">Full name <span className="text-destructive">*</span></Label>
                 <Input
                   id="bk-name"
                   value={form.name}
@@ -228,7 +258,7 @@ export function BookingBox({
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label htmlFor="bk-email" className="mb-1 block">Email</Label>
+                  <Label htmlFor="bk-email" className="mb-1 block">Email <span className="text-destructive">*</span></Label>
                   <Input
                     id="bk-email"
                     type="email"
@@ -238,7 +268,7 @@ export function BookingBox({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="bk-mobile" className="mb-1 block">Mobile</Label>
+                  <Label htmlFor="bk-mobile" className="mb-1 block">Mobile <span className="text-destructive">*</span></Label>
                   <Input
                     id="bk-mobile"
                     value={form.mobile}

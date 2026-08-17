@@ -27,6 +27,15 @@ export async function createOrder(amountRupees: number, receipt: string) {
   });
 }
 
+export async function refundPayment(paymentId: string, amountRupees?: number) {
+  const rzp = getRazorpay();
+  if (!rzp) return null;
+  if (amountRupees !== undefined) {
+    return rzp.payments.refund(paymentId, { amount: Math.round(amountRupees * 100) });
+  }
+  return rzp.payments.refund(paymentId, {});
+}
+
 /** HMAC-SHA256 verification of the Razorpay checkout response. */
 export function verifySignature(orderId: string, paymentId: string, signature: string) {
   if (!keySecret) return false;

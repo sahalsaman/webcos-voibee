@@ -11,6 +11,17 @@ import type {
   EVENT_STATUSES,
   EmployeeStatus,
   AdminPortalPageKey,
+  SupplierStatus,
+  SupplierType,
+  CampaignStatus,
+  CampaignChannel,
+  PayrollStatus,
+  QuotationStatus,
+  LeadStatus,
+  LeadSource,
+  VisaStatus,
+  ExpenseStatus,
+  InvoiceStatus,
 } from "@/lib/constants";
 
 /** Plain (serialized) shapes returned to client components. */
@@ -135,6 +146,122 @@ export interface EmployeeDTO {
   portalAccess?: boolean;
   portalPages?: AdminPortalPageKey[];
   notes?: string;
+  createdAt: string;
+}
+
+export interface SupplierDTO {
+  _id: string;
+  companyName: string;
+  contactName: string;
+  email?: string;
+  phone: string;
+  type: SupplierType;
+  status: SupplierStatus;
+  country: string;
+  countryCode: string;
+  city: string;
+  address: string;
+  taxId: string;
+  commissionRate: number;
+  notes: string;
+  createdAt: string;
+}
+
+export interface CampaignDTO {
+  _id: string;
+  name: string;
+  channel: CampaignChannel;
+  status: CampaignStatus;
+  targetAudience: string;
+  budget: number;
+  spent: number;
+  startDate: string;
+  endDate?: string | null;
+  owner: string;
+  description: string;
+  notes: string;
+  createdAt: string;
+  leadCount?: number;
+}
+
+export interface LeadDTO {
+  _id: string;
+  leadNumber: string;
+  customerName: string;
+  email?: string;
+  phone: string;
+  destination: string;
+  travelDate?: string | null;
+  travelers: number;
+  budget: number;
+  source: LeadSource;
+  status: LeadStatus;
+  campaign?: string | Pick<CampaignDTO, "_id" | "name" | "channel"> | null;
+  quotation?: string | Pick<QuotationDTO, "_id" | "quotationNumber" | "status" | "totalAmount"> | null;
+  assignedTo: string;
+  notes: string;
+  createdAt: string;
+}
+
+export interface VisaApplicationDTO {
+  _id: string;
+  visaNumber: string;
+  applicantName: string;
+  phone: string;
+  email?: string;
+  passportNumber: string;
+  destinationCountry: string;
+  visaType: string;
+  status: VisaStatus;
+  submittedAt?: string | null;
+  expectedAt?: string | null;
+  completedAt?: string | null;
+  bookingNumber: string;
+  assignedTo: string;
+  notes: string;
+  createdAt: string;
+}
+
+export interface ExpenseDTO { _id: string; expenseNumber: string; title: string; category: string; vendor: string; amount: number; expenseDate: string; status: ExpenseStatus; paymentReference: string; notes: string; createdAt: string; }
+export interface InvoiceDTO { _id: string; invoiceNumber: string; customerName: string; customerEmail?: string; customerPhone: string; description: string; amount: number; issueDate: string; dueDate: string; status: InvoiceStatus; bookingNumber: string; notes: string; createdAt: string; }
+
+export interface PayrollDTO {
+  _id: string;
+  employee: string | Pick<EmployeeDTO, "_id" | "name" | "email" | "designation" | "department">;
+  month: string;
+  basicSalary: number;
+  allowances: number;
+  deductions: number;
+  netPay: number;
+  status: PayrollStatus;
+  paymentDate?: string | null;
+  paymentReference: string;
+  notes: string;
+  createdAt: string;
+}
+
+export interface QuotationDTO {
+  _id: string;
+  quotationNumber: string;
+  shareToken: string;
+  lead?: string | Pick<LeadDTO, "_id" | "leadNumber" | "customerName"> | null;
+  customer?: string | Pick<UserDTO, "_id" | "name" | "email" | "mobile"> | null;
+  trip?: string | Pick<TripDTO, "_id" | "title" | "destination" | "basePrice"> | null;
+  customItinerary?: ItineraryItem[];
+  customerName: string;
+  customerEmail?: string;
+  customerPhone: string;
+  title: string;
+  items: { description: string; quantity: number; unitPrice: number; amount: number }[];
+  subtotal: number;
+  discount: number;
+  taxRate: number;
+  taxAmount: number;
+  totalAmount: number;
+  validUntil: string;
+  status: QuotationStatus;
+  notes: string;
+  terms: string;
   createdAt: string;
 }
 
