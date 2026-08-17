@@ -7,6 +7,7 @@ import { shortId } from "@/lib/utils";
 import "@/models";
 import Quotation from "@/models/Quotation";
 import Lead from "@/models/Lead";
+import { getSettings } from "@/models/Settings";
 
 export async function GET() {
   try {
@@ -25,8 +26,13 @@ export async function POST(request: Request) {
     const data = quotationSchema.parse(await request.json());
     const totals = calculateQuotation(data.items, data.discount, data.taxRate);
     await connectDB();
+    const settings = await getSettings();
     const quotation = await Quotation.create({
       ...data,
+      terms: data.terms || settings.quotationTerms || "",
+      policy: data.policy || settings.quotationPolicy || "",
+      importantInformation: data.importantInformation || settings.quotationImportantInformation || "",
+      otherInformation: data.otherInformation || settings.quotationOtherInformation || "",
       ...totals,
       lead: data.leadId || null,
       customer: data.customerId || null,

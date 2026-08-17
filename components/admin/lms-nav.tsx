@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, UserRoundSearch } from "lucide-react";
+import { BedDouble, FileText, Stamp, Tickets, UserRoundSearch } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
   { href: "/admin/lms/leads", label: "Leads", icon: UserRoundSearch },
   { href: "/admin/lms/quotations", label: "Quotations", icon: FileText },
+  { href: "/admin/lms/tickets", label: "Tickets", icon: Tickets },
+  { href: "/admin/lms/hotels", label: "Hotel Reservations", icon: BedDouble },
+  { href: "/admin/lms/visas", label: "Visa Tracking", icon: Stamp },
 ];
 
 export function LmsNav() {

@@ -28,7 +28,7 @@ export function CampaignDrawer({ campaign }: { campaign?: CampaignDTO }) {
           <aside role="dialog" aria-modal="true" aria-labelledby="campaign-drawer-title" className="absolute right-0 top-0 flex h-full w-full max-w-2xl flex-col border-l border-border bg-background shadow-2xl">
             <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <div className="min-w-0 pr-3">
-                <h2 id="campaign-drawer-title" className="text-lg font-bold">{editing ? "Edit Campaign" : "Add Campaign"}</h2>
+                <h2 id="campaign-drawer-title" className="text-lg text-left font-bold">{editing ? "Edit Campaign" : "Add Campaign"}</h2>
                 <p className="truncate text-sm text-muted-foreground">{editing ? campaign!.name : "Plan and track a marketing campaign"}</p>
               </div>
               <Button type="button" variant="ghost" size="icon" onClick={() => setOpen(false)} aria-label="Close"><X className="size-5" /></Button>

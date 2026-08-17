@@ -1,0 +1,2 @@
+import { PayrollSection } from "@/components/admin/payroll-section"; import { listAdminEmployees, listAdminPayroll } from "@/lib/dashboard"; import type { EmployeeDTO, PayrollDTO } from "@/types";
+export default async function HrmPayrollPage(){const [employees,payroll]=await Promise.all([listAdminEmployees() as Promise<EmployeeDTO[]>,listAdminPayroll() as Promise<PayrollDTO[]>]);return <PayrollSection employees={employees} payroll={payroll}/>}

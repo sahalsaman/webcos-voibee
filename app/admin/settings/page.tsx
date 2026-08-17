@@ -1,31 +1,28 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Megaphone, Settings, UserRound, UsersRound, WalletCards } from "lucide-react";
+import { FileText, Megaphone, Settings, UserRound } from "lucide-react";
 import { connectDB } from "@/lib/db";
 import { getSettings } from "@/models/Settings";
-import { formatDate, formatINR, serialize } from "@/lib/utils";
+import { serialize } from "@/lib/utils";
 import { SettingsForm } from "@/components/admin/settings-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { OfferCardRowActions } from "@/components/admin/offer-card-row-actions";
-import { EmployeeRowActions } from "@/components/admin/employee-row-actions";
 import { OfferCardDrawer } from "@/components/admin/offer-card-drawer";
-import { EmployeeDrawer } from "@/components/admin/employee-drawer";
 import { ChangePasswordForm } from "@/components/admin/change-password-form";
-import { PayrollSection } from "@/components/admin/payroll-section";
 import { DEFAULT_SETTINGS } from "@/lib/constants";
 import { getCurrentUser } from "@/lib/session";
-import { listAdminEmployees, listAdminOfferCards, listAdminPayroll } from "@/lib/dashboard";
-import type { EmployeeDTO, OfferCardDTO, PayrollDTO } from "@/types";
+import { listAdminOfferCards } from "@/lib/dashboard";
+import type { OfferCardDTO } from "@/types";
+import { QuotationSettingsForm } from "@/components/admin/quotation-settings-form";
 
 const OFFER_FALLBACK = "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=200&q=60";
 
 const SETTINGS_SECTIONS = [
   { key: "platform", label: "Platform Configuration", icon: Settings },
+  { key: "quotation", label: "Quotation Setup", icon: FileText },
   { key: "offers", label: "Offer Cards", icon: Megaphone },
-  { key: "employees", label: "Employees", icon: UsersRound },
-  { key: "payroll", label: "Employee Payroll", icon: WalletCards },
   { key: "profile", label: "Profile", icon: UserRound },
 ] as const;
 
@@ -60,17 +57,13 @@ export default async function AdminSettingsPage({
     /* fall back to defaults if DB unavailable */
   }
 
-  const [offers, employees, payroll] = await Promise.all([
-    activeSection === "offers" ? listAdminOfferCards() : Promise.resolve([]),
-    activeSection === "employees" || activeSection === "payroll" ? listAdminEmployees() : Promise.resolve([]),
-    activeSection === "payroll" ? listAdminPayroll() : Promise.resolve([]),
-  ]);
+  const offers = activeSection === "offers" ? await listAdminOfferCards() : [];
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">Manage platform, offers, employees and profile access</p>
+        <p className="text-muted-foreground">Manage platform, quotation defaults, homepage offers and profile access</p>
       </div>
 
       <SettingsNav activeSection={activeSection} />
@@ -89,9 +82,14 @@ export default async function AdminSettingsPage({
 
       {activeSection === "offers" ? <OfferCardsSection offers={offers as OfferCardDTO[]} /> : null}
 
-      {activeSection === "employees" ? <EmployeesSection employees={employees as EmployeeDTO[]} /> : null}
-
-      {activeSection === "payroll" ? <PayrollSection payroll={payroll as PayrollDTO[]} employees={employees as EmployeeDTO[]} /> : null}
+      {activeSection === "quotation" ? (
+        <QuotationSettingsForm settings={{
+          quotationTerms: settings.quotationTerms,
+          quotationPolicy: settings.quotationPolicy,
+          quotationImportantInformation: settings.quotationImportantInformation,
+          quotationOtherInformation: settings.quotationOtherInformation,
+        }} />
+      ) : null}
 
       {activeSection === "profile" ? <ChangePasswordForm email={user?.email} /> : null}
     </div>
@@ -185,69 +183,6 @@ function OfferCardsSection({ offers }: { offers: OfferCardDTO[] }) {
           title="No offer cards yet"
           description="Create up to four active banners for the homepage carousel."
           action={<OfferCardDrawer />}
-        />
-      )}
-    </div>
-  );
-}
-
-function EmployeesSection({ employees }: { employees: EmployeeDTO[] }) {
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold">Employees</h2>
-          <p className="text-muted-foreground">Manage internal team members, salaries and portal access</p>
-        </div>
-        <EmployeeDrawer />
-      </div>
-
-      {employees.length ? (
-        <Card>
-          <CardContent className="overflow-x-auto p-0">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-muted-foreground">
-                  <th className="p-4 font-medium">Employee</th>
-                  <th className="p-4 font-medium">Role</th>
-                  <th className="p-4 font-medium">Portal</th>
-                  <th className="p-4 font-medium">Salary</th>
-                  <th className="p-4 font-medium">Joined</th>
-                  <th className="p-4 font-medium">Status</th>
-                  <th className="p-4 text-right font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {employees.map((employee) => (
-                  <tr key={employee._id} className="border-b border-border/50 hover:bg-secondary/40">
-                    <td className="p-4">
-                      <p className="font-medium">{employee.name}</p>
-                      <p className="text-xs text-muted-foreground">{employee.email} · {employee.mobile || "no mobile"}</p>
-                    </td>
-                    <td className="p-4">
-                      <p>{employee.designation}</p>
-                      <p className="text-xs text-muted-foreground">{employee.department}</p>
-                    </td>
-                    <td className="p-4">
-                      <p className="font-medium">{employee.portalAccess ? "Enabled" : "No access"}</p>
-                      <p className="text-xs text-muted-foreground">{employee.portalAccess ? (employee.portalPages?.length || 0) + " pages" : "-"}</p>
-                    </td>
-                    <td className="p-4 font-medium">{formatINR(employee.salary)}</td>
-                    <td className="p-4 text-muted-foreground">{employee.joinedAt ? formatDate(employee.joinedAt) : "-"}</td>
-                    <td className="p-4"><StatusBadge status={employee.status} /></td>
-                    <td className="p-4"><EmployeeRowActions employee={employee} /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-      ) : (
-        <EmptyState
-          icon={UsersRound}
-          title="No employees yet"
-          description="Add employees to track team, salary and status."
-          action={<EmployeeDrawer />}
         />
       )}
     </div>

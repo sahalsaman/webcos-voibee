@@ -47,15 +47,28 @@ export const QUOTATION_STATUSES = ["draft", "sent", "accepted", "rejected", "exp
 export const LEAD_STATUSES = ["new", "contacted", "qualified", "quoted", "won", "lost"] as const;
 export const LEAD_SOURCES = ["Marketing Campaign", "Website", "WhatsApp", "Phone", "Referral", "Walk-in", "Other"] as const;
 export const VISA_STATUSES = ["documents_pending", "documents_received", "submitted", "under_review", "approved", "rejected", "completed"] as const;
+export const TICKET_TYPES = ["flight", "train", "bus", "cruise", "other"] as const;
+export const TICKET_STATUSES = ["requested", "on_hold", "booked", "ticketed", "cancelled", "refunded"] as const;
+export const HOTEL_RESERVATION_STATUSES = ["requested", "on_hold", "confirmed", "checked_in", "checked_out", "cancelled"] as const;
 export const EXPENSE_STATUSES = ["pending", "approved", "paid", "cancelled"] as const;
 export const INVOICE_STATUSES = ["draft", "sent", "paid", "overdue", "cancelled"] as const;
+export const REPUTATION_PLATFORMS = ["Google", "Tripadvisor", "Facebook", "Instagram", "Trustpilot", "Website", "Other"] as const;
+export const REPUTATION_SENTIMENTS = ["positive", "neutral", "negative"] as const;
+export const REPUTATION_STATUSES = ["new", "reviewing", "response_drafted", "responded", "escalated", "resolved"] as const;
+export const ATTENDANCE_STATUSES = ["present", "absent", "late", "half_day", "work_from_home", "on_leave"] as const;
+export const PERFORMANCE_STATUSES = ["draft", "in_review", "completed"] as const;
+export const LEAVE_TYPES = ["annual", "sick", "casual", "unpaid", "maternity", "paternity", "other"] as const;
+export const LEAVE_REQUEST_STATUSES = ["pending", "approved", "rejected", "cancelled"] as const;
+export const HR_TASK_PRIORITIES = ["low", "medium", "high", "urgent"] as const;
+export const HR_TASK_STATUSES = ["todo", "in_progress", "blocked", "completed", "cancelled"] as const;
 
 export const ADMIN_PORTAL_PAGES = [
   { key: "dashboard", label: "Dashboard", href: "/admin" },
   { key: "bookings", label: "Bookings", href: "/admin/bookings" },
   { key: "lms", label: "LMS", href: "/admin/lms" },
   { key: "campaigns", label: "Marketing Campaigns", href: "/admin/campaigns" },
-  { key: "visas", label: "Visa Tracking", href: "/admin/visas" },
+  { key: "reputation", label: "Reputation Management", href: "/admin/reputation" },
+  { key: "hrm", label: "HRM", href: "/admin/hrm" },
   { key: "users", label: "Users", href: "/admin/users" },
   { key: "inventory", label: "Inventory", href: "/admin/inventory" },
   { key: "finance", label: "Finance", href: "/admin/finance" },
@@ -77,9 +90,9 @@ export function suggestedEmployeePortalPages(designation: string) {
   const text = designation.toLowerCase();
   if (text.includes("finance") || text.includes("account")) return ["dashboard", "bookings", "users", "finance", "reports"];
   if (text.includes("sales") || text.includes("booking")) return ["dashboard", "bookings", "lms", "users"];
-  if (text.includes("content") || text.includes("marketing")) return ["dashboard", "inventory", "campaigns", "lms", "reports"];
-  if (text.includes("operation") || text.includes("trip") || text.includes("package")) return ["dashboard", "inventory", "bookings", "visas", "users"];
-  if (text.includes("hr") || text.includes("human")) return ["dashboard", "settings", "reports"];
+  if (text.includes("content") || text.includes("marketing")) return ["dashboard", "inventory", "campaigns", "reputation", "lms", "reports"];
+  if (text.includes("operation") || text.includes("trip") || text.includes("package")) return ["dashboard", "inventory", "bookings", "lms", "users"];
+  if (text.includes("hr") || text.includes("human")) return ["dashboard", "hrm", "settings", "reports"];
   return ["dashboard"];
 }
 export type TripStatus = (typeof TRIP_STATUSES)[number];
@@ -94,8 +107,20 @@ export type QuotationStatus = (typeof QUOTATION_STATUSES)[number];
 export type LeadStatus = (typeof LEAD_STATUSES)[number];
 export type LeadSource = (typeof LEAD_SOURCES)[number];
 export type VisaStatus = (typeof VISA_STATUSES)[number];
+export type TicketType = (typeof TICKET_TYPES)[number];
+export type TicketStatus = (typeof TICKET_STATUSES)[number];
+export type HotelReservationStatus = (typeof HOTEL_RESERVATION_STATUSES)[number];
 export type ExpenseStatus = (typeof EXPENSE_STATUSES)[number];
 export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
+export type ReputationPlatform = (typeof REPUTATION_PLATFORMS)[number];
+export type ReputationSentiment = (typeof REPUTATION_SENTIMENTS)[number];
+export type ReputationStatus = (typeof REPUTATION_STATUSES)[number];
+export type AttendanceStatus = (typeof ATTENDANCE_STATUSES)[number];
+export type PerformanceStatus = (typeof PERFORMANCE_STATUSES)[number];
+export type LeaveType = (typeof LEAVE_TYPES)[number];
+export type LeaveRequestStatus = (typeof LEAVE_REQUEST_STATUSES)[number];
+export type HrTaskPriority = (typeof HR_TASK_PRIORITIES)[number];
+export type HrTaskStatus = (typeof HR_TASK_STATUSES)[number];
 
 export const COUNTRY_OPTIONS = [
   { name: "India", code: "IN", currency: "INR", symbol: "₹" },
@@ -187,4 +212,8 @@ export const DEFAULT_SETTINGS = {
   platformFeeFlat: 0, // flat INR per booking retained by platform
   currency: "INR",
   minWithdrawal: 1000,
+  quotationTerms: "",
+  quotationPolicy: "",
+  quotationImportantInformation: "",
+  quotationOtherInformation: "",
 };

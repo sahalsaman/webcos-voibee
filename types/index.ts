@@ -20,8 +20,13 @@ import type {
   LeadStatus,
   LeadSource,
   VisaStatus,
+  TicketType, TicketStatus, HotelReservationStatus,
   ExpenseStatus,
   InvoiceStatus,
+  ReputationPlatform,
+  ReputationSentiment,
+  ReputationStatus,
+  AttendanceStatus, PerformanceStatus, LeaveType, LeaveRequestStatus, HrTaskPriority, HrTaskStatus,
 } from "@/lib/constants";
 
 /** Plain (serialized) shapes returned to client components. */
@@ -222,8 +227,17 @@ export interface VisaApplicationDTO {
   createdAt: string;
 }
 
+export interface TicketTrackingDTO { _id:string; trackingNumber:string; customerName:string; phone:string; ticketType:TicketType; provider:string; referenceNumber:string; origin:string; destination:string; departureAt:string; arrivalAt?:string|null; travelers:number; amount:number; status:TicketStatus; assignedTo:string; notes:string; createdAt:string; }
+export interface HotelReservationDTO { _id:string; trackingNumber:string; customerName:string; phone:string; hotelName:string; destination:string; confirmationNumber:string; checkIn:string; checkOut:string; rooms:number; guests:number; roomType:string; mealPlan:string; amount:number; status:HotelReservationStatus; assignedTo:string; notes:string; createdAt:string; }
+
 export interface ExpenseDTO { _id: string; expenseNumber: string; title: string; category: string; vendor: string; amount: number; expenseDate: string; status: ExpenseStatus; paymentReference: string; notes: string; createdAt: string; }
 export interface InvoiceDTO { _id: string; invoiceNumber: string; customerName: string; customerEmail?: string; customerPhone: string; description: string; amount: number; issueDate: string; dueDate: string; status: InvoiceStatus; bookingNumber: string; notes: string; createdAt: string; }
+export interface ReputationDTO { _id: string; platform: ReputationPlatform; reviewerName: string; rating: number; reviewText: string; reviewUrl: string; sentiment: ReputationSentiment; status: ReputationStatus; assignedTo: string; responseText: string; reviewedAt: string; respondedAt?: string | null; notes: string; createdAt: string; }
+type EmployeeRef = string | Pick<EmployeeDTO, "_id" | "name" | "email" | "designation" | "department">;
+export interface AttendanceDTO { _id:string; employee:EmployeeRef; date:string; status:AttendanceStatus; checkIn:string; checkOut:string; workHours:number; notes:string; }
+export interface PerformanceReviewDTO { _id:string; employee:EmployeeRef; period:string; score:number; goals:string; achievements:string; feedback:string; reviewer:string; status:PerformanceStatus; createdAt:string; }
+export interface LeaveRequestDTO { _id:string; employee:EmployeeRef; type:LeaveType; startDate:string; endDate:string; days:number; status:LeaveRequestStatus; reason:string; adminNotes:string; }
+export interface HrTaskDTO { _id:string; employee:EmployeeRef; title:string; description:string; dueDate:string; priority:HrTaskPriority; status:HrTaskStatus; assignedBy:string; completedAt?:string|null; }
 
 export interface PayrollDTO {
   _id: string;
@@ -262,6 +276,9 @@ export interface QuotationDTO {
   status: QuotationStatus;
   notes: string;
   terms: string;
+  policy: string;
+  importantInformation: string;
+  otherInformation: string;
   createdAt: string;
 }
 

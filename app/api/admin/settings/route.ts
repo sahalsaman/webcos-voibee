@@ -25,6 +25,10 @@ export async function PATCH(request: Request) {
       "platformFeeFlat",
       "currency",
       "minWithdrawal",
+      "quotationTerms",
+      "quotationPolicy",
+      "quotationImportantInformation",
+      "quotationOtherInformation",
     ] as const;
     const update: Record<string, unknown> = {};
     for (const k of allowed) {

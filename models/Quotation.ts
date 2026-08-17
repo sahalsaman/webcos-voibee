@@ -33,6 +33,9 @@ const QuotationSchema = new Schema(
     status: { type: String, enum: QUOTATION_STATUSES, default: "draft", index: true },
     notes: { type: String, default: "", trim: true },
     terms: { type: String, default: "", trim: true },
+    policy: { type: String, default: "", trim: true },
+    importantInformation: { type: String, default: "", trim: true },
+    otherInformation: { type: String, default: "", trim: true },
   },
   { timestamps: true },
 );

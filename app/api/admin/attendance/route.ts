@@ -1,0 +1,2 @@
+import {connectDB} from "@/lib/db";import {handleError,ok,requireApiRole} from "@/lib/api";import {attendanceSchema} from "@/lib/validations";import Attendance from "@/models/Attendance";
+export async function POST(r:Request){try{await requireApiRole(["admin"]);const d=attendanceSchema.parse(await r.json());await connectDB();const x=await Attendance.create({...d,employee:d.employeeId,date:new Date(d.date)});return ok({id:String(x._id)},201)}catch(e){return handleError(e)}}

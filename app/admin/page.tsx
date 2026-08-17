@@ -6,6 +6,11 @@ import {
   IndianRupee,
   Users,
   UserCircle,
+  Star,
+  MessageSquareWarning,
+  ContactRound,
+  Boxes,
+  Wallet,
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { AreaTrendChart, BarRankChart } from "@/components/dashboard/charts";
@@ -13,7 +18,7 @@ import { StatusBadge } from "@/components/dashboard/status-badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
-import { getAdminStats, getAdminCharts, getRecentBookings } from "@/lib/dashboard";
+import { getAdminStats, getAdminCharts, getRecentBookings, getAdminReputationSummary } from "@/lib/dashboard";
 import { formatINR, formatDate } from "@/lib/utils";
 
 interface RecentBooking {
@@ -28,10 +33,11 @@ interface RecentBooking {
 }
 
 export default async function AdminDashboard() {
-  const [stats, charts, recent] = await Promise.all([
+  const [stats, charts, recent, reputation] = await Promise.all([
     getAdminStats(),
     getAdminCharts(),
     getRecentBookings(6),
+    getAdminReputationSummary(),
   ]);
   const bookings = recent as RecentBooking[];
 
@@ -42,14 +48,23 @@ export default async function AdminDashboard() {
         <p className="text-muted-foreground">Platform overview & analytics</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Total Packages" value={stats.trips} icon={Plane} hint={`${stats.activeTrips} active`} />
         <StatCard label="Active Packages" value={stats.activeTrips} icon={PlaneTakeoff} accent="success" />
         <StatCard label="Total Bookings" value={stats.bookings} icon={CalendarCheck} accent="accent" />
         <StatCard label="Gross Revenue" value={formatINR(stats.revenue)} icon={IndianRupee} accent="success" hint={`${formatINR(stats.adminRevenue)} to operator`} />
         <StatCard label="Partners" value={stats.partners} icon={Users} accent="primary" />
         <StatCard label="Travelers" value={stats.travelers} icon={UserCircle} accent="warning" />
+        <StatCard label="Average Rating" value={reputation.averageRating ? `${reputation.averageRating}/5` : "—"} icon={Star} accent="warning" hint={`${reputation.total} reviews tracked`} />
+        <StatCard label="ORM Attention" value={reputation.unresolved} icon={MessageSquareWarning} accent="accent" hint={`${reputation.negative} negative open`} />
       </div>
+
+      <Card><CardHeader><CardTitle>Operations workspace</CardTitle></CardHeader><CardContent className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{[
+        { href: "/admin/lms", label: "Leads & quotations", description: "Follow enquiries and prepare offers", icon: ContactRound },
+        { href: "/admin/inventory", label: "Inventory", description: "Manage itineraries and suppliers", icon: Boxes },
+        { href: "/admin/finance", label: "Finance", description: "Review earnings, expenses and invoices", icon: Wallet },
+        { href: "/admin/reputation", label: "Reputation", description: "Respond to reviews and escalations", icon: Star },
+      ].map((item) => <Link key={item.href} href={item.href} className="rounded-xl border border-border p-4 transition-colors hover:bg-secondary/50"><item.icon className="mb-3 size-5 text-primary"/><p className="font-semibold">{item.label}</p><p className="mt-1 text-xs text-muted-foreground">{item.description}</p></Link>)}</CardContent></Card>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <AreaTrendChart title="Booking Trends" data={charts.trend} xKey="month" yKey="bookings" />

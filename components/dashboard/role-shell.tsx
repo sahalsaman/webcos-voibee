@@ -14,8 +14,9 @@ import {
   ShoppingBag,
   Megaphone,
   ContactRound,
-  Stamp,
   Boxes,
+  Star,
+  BriefcaseBusiness,
 } from "lucide-react";
 import { DashboardShell, type NavItem } from "@/components/dashboard/shell";
 import type { AdminPortalPageKey } from "@/lib/constants";
@@ -26,11 +27,12 @@ const NAVS: Record<string, { label: string; items: NavItem[] }> = {
     items: [
       { href: "/admin", label: "Dashboard", icon: LayoutDashboard, accessKey: "dashboard" },
       { href: "/admin/bookings", label: "Bookings", icon: CalendarCheck, accessKey: "bookings" },
-      { href: "/admin/lms", label: "LMS", icon: ContactRound, accessKey: "lms" },
-      { href: "/admin/campaigns", label: "Marketing Campaigns", icon: Megaphone, accessKey: "campaigns" },
-      { href: "/admin/visas", label: "Visa Tracking", icon: Stamp, accessKey: "visas" },
+      { href: "/admin/lms", label: "LMS & OS", icon: ContactRound, accessKey: "lms" },
       { href: "/admin/users", label: "Users", icon: Users, accessKey: "users" },
       { href: "/admin/inventory", label: "Inventory", icon: Boxes, accessKey: "inventory" },
+      { href: "/admin/campaigns", label: "Marketing Campaigns", icon: Megaphone, accessKey: "campaigns" },
+      { href: "/admin/reputation", label: "ORM", icon: Star, accessKey: "reputation" },
+      { href: "/admin/hrm", label: "HRM", icon: BriefcaseBusiness, accessKey: "hrm" },
       { href: "/admin/finance", label: "Finance", icon: Wallet, accessKey: "finance" },
       { href: "/admin/reports", label: "Reports", icon: FileBarChart, accessKey: "reports" },
       { href: "/admin/settings", label: "Settings", icon: Settings, accessKey: "settings" },

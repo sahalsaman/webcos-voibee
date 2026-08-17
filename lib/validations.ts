@@ -19,8 +19,13 @@ import {
   LEAD_SOURCES,
   LEAD_STATUSES,
   VISA_STATUSES,
+  TICKET_TYPES, TICKET_STATUSES, HOTEL_RESERVATION_STATUSES,
   EXPENSE_STATUSES,
   INVOICE_STATUSES,
+  REPUTATION_PLATFORMS,
+  REPUTATION_SENTIMENTS,
+  REPUTATION_STATUSES,
+  ATTENDANCE_STATUSES, PERFORMANCE_STATUSES, LEAVE_TYPES, LEAVE_REQUEST_STATUSES, HR_TASK_PRIORITIES, HR_TASK_STATUSES,
 } from "@/lib/constants";
 
 const mobile = z
@@ -271,6 +276,9 @@ export const quotationSchema = z.object({
   status: z.enum(QUOTATION_STATUSES).default("draft"),
   notes: z.string().trim().default(""),
   terms: z.string().trim().default(""),
+  policy: z.string().trim().default(""),
+  importantInformation: z.string().trim().default(""),
+  otherInformation: z.string().trim().default(""),
 });
 
 export const leadSchema = z.object({
@@ -308,6 +316,9 @@ export const visaSchema = z.object({
   notes: z.string().trim().default(""),
 });
 
+export const ticketTrackingSchema = z.object({ customerName:z.string().trim().min(2), phone:z.string().trim().min(7), ticketType:z.enum(TICKET_TYPES), provider:z.string().trim().min(2), referenceNumber:z.string().trim().default(""), origin:z.string().trim().min(2), destination:z.string().trim().min(2), departureAt:z.string().trim().min(1), arrivalAt:z.string().trim().optional().or(z.literal("")), travelers:z.number().int().positive().default(1), amount:z.number().nonnegative().default(0), status:z.enum(TICKET_STATUSES).default("requested"), assignedTo:z.string().trim().default(""), notes:z.string().trim().default("") });
+export const hotelReservationSchema = z.object({ customerName:z.string().trim().min(2), phone:z.string().trim().min(7), hotelName:z.string().trim().min(2), destination:z.string().trim().min(2), confirmationNumber:z.string().trim().default(""), checkIn:z.string().trim().min(1), checkOut:z.string().trim().min(1), rooms:z.number().int().positive().default(1), guests:z.number().int().positive().default(1), roomType:z.string().trim().default(""), mealPlan:z.string().trim().default(""), amount:z.number().nonnegative().default(0), status:z.enum(HOTEL_RESERVATION_STATUSES).default("requested"), assignedTo:z.string().trim().default(""), notes:z.string().trim().default("") }).refine((data)=>new Date(data.checkOut)>new Date(data.checkIn),{path:["checkOut"],message:"Check-out must be after check-in"});
+
 export const expenseSchema = z.object({
   title: z.string().trim().min(2),
   category: z.string().trim().min(2),
@@ -335,6 +346,17 @@ export const invoiceSchema = z.object({
     ctx.addIssue({ code: "custom", path: ["dueDate"], message: "Due date cannot be before issue date" });
   }
 });
+
+export const reputationSchema = z.object({
+  platform: z.enum(REPUTATION_PLATFORMS), reviewerName: z.string().trim().min(2), rating: z.number().min(1).max(5),
+  reviewText: z.string().trim().min(2), reviewUrl: z.string().trim().url().optional().or(z.literal("")),
+  sentiment: z.enum(REPUTATION_SENTIMENTS), status: z.enum(REPUTATION_STATUSES).default("new"), assignedTo: z.string().trim().default(""),
+  responseText: z.string().trim().default(""), reviewedAt: z.string().trim().min(1), respondedAt: z.string().trim().optional().or(z.literal("")), notes: z.string().trim().default(""),
+});
+export const attendanceSchema=z.object({employeeId:z.string().min(1),date:z.string().min(1),status:z.enum(ATTENDANCE_STATUSES),checkIn:z.string().default(""),checkOut:z.string().default(""),workHours:z.number().min(0).max(24).default(0),notes:z.string().trim().default("")});
+export const performanceReviewSchema=z.object({employeeId:z.string().min(1),period:z.string().trim().min(2),score:z.number().min(1).max(5),goals:z.string().trim().default(""),achievements:z.string().trim().default(""),feedback:z.string().trim().min(2),reviewer:z.string().trim().default(""),status:z.enum(PERFORMANCE_STATUSES)});
+export const leaveRequestSchema=z.object({employeeId:z.string().min(1),type:z.enum(LEAVE_TYPES),startDate:z.string().min(1),endDate:z.string().min(1),days:z.number().min(.5),status:z.enum(LEAVE_REQUEST_STATUSES),reason:z.string().trim().min(2),adminNotes:z.string().trim().default("")}).refine(x=>x.endDate>=x.startDate,{path:["endDate"],message:"End date cannot be before start date"});
+export const hrTaskSchema=z.object({employeeId:z.string().min(1),title:z.string().trim().min(2),description:z.string().trim().default(""),dueDate:z.string().min(1),priority:z.enum(HR_TASK_PRIORITIES),status:z.enum(HR_TASK_STATUSES),assignedBy:z.string().trim().default(""),completedAt:z.string().optional().or(z.literal(""))});
 
 export const bookingSchema = z.object({
   tripId: z.string().min(1),

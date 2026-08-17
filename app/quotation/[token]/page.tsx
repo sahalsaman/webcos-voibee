@@ -31,8 +31,12 @@ export default async function CustomerQuotationPage({ params }: { params: Promis
           <div className="ml-auto mt-6 grid max-w-sm gap-3 text-sm"><div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatINR(quotation.subtotal)}</span></div>{quotation.discount > 0 ? <div className="flex justify-between"><span className="text-muted-foreground">Discount</span><span>- {formatINR(quotation.discount)}</span></div> : null}{quotation.taxAmount > 0 ? <div className="flex justify-between"><span className="text-muted-foreground">Tax ({quotation.taxRate}%)</span><span>{formatINR(quotation.taxAmount)}</span></div> : null}<div className="flex justify-between border-t border-border pt-3 text-xl font-bold"><span>Total</span><span>{formatINR(quotation.totalAmount)}</span></div></div>
         </section>
 
-        {quotation.notes || quotation.terms ? <section className="grid gap-6 border-t border-border bg-secondary/20 p-6 sm:grid-cols-2 sm:p-8">{quotation.notes ? <div><h3 className="font-semibold">Notes</h3><p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{quotation.notes}</p></div> : null}{quotation.terms ? <div><h3 className="font-semibold">Terms and conditions</h3><p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{quotation.terms}</p></div> : null}</section> : null}
+        {quotation.notes || quotation.terms || quotation.policy || quotation.importantInformation || quotation.otherInformation ? <section className="grid gap-6 border-t border-border bg-secondary/20 p-6 sm:grid-cols-2 sm:p-8">{quotation.notes ? <Info title="Notes" value={quotation.notes} /> : null}{quotation.terms ? <Info title="Terms and conditions" value={quotation.terms} /> : null}{quotation.policy ? <Info title="Policy" value={quotation.policy} /> : null}{quotation.importantInformation ? <Info title="Important information" value={quotation.importantInformation} /> : null}{quotation.otherInformation ? <Info title="Other information" value={quotation.otherInformation} /> : null}</section> : null}
       </div>
     </main>
   );
+}
+
+function Info({ title, value }: { title: string; value: string }) {
+  return <div><h3 className="font-semibold">{title}</h3><p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{value}</p></div>;
 }

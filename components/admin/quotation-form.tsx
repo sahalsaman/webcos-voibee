@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -44,8 +44,31 @@ export function QuotationForm({ quotation, leads = [], customers = [], itinerari
     status: quotation?.status ?? "draft",
     notes: quotation?.notes ?? "",
     terms: quotation?.terms ?? "",
+    policy: quotation?.policy ?? "",
+    importantInformation: quotation?.importantInformation ?? "",
+    otherInformation: quotation?.otherInformation ?? "",
   });
   const totals = calculateQuotation([{ description: form.itineraryTitle || "Travel itinerary", quantity: 1, unitPrice: Number(form.amount) }], Number(form.discount), Number(form.taxRate));
+
+  useEffect(() => {
+    if (editing) return;
+    let active = true;
+    fetch("/api/admin/settings")
+      .then((response) => response.json())
+      .then((result) => {
+        if (!active || !result.success) return;
+        const settings = result.data;
+        setForm((current) => ({
+          ...current,
+          terms: current.terms || settings.quotationTerms || "",
+          policy: current.policy || settings.quotationPolicy || "",
+          importantInformation: current.importantInformation || settings.quotationImportantInformation || "",
+          otherInformation: current.otherInformation || settings.quotationOtherInformation || "",
+        }));
+      })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, [editing]);
 
   function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -113,6 +136,9 @@ export function QuotationForm({ quotation, leads = [], customers = [], itinerari
         </div>
         <div className="sm:col-span-2"><Label className="mb-1.5 block">Customer notes</Label><Textarea value={form.notes} onChange={(event) => set("notes", event.target.value)} className="min-h-20" /></div>
         <div className="sm:col-span-2"><Label className="mb-1.5 block">Terms and conditions</Label><Textarea value={form.terms} onChange={(event) => set("terms", event.target.value)} className="min-h-20" /></div>
+        <div className="sm:col-span-2"><Label className="mb-1.5 block">Policy</Label><Textarea value={form.policy} onChange={(event) => set("policy", event.target.value)} className="min-h-20" /></div>
+        <div className="sm:col-span-2"><Label className="mb-1.5 block">Important information</Label><Textarea value={form.importantInformation} onChange={(event) => set("importantInformation", event.target.value)} className="min-h-20" /></div>
+        <div className="sm:col-span-2"><Label className="mb-1.5 block">Other information</Label><Textarea value={form.otherInformation} onChange={(event) => set("otherInformation", event.target.value)} className="min-h-20" /></div>
       </div>
       <div className="sticky bottom-0 z-10 -mx-5 -mb-5 flex flex-col-reverse gap-2 border-t border-border bg-background/95 px-5 py-4 backdrop-blur sm:flex-row sm:justify-end">
         <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={onCancel}>Cancel</Button>

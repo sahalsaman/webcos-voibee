@@ -19,8 +19,12 @@ import Payroll from "@/models/Payroll";
 import Quotation from "@/models/Quotation";
 import Lead from "@/models/Lead";
 import VisaApplication from "@/models/VisaApplication";
+import TicketTracking from "@/models/TicketTracking";
+import HotelReservation from "@/models/HotelReservation";
 import Expense from "@/models/Expense";
 import Invoice from "@/models/Invoice";
+import Reputation from "@/models/Reputation";
+import Attendance from "@/models/Attendance"; import PerformanceReview from "@/models/PerformanceReview"; import LeaveRequest from "@/models/LeaveRequest"; import HrTask from "@/models/HrTask";
 
 async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
@@ -402,9 +406,18 @@ export async function listAdminLeads(campaignId?: string) {
 export async function listAdminVisas() {
   return safe(async () => serialize(await VisaApplication.find({}).sort({ createdAt: -1 }).lean()), []);
 }
+export async function listAdminTickets() { return safe(async()=>serialize(await TicketTracking.find({}).sort({departureAt:1,createdAt:-1}).lean()),[]); }
+export async function listAdminHotelReservations() { return safe(async()=>serialize(await HotelReservation.find({}).sort({checkIn:1,createdAt:-1}).lean()),[]); }
 
 export async function listAdminExpenses() { return safe(async () => serialize(await Expense.find({}).sort({ expenseDate: -1, createdAt: -1 }).lean()), []); }
 export async function listAdminInvoices() { return safe(async () => serialize(await Invoice.find({}).sort({ issueDate: -1, createdAt: -1 }).lean()), []); }
+export async function listAdminReputation() { return safe(async () => serialize(await Reputation.find({}).sort({ reviewedAt: -1, createdAt: -1 }).lean()), []); }
+export async function getAdminReputationSummary() { return safe(async () => { const [total, unresolved, negative, ratings] = await Promise.all([Reputation.countDocuments({}), Reputation.countDocuments({ status: { $nin: ["responded", "resolved"] } }), Reputation.countDocuments({ sentiment: "negative", status: { $ne: "resolved" } }), Reputation.aggregate([{ $group: { _id: null, average: { $avg: "$rating" } } }])]); return { total, unresolved, negative, averageRating: Number((ratings[0]?.average ?? 0).toFixed(1)) }; }, { total: 0, unresolved: 0, negative: 0, averageRating: 0 }); }
+const employeePopulate={path:"employee",model:Employee,select:"name email designation department"};
+export async function listAdminAttendance(){return safe(async()=>serialize(await Attendance.find({}).sort({date:-1}).populate(employeePopulate).lean()),[])}
+export async function listAdminPerformanceReviews(){return safe(async()=>serialize(await PerformanceReview.find({}).sort({createdAt:-1}).populate(employeePopulate).lean()),[])}
+export async function listAdminLeaveRequests(){return safe(async()=>serialize(await LeaveRequest.find({}).sort({startDate:-1}).populate(employeePopulate).lean()),[])}
+export async function listAdminHrTasks(){return safe(async()=>serialize(await HrTask.find({}).sort({dueDate:1}).populate(employeePopulate).lean()),[])}
 
 /* ----------------------------- PARTNER ----------------------------- */
 

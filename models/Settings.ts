@@ -10,6 +10,10 @@ const SettingsSchema = new Schema(
     platformFeeFlat: { type: Number, default: DEFAULT_SETTINGS.platformFeeFlat },
     currency: { type: String, default: DEFAULT_SETTINGS.currency },
     minWithdrawal: { type: Number, default: DEFAULT_SETTINGS.minWithdrawal },
+    quotationTerms: { type: String, default: DEFAULT_SETTINGS.quotationTerms, trim: true },
+    quotationPolicy: { type: String, default: DEFAULT_SETTINGS.quotationPolicy, trim: true },
+    quotationImportantInformation: { type: String, default: DEFAULT_SETTINGS.quotationImportantInformation, trim: true },
+    quotationOtherInformation: { type: String, default: DEFAULT_SETTINGS.quotationOtherInformation, trim: true },
   },
   { timestamps: true },
 );
