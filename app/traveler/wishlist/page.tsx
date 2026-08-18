@@ -31,7 +31,7 @@ export default async function TravelerWishlistPage() {
           description="Save packages you love to find them here later."
           action={
             <Button asChild variant="gradient">
-              <Link href="/packages">Explore packages</Link>
+              <Link href="/trips">Explore packages</Link>
             </Button>
           }
         />

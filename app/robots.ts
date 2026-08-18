@@ -4,11 +4,11 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.voibee.com";
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      disallow: ["/admin", "/partner", "/traveler", "/api"],
-    },
+    rules: [
+      { userAgent: "*", allow: "/", disallow: ["/admin", "/partner", "/traveler", "/api"] },
+      { userAgent: ["Googlebot", "Bingbot", "OAI-SearchBot", "ChatGPT-User", "GPTBot"], allow: "/", disallow: ["/admin", "/partner", "/traveler", "/api"] },
+    ],
     sitemap: `${appUrl}/sitemap.xml`,
+    host: appUrl,
   };
 }

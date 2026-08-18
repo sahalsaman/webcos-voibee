@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getHomeDestinations, isIndiaCountry } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
-import { formatCurrencyForCountry } from "@/lib/utils";
+import { formatCurrencyForCountry, slugify } from "@/lib/utils";
 import type { DestinationDTO } from "@/types";
 
 export const metadata: Metadata = {
@@ -105,7 +105,7 @@ function DestinationSection({
           <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
         </div>
         <Button asChild variant="outline" size="sm">
-          <Link href={hrefWithCountry("/packages", country)}>
+          <Link href={hrefWithCountry("/trips", country)}>
             View packages <ArrowRight className="size-4" />
           </Link>
         </Button>
@@ -123,7 +123,7 @@ function DestinationSection({
 function DestinationCard({ destination, country }: { destination: DestinationDTO; country?: string }) {
   return (
     <Link
-      href={hrefWithCountry(`/packages?destination=${encodeURIComponent(destination.title)}`, country)}
+      href={hrefWithCountry(`/destinations/${slugify(destination.title)}`, country)}
       className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10"
     >
       <div className="relative aspect-[4/3] overflow-hidden">

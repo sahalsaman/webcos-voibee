@@ -75,7 +75,7 @@ test("LMS campaign attribution and visa tracking enforce mandatory fields", () =
   const lead = { customerName: "Campaign Lead", phone: "9876543210", source: "Marketing Campaign", status: "new", travelers: 2, budget: 50000 };
   assert.equal(leadSchema.safeParse(lead).success, false);
   assert.equal(leadSchema.safeParse({ ...lead, campaignId: "campaign-1" }).success, true);
-  assert.equal(visaSchema.safeParse({ applicantName: "Visa Customer", phone: "9876543210", passportNumber: "P123456", destinationCountry: "UAE", visaType: "Tourist", status: "documents_pending" }).success, true);
+  assert.equal(visaSchema.safeParse({ customerId: "customer-1", passportNumber: "P123456", destinationCountry: "UAE", visaType: "Tourist", status: "documents_pending" }).success, true);
   assert.equal(visaSchema.safeParse({ applicantName: "A" }).success, false);
 });
 

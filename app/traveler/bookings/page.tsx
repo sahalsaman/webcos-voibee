@@ -78,7 +78,7 @@ export default async function TravelerBookingsPage({
                   <span className="text-lg font-bold">{formatINR(b.totalAmount)}</span>
                   {b.trip ? (
                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/packages/${b.trip.slug}`}>View package</Link>
+                      <Link href={`/trips/${b.trip.slug}`}>View package</Link>
                     </Button>
                   ) : null}
                 </div>
@@ -93,7 +93,7 @@ export default async function TravelerBookingsPage({
           description="Your booked packages will show up here."
           action={
             <Button asChild variant="gradient">
-              <Link href="/packages">Explore packages</Link>
+              <Link href="/trips">Explore packages</Link>
             </Button>
           }
         />

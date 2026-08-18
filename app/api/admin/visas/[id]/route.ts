@@ -2,6 +2,7 @@ import { connectDB } from "@/lib/db";
 import { fail, handleError, ok, requireApiRole } from "@/lib/api";
 import { visaSchema } from "@/lib/validations";
 import VisaApplication from "@/models/VisaApplication";
+import { resolveCustomerReference } from "@/lib/customer-reference";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -11,9 +12,13 @@ export async function PATCH(request: Request, { params }: Ctx) {
     const { id } = await params;
     const data = visaSchema.parse(await request.json());
     await connectDB();
+    const linked = await resolveCustomerReference(data.leadId, data.customerId);
     const visa = await VisaApplication.findByIdAndUpdate(id, {
       ...data,
-      email: data.email?.toLowerCase() || "",
+      ...linked,
+      applicantName: linked.customerName,
+      phone: linked.phone,
+      email: linked.email,
       submittedAt: data.submittedAt ? new Date(data.submittedAt) : null,
       expectedAt: data.expectedAt ? new Date(data.expectedAt) : null,
       completedAt: data.completedAt ? new Date(data.completedAt) : null,

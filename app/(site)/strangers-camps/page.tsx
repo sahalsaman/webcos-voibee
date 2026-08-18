@@ -75,7 +75,7 @@ export default async function StrangersCampsPage({ searchParams }: { searchParam
             <h2 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">Available camp packages</h2>
           </div>
           <Button asChild variant="outline">
-            <Link href={hrefWithCountry("/packages?category=Strangers", country)}>
+            <Link href={hrefWithCountry("/trips?category=Strangers", country)}>
               View with filters <ArrowRight className="size-4" />
             </Link>
           </Button>
@@ -87,7 +87,7 @@ export default async function StrangersCampsPage({ searchParams }: { searchParam
               <TripCard
                 key={trip._id}
                 trip={trip}
-                href={hrefWithCountry(`/packages/${trip.slug}`, country)}
+                href={hrefWithCountry(`/trips/${trip.slug}`, country)}
               />
             ))}
           </div>
@@ -98,7 +98,7 @@ export default async function StrangersCampsPage({ searchParams }: { searchParam
             description="Active packages with Strangers category added from admin will appear here."
             action={
               <Button asChild variant="gradient">
-                <Link href={hrefWithCountry("/packages", country)}>Explore all packages</Link>
+                <Link href={hrefWithCountry("/trips", country)}>Explore all packages</Link>
               </Button>
             }
           />

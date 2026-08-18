@@ -19,7 +19,7 @@ const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=70";
 
 export function TripCard({ trip, href, priceOverride, priceLabel }: TripCardProps) {
-  const link = href ?? `/packages/${trip.slug}`;
+  const link = href ?? `/trips/${trip.slug}`;
   const img = trip.images?.[0] || FALLBACK_IMG;
   const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
   const { label: duration } = tripDuration(trip.startDate, trip.endDate);

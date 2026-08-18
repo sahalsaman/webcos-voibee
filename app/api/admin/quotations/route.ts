@@ -8,6 +8,7 @@ import "@/models";
 import Quotation from "@/models/Quotation";
 import Lead from "@/models/Lead";
 import { getSettings } from "@/models/Settings";
+import { resolveCustomerReference } from "@/lib/customer-reference";
 
 export async function GET() {
   try {
@@ -27,8 +28,12 @@ export async function POST(request: Request) {
     const totals = calculateQuotation(data.items, data.discount, data.taxRate);
     await connectDB();
     const settings = await getSettings();
+    const linked = await resolveCustomerReference(data.leadId, data.customerId);
     const quotation = await Quotation.create({
       ...data,
+      customerName: linked.customerName,
+      customerPhone: linked.phone,
+      customerEmail: linked.email,
       terms: data.terms || settings.quotationTerms || "",
       policy: data.policy || settings.quotationPolicy || "",
       importantInformation: data.importantInformation || settings.quotationImportantInformation || "",
@@ -39,7 +44,6 @@ export async function POST(request: Request) {
       trip: data.itineraryId || null,
       quotationNumber: shortId("QTN-"),
       shareToken: randomUUID().replaceAll("-", ""),
-      customerEmail: data.customerEmail?.toLowerCase() ?? "",
       validUntil: new Date(data.validUntil),
     });
     if (data.leadId) {

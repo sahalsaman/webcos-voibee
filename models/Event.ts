@@ -14,7 +14,7 @@ const EventSchema = new Schema(
     startDate: { type: Date, required: true, index: true },
     endDate: { type: Date, default: null },
     priceLabel: { type: String, default: "" },
-    href: { type: String, default: "/packages" },
+    href: { type: String, default: "/trips" },
     ctaLabel: { type: String, default: "Explore packages" },
     status: { type: String, enum: EVENT_STATUSES, default: "active", index: true },
     featured: { type: Boolean, default: false, index: true },

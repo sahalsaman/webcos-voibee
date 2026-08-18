@@ -11,13 +11,29 @@ export function fail(message: string, status = 400, extra?: object) {
   return NextResponse.json({ success: false, message, ...extra }, { status });
 }
 
+function fieldLabel(path: PropertyKey[]) {
+  const key = path.filter((part) => typeof part !== "number").at(-1);
+  if (key === undefined) return "Form";
+  return String(key)
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replaceAll("_", " ")
+    .replace(/^./, (letter) => letter.toUpperCase());
+}
+
+/** Convert validation issues into a message that legacy form handlers can display. */
+export function validationErrorMessage(err: ZodError) {
+  const messages = err.issues.map((issue) => `${fieldLabel(issue.path)}: ${issue.message}`);
+  return [...new Set(messages)].slice(0, 3).join(" · ") || "Please check the highlighted fields";
+}
+
 /** Normalise thrown errors (Zod, Mongo duplicate keys, generic) to a response. */
 export function handleError(err: unknown) {
   // requireApiRole throws a ready-made Response — pass it straight through.
   if (err instanceof Response) return err;
   if (err instanceof ZodError) {
-    return fail("Validation failed", 422, {
+    return fail(validationErrorMessage(err), 422, {
       errors: err.flatten().fieldErrors,
+      formErrors: err.flatten().formErrors,
     });
   }
   if (

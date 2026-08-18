@@ -19,7 +19,7 @@ import { destinationImage } from "@/lib/images";
 import type { DestinationDTO } from "@/types";
 
 const NAV_LINKS = [
-  { href: "/packages", label: "Holidays" },
+  { href: "/trips", label: "Holidays" },
   { href: "/strangers-camps", label: "Strangers Camps" },
   { href: "/events", label: "Events" },
 ];
@@ -77,7 +77,7 @@ export function Navbar() {
 
           <div className="hidden items-center gap-1 md:flex">
             {NAV_LINKS.map((l) => (
-              l.href === "/packages" ? (
+              l.href === "/trips" ? (
                 <div key={`${l.href}-${l.label}`} className="group flex h-18 items-center">
                   <Link
                     href={withCountry(l.href)}
@@ -92,7 +92,7 @@ export function Navbar() {
                           {destinations.map((destination) => (
                             <Link
                               key={destination._id}
-                              href={withCountry(`/packages?destination=${encodeURIComponent(destination.title)}`)}
+                              href={withCountry(`/trips?destination=${encodeURIComponent(destination.title)}`)}
                               className="group/item grid grid-cols-[64px_minmax(0,1fr)] items-center  rounded-2xl p-2 transition hover:bg-secondary/80"
                             >
                               <Image

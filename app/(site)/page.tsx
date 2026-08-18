@@ -134,7 +134,7 @@ export default async function HomePage({
       title: `${d.title} package deals`,
       description: `Book curated ${d.title} packages with verified stays, flexible plans and smooth support.`,
       image: d.images[0] || destinationImage(d.title),
-      href: hrefWithCountry(`/packages?destination=${encodeURIComponent(d.title)}`, country),
+      href: hrefWithCountry(`/trips?destination=${encodeURIComponent(d.title)}`, country),
       price: `From ${formatCurrencyForCountry(d.basePrice, country)}`,
       ctaLabel: "View packages",
     }));
@@ -172,7 +172,7 @@ export default async function HomePage({
 
             <div className="mt-6 flex flex-wrap gap-2">
               {heroDestinations.map((d) => (
-                <Link key={d._id} href={hrefWithCountry(`/packages?destination=${encodeURIComponent(d.title)}`, country)}>
+                <Link key={d._id} href={hrefWithCountry(`/trips?destination=${encodeURIComponent(d.title)}`, country)}>
                   <Badge variant="glass" className="border-primary/15 bg-card/90 shadow-sm hover:border-primary/35 hover:text-primary">
                     {d.title}
                   </Badge>
@@ -238,7 +238,7 @@ export default async function HomePage({
               return (
                 <Link
                   key={theme.name}
-                  href={hrefWithCountry(`/packages?category=${encodeURIComponent(theme.name)}`, country)}
+                  href={hrefWithCountry(`/trips?category=${encodeURIComponent(theme.name)}`, country)}
                   className="group flex min-h-28 flex-col items-center justify-center rounded-xl border border-border bg-card p-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10"
                 >
                   <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
@@ -263,7 +263,7 @@ export default async function HomePage({
               align="left"
             />
             <Button asChild variant="outline" className="hidden sm:flex">
-              <Link href="/packages">
+              <Link href="/trips">
                 View all <ArrowRight className="size-4" />
               </Link>
             </Button>
@@ -282,7 +282,7 @@ export default async function HomePage({
               description="Once the operator publishes packages (or you run the seed script), they'll appear here."
               action={
                 <Button asChild variant="gradient">
-                  <Link href="/packages">Browse packages</Link>
+                  <Link href="/trips">Browse packages</Link>
                 </Button>
               }
             />
@@ -416,7 +416,7 @@ export default async function HomePage({
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Button asChild size="lg" variant="gradient">
-                <Link href={hrefWithCountry("/packages", country)}>
+                <Link href={hrefWithCountry("/trips", country)}>
                   Join the community <ArrowRight className="size-4" />
                 </Link>
               </Button>
@@ -554,7 +554,7 @@ function DestinationGrid({
       <div className="mb-4 flex items-center justify-between gap-4">
         <h3 className="text-lg font-semibold">{title}</h3>
         <Button asChild variant="outline" size="sm">
-          <Link href={hrefWithCountry("/packages", country)}>
+          <Link href={hrefWithCountry("/trips", country)}>
             Explore <ArrowRight className="size-4" />
           </Link>
         </Button>
@@ -563,7 +563,7 @@ function DestinationGrid({
         {destinations.map((d) => (
           <Link
             key={d._id}
-            href={hrefWithCountry(`/packages?destination=${encodeURIComponent(d.title)}`, country)}
+            href={hrefWithCountry(`/trips?destination=${encodeURIComponent(d.title)}`, country)}
             className="group relative aspect-[3/4] overflow-hidden rounded-xl"
           >
             <Image
@@ -592,7 +592,7 @@ function toOfferSlide(offer: OfferCardDTO, country?: string): OfferSlide {
     title: offer.title,
     description: offer.description,
     image: offer.images[0] || destinationImage(offer.title),
-    href: hrefWithCountry(offer.href || "/packages", country),
+    href: hrefWithCountry(offer.href || "/trips", country),
     price: offer.priceLabel || undefined,
     ctaLabel: offer.ctaLabel || "View packages",
   };

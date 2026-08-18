@@ -75,9 +75,17 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "TravelAgency", "@id": `${appUrl}/#organization`, name: "Voibee Holidays", url: appUrl, logo: `${appUrl}/voibee-logo-with-name.png`, description: "Curated holiday packages, group trips and customized travel experiences across India and international destinations." },
+      { "@type": "WebSite", "@id": `${appUrl}/#website`, url: appUrl, name: "Voibee Holidays", publisher: { "@id": `${appUrl}/#organization` }, potentialAction: { "@type": "SearchAction", target: { "@type": "EntryPoint", urlTemplate: `${appUrl}/trips?q={search_term_string}` }, "query-input": "required name=search_term_string" } },
+    ],
+  };
   return (
     <html lang="en" suppressHydrationWarning className={`${jakarta.variable} h-full`}>
       <body className="min-h-full bg-background text-foreground antialiased">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
         <Analytics/>
         <Providers>{children}</Providers>
       </body>

@@ -52,12 +52,12 @@ export function TripFilters({
     const country = params.get("c");
     if (country) next.set("c", country);
     if (sort && sort !== "newest") next.set("sort", sort);
-    router.push(`/packages?${next.toString()}`);
+    router.push(`/trips?${next.toString()}`);
   }
 
   function reset() {
     const country = params.get("c");
-    router.push(country ? `/packages?c=${encodeURIComponent(country)}` : "/packages");
+    router.push(country ? `/trips?c=${encodeURIComponent(country)}` : "/trips");
   }
 
   const hasFilters =

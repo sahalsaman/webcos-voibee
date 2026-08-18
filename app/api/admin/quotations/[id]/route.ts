@@ -5,6 +5,7 @@ import { quotationSchema } from "@/lib/validations";
 import "@/models";
 import Quotation from "@/models/Quotation";
 import Lead from "@/models/Lead";
+import { resolveCustomerReference } from "@/lib/customer-reference";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -15,17 +16,20 @@ export async function PATCH(request: Request, { params }: Ctx) {
     const data = quotationSchema.parse(await request.json());
     const totals = calculateQuotation(data.items, data.discount, data.taxRate);
     await connectDB();
+    const linked = await resolveCustomerReference(data.leadId, data.customerId);
     const current = await Quotation.findById(id).select("lead");
     if (!current) return fail("Quotation not found", 404);
     const quotation = await Quotation.findByIdAndUpdate(
       id,
       {
         ...data,
+        customerName: linked.customerName,
+        customerPhone: linked.phone,
+        customerEmail: linked.email,
         ...totals,
         lead: data.leadId || null,
         customer: data.customerId || null,
         trip: data.itineraryId || null,
-        customerEmail: data.customerEmail?.toLowerCase() ?? "",
         validUntil: new Date(data.validUntil),
       },
       { new: true, runValidators: true },

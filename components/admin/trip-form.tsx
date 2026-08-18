@@ -134,7 +134,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
 
     try {
       const res = await fetch(
-        editing ? `/api/packages/${trip!._id}` : "/api/packages",
+        editing ? `/api/trips/${trip!._id}` : "/api/trips",
         {
           method: editing ? "PATCH" : "POST",
           headers: { "Content-Type": "application/json" },

@@ -14,8 +14,6 @@ const COUNTRY_HEADERS = [
   "cloudfront-viewer-country",
   "x-country-code",
 ];
-const PUBLIC_FILE = /\.(?:.*)$/;
-
 function hasSessionCookie(req: NextRequest) {
   return (
     req.cookies.has("authjs.session-token") ||
@@ -34,18 +32,6 @@ function countryCode(req: NextRequest) {
 
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
-
-  if (
-    req.method === "GET" &&
-    !req.nextUrl.searchParams.has("c") &&
-    !pathname.startsWith("/api") &&
-    !pathname.startsWith("/_next") &&
-    !PUBLIC_FILE.test(pathname)
-  ) {
-    const url = req.nextUrl.clone();
-    url.searchParams.set("c", countryCode(req));
-    return NextResponse.redirect(url);
-  }
 
   const isProtected = PROTECTED.some((re) => re.test(pathname));
 

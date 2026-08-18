@@ -1,5 +1,5 @@
 import { connectDB } from "@/lib/db";
-import { serialize } from "@/lib/utils";
+import { serialize, slugify } from "@/lib/utils";
 import "@/models"; // ensure all schemas are registered
 import Trip from "@/models/Trip";
 import Destination from "@/models/Destination";
@@ -81,6 +81,22 @@ export async function getHomeDestinations(countryCode?: string) {
       : [],
     international: items.filter((d) => d.countryCode.toUpperCase() !== "IN"),
   };
+}
+
+export async function getDestinationLanding(slug: string) {
+  return safe(async () => {
+    const destinations = await Destination.find({ status: "active" }).lean();
+    const destinationRecord = destinations.find((item) => slugify(String(item.title)) === slugify(slug));
+    const destinationName = destinationRecord?.title || slug.replaceAll("-", " ");
+    const trips = await Trip.find({ status: "active", destination: new RegExp(`^${destinationName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") })
+      .sort({ featured: -1, rating: -1, createdAt: -1 })
+      .lean();
+    if (!destinationRecord && trips.length === 0) return null;
+    const destination = destinationRecord
+      ? serialize(destinationRecord) as DestinationDTO
+      : { _id: destinationName, title: trips[0].destination, description: `Explore curated ${trips[0].destination} holiday packages and trips.`, images: trips[0].images, videos: [], basePrice: Math.min(...trips.map((trip) => trip.basePrice)), status: "active" as const, featured: false, tags: [], popular: false, country: trips[0].country, countryCode: trips[0].country === "India" ? "IN" : "INTL", createdAt: new Date().toISOString() };
+    return { destination, trips: serialize(trips) as TripDTO[] };
+  }, null as { destination: DestinationDTO; trips: TripDTO[] } | null);
 }
 
 export async function getOfferCards(countryCode?: string, limit = 4) {

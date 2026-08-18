@@ -7,7 +7,7 @@ const OfferCardSchema = new Schema(
     description: { type: String, default: "" },
     images: { type: [String], default: [] },
     videos: { type: [String], default: [] },
-    href: { type: String, default: "/packages" },
+    href: { type: String, default: "/trips" },
     ctaLabel: { type: String, default: "View packages" },
     priceLabel: { type: String, default: "" },
     status: { type: String, enum: OFFER_CARD_STATUSES, default: "active", index: true },

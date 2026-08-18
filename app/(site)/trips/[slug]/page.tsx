@@ -23,16 +23,21 @@ import { isCustomDateTripCategory } from "@/lib/constants";
 import { formatDate, tripDuration } from "@/lib/utils";
 
 type Props = { params: Promise<{ slug: string }> };
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.voibee.com";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const trip = await getTripBySlug(slug);
   if (!trip) return { title: "Package not found" };
   return {
-    title: trip.title,
+    title: `${trip.title} | ${trip.destination} Tour Package`,
     description: trip.description?.slice(0, 160),
+    keywords: [trip.title, `${trip.destination} packages`, `${trip.destination} tour package`, `${trip.destination} holiday package`, trip.category, ...trip.tags],
+    alternates: { canonical: `/trips/${trip.slug}` },
     openGraph: {
-      title: trip.title,
+      type: "website",
+      url: `/trips/${trip.slug}`,
+      title: `${trip.title} | ${trip.destination} Tour Package`,
       description: trip.description?.slice(0, 160),
       images: trip.images?.[0] ? [{ url: trip.images[0] }] : undefined,
     },
@@ -55,29 +60,36 @@ export default async function TripDetailPage({ params }: Props) {
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "TouristTrip",
-    name: trip.title,
-    description: trip.description,
-    image: trip.images,
-    touristType: trip.category,
-    offers: {
-      "@type": "Offer",
-      price: trip.basePrice,
-      priceCurrency: "INR",
-      availability:
-        customDate || trip.availableSeats > 0
-          ? "https://schema.org/InStock"
-          : "https://schema.org/SoldOut",
-    },
-    ...(trip.reviewCount > 0
-      ? {
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: trip.rating,
-            reviewCount: trip.reviewCount,
-          },
-        }
-      : {}),
+    "@graph": [
+      {
+        "@type": ["Product", "TouristTrip"],
+        "@id": `${appUrl}/trips/${trip.slug}#package`,
+        name: trip.title,
+        description: trip.description,
+        url: `${appUrl}/trips/${trip.slug}`,
+        image: trip.images,
+        category: "Travel Package",
+        touristType: trip.category,
+        brand: { "@type": "Brand", name: "Voibee Holidays" },
+        hasPart: trip.itinerary.map((item) => ({ "@type": "TouristAttraction", name: `Day ${item.day}: ${item.title}`, description: item.description })),
+        offers: {
+          "@type": "Offer",
+          url: `${appUrl}/trips/${trip.slug}`,
+          price: trip.basePrice,
+          priceCurrency: "INR",
+          availability: customDate || trip.availableSeats > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+        },
+        ...(trip.reviewCount > 0 ? { aggregateRating: { "@type": "AggregateRating", ratingValue: trip.rating, reviewCount: trip.reviewCount } } : {}),
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: appUrl },
+          { "@type": "ListItem", position: 2, name: "Holiday Packages", item: `${appUrl}/trips` },
+          { "@type": "ListItem", position: 3, name: trip.title, item: `${appUrl}/trips/${trip.slug}` },
+        ],
+      },
+    ],
   };
 
   return (

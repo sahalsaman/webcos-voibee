@@ -13,9 +13,15 @@ import { destinationImage } from "@/lib/images";
 import type { DestinationDTO, TripDTO } from "@/types";
 
 export const metadata: Metadata = {
-  title: "Explore Packages",
+  title: "Holiday Packages",
   description:
     "Browse curated travel packages across India and beyond. Filter by destination, budget and package type.",
+  alternates: { canonical: "/trips" },
+  openGraph: {
+    title: "Holiday Packages | Voibee Holidays",
+    description: "Browse curated travel packages across India and beyond, including Goa packages, family holidays and group trips.",
+    url: "/trips",
+  },
 };
 
 type SP = Record<string, string | string[] | undefined>;
@@ -112,7 +118,7 @@ export default async function TripsPage({
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {showGroupedPackages ? (
         <header className="mb-8">
-          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Holiday Packages</h1>
+          <h3 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Holiday Packages</h3>
           <p className="mt-2 max-w-2xl text-muted-foreground">
             Explore curated packages grouped by destination.
           </p>
@@ -129,7 +135,7 @@ export default async function TripsPage({
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/86 via-slate-950/48 to-slate-950/12" />
         <div className="relative max-w-2xl">
           <p className="text-sm font-semibold uppercase tracking-[0.14em] text-sky-200">Holiday Packages</p>
-          <h1 className="mt-3 text-4xl font-extrabold leading-tight sm:text-5xl">{heroTitle}</h1>
+          <h3 className="mt-3 text-4xl font-extrabold leading-tight sm:text-5xl">{heroTitle}</h3>
           <p className="mt-4 max-w-xl text-base leading-7 text-slate-100 sm:text-lg">
             {heroDescription}
           </p>
@@ -183,7 +189,7 @@ export default async function TripsPage({
                 ))}
               </div>
               <Pagination
-                base="/packages"
+                base="/trips"
                 params={linkParams}
                 page={result.page}
                 totalPages={result.totalPages}
@@ -196,7 +202,7 @@ export default async function TripsPage({
               description="Try widening your budget or clearing some filters to see more results."
               action={
                 <Button asChild variant="gradient">
-                  <Link href="/packages">Clear filters</Link>
+                  <Link href="/trips">Clear filters</Link>
                 </Button>
               }
             />

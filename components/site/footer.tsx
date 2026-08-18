@@ -51,10 +51,10 @@ export function Footer() {
         <div>
           <h4 className="mb-3 text-sm font-semibold">Package themes</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link className="hover:text-foreground" href={withCountry("/packages")}>All packages</Link></li>
+            <li><Link className="hover:text-foreground" href={withCountry("/trips")}>All packages</Link></li>
             {TRIP_CATEGORIES.slice(0, 4).map((theme) => (
               <li key={theme}>
-                <Link className="hover:text-foreground" href={withCountry(`/packages?category=${encodeURIComponent(theme)}`)}>
+                <Link className="hover:text-foreground" href={withCountry(`/trips?category=${encodeURIComponent(theme)}`)}>
                   {theme}
                 </Link>
               </li>
@@ -68,7 +68,7 @@ export function Footer() {
             <li className="col-span-2"><Link className="font-medium text-primary hover:underline" href={withCountry("/destinations")}>View all destinations</Link></li>
             {destinations.map((d) => (
               <li key={d._id}>
-                <Link className="hover:text-foreground" href={withCountry(`/packages?destination=${encodeURIComponent(d.title)}`)}>
+                <Link className="hover:text-foreground" href={withCountry(`/trips?destination=${encodeURIComponent(d.title)}`)}>
                   {d.title}
                 </Link>
               </li>
@@ -79,7 +79,7 @@ export function Footer() {
         <div>
           <h4 className="mb-3 text-sm font-semibold">Company</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link className="hover:text-foreground" href="/packages">Explore Packages</Link></li>
+            <li><Link className="hover:text-foreground" href="/trips">Explore Packages</Link></li>
             <li><Link className="hover:text-foreground" href="/destinations">Destinations</Link></li>
             <li><Link className="hover:text-foreground" href="/login">Traveler Login</Link></li>
             <li><Link className="hover:text-foreground" href="/register">Create Account</Link></li>

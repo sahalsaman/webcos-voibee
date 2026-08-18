@@ -25,6 +25,7 @@ import Expense from "@/models/Expense";
 import Invoice from "@/models/Invoice";
 import Reputation from "@/models/Reputation";
 import Attendance from "@/models/Attendance"; import PerformanceReview from "@/models/PerformanceReview"; import LeaveRequest from "@/models/LeaveRequest"; import HrTask from "@/models/HrTask";
+import type { UserDTO } from "@/types";
 
 async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
@@ -256,7 +257,7 @@ export async function listAdminTravelers() {
         lastBookingAt: summary?.lastBookingAt ?? null,
         bookings: bookingsByTraveler.get(key) ?? [],
       };
-    });
+    }) as unknown as UserDTO[];
   }, []);
 }
 
@@ -404,10 +405,10 @@ export async function listAdminLeads(campaignId?: string) {
 }
 
 export async function listAdminVisas() {
-  return safe(async () => serialize(await VisaApplication.find({}).sort({ createdAt: -1 }).lean()), []);
+  return safe(async () => serialize(await VisaApplication.find({}).sort({ createdAt: -1 }).populate("lead", "leadNumber customerName").populate("customer", "name email mobile").lean()), []);
 }
-export async function listAdminTickets() { return safe(async()=>serialize(await TicketTracking.find({}).sort({departureAt:1,createdAt:-1}).lean()),[]); }
-export async function listAdminHotelReservations() { return safe(async()=>serialize(await HotelReservation.find({}).sort({checkIn:1,createdAt:-1}).lean()),[]); }
+export async function listAdminTickets() { return safe(async()=>serialize(await TicketTracking.find({}).sort({departureAt:1,createdAt:-1}).populate("lead","leadNumber customerName").populate("customer","name email mobile").lean()),[]); }
+export async function listAdminHotelReservations() { return safe(async()=>serialize(await HotelReservation.find({}).sort({checkIn:1,createdAt:-1}).populate("lead","leadNumber customerName").populate("customer","name email mobile").lean()),[]); }
 
 export async function listAdminExpenses() { return safe(async () => serialize(await Expense.find({}).sort({ expenseDate: -1, createdAt: -1 }).lean()), []); }
 export async function listAdminInvoices() { return safe(async () => serialize(await Invoice.find({}).sort({ issueDate: -1, createdAt: -1 }).lean()), []); }

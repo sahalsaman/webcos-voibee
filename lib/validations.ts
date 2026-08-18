@@ -153,7 +153,7 @@ export const offerCardSchema = z.object({
   description: z.string().default(""),
   images: z.array(z.string()).default([]),
   videos: z.array(z.string()).default([]),
-  href: z.string().trim().min(1).default("/packages"),
+  href: z.string().trim().min(1).default("/trips"),
   ctaLabel: z.string().trim().default("View packages"),
   priceLabel: z.string().trim().default(""),
   status: z.enum(OFFER_CARD_STATUSES).default("active"),
@@ -176,7 +176,7 @@ export const eventSchema = z.object({
   startDate: z.string().trim().min(1),
   endDate: z.string().trim().optional().or(z.literal("")),
   priceLabel: z.string().trim().default(""),
-  href: z.string().trim().min(1).default("/packages"),
+  href: z.string().trim().min(1).default("/trips"),
   ctaLabel: z.string().trim().default("Explore packages"),
   status: z.enum(EVENT_STATUSES).default("active"),
   featured: z.boolean().default(false),
@@ -261,9 +261,9 @@ export const quotationSchema = z.object({
   customerId: z.string().trim().optional().or(z.literal("")),
   itineraryId: z.string().trim().optional().or(z.literal("")),
   customItinerary: z.array(z.object({ day: z.number().int().positive(), title: z.string().trim().min(1), description: z.string().trim().default("") })).default([]),
-  customerName: z.string().trim().min(2),
+  customerName: z.string().trim().default(""),
   customerEmail: z.string().trim().email().optional().or(z.literal("")),
-  customerPhone: z.string().trim().min(7),
+  customerPhone: z.string().trim().default(""),
   title: z.string().trim().min(2),
   items: z.array(z.object({
     description: z.string().trim().min(1),
@@ -279,7 +279,7 @@ export const quotationSchema = z.object({
   policy: z.string().trim().default(""),
   importantInformation: z.string().trim().default(""),
   otherInformation: z.string().trim().default(""),
-});
+}).refine((data) => Boolean(data.leadId || data.customerId), { path: ["customerId"], message: "Select a customer or lead" });
 
 export const leadSchema = z.object({
   customerName: z.string().trim().min(2),
@@ -301,9 +301,8 @@ export const leadSchema = z.object({
 });
 
 export const visaSchema = z.object({
-  applicantName: z.string().trim().min(2),
-  phone: z.string().trim().min(7),
-  email: z.string().trim().email().optional().or(z.literal("")),
+  leadId: z.string().trim().optional().or(z.literal("")),
+  customerId: z.string().trim().optional().or(z.literal("")),
   passportNumber: z.string().trim().min(4),
   destinationCountry: z.string().trim().min(2),
   visaType: z.string().trim().min(2),
@@ -314,10 +313,10 @@ export const visaSchema = z.object({
   bookingNumber: z.string().trim().default(""),
   assignedTo: z.string().trim().default(""),
   notes: z.string().trim().default(""),
-});
+}).refine((data) => Boolean(data.leadId || data.customerId), { path: ["customerId"], message: "Select a customer or lead" });
 
-export const ticketTrackingSchema = z.object({ customerName:z.string().trim().min(2), phone:z.string().trim().min(7), ticketType:z.enum(TICKET_TYPES), provider:z.string().trim().min(2), referenceNumber:z.string().trim().default(""), origin:z.string().trim().min(2), destination:z.string().trim().min(2), departureAt:z.string().trim().min(1), arrivalAt:z.string().trim().optional().or(z.literal("")), travelers:z.number().int().positive().default(1), amount:z.number().nonnegative().default(0), status:z.enum(TICKET_STATUSES).default("requested"), assignedTo:z.string().trim().default(""), notes:z.string().trim().default("") });
-export const hotelReservationSchema = z.object({ customerName:z.string().trim().min(2), phone:z.string().trim().min(7), hotelName:z.string().trim().min(2), destination:z.string().trim().min(2), confirmationNumber:z.string().trim().default(""), checkIn:z.string().trim().min(1), checkOut:z.string().trim().min(1), rooms:z.number().int().positive().default(1), guests:z.number().int().positive().default(1), roomType:z.string().trim().default(""), mealPlan:z.string().trim().default(""), amount:z.number().nonnegative().default(0), status:z.enum(HOTEL_RESERVATION_STATUSES).default("requested"), assignedTo:z.string().trim().default(""), notes:z.string().trim().default("") }).refine((data)=>new Date(data.checkOut)>new Date(data.checkIn),{path:["checkOut"],message:"Check-out must be after check-in"});
+export const ticketTrackingSchema = z.object({ leadId:z.string().trim().optional().or(z.literal("")), customerId:z.string().trim().optional().or(z.literal("")), ticketType:z.enum(TICKET_TYPES), provider:z.string().trim().min(2), referenceNumber:z.string().trim().default(""), origin:z.string().trim().min(2), destination:z.string().trim().min(2), departureAt:z.string().trim().min(1), arrivalAt:z.string().trim().optional().or(z.literal("")), travelers:z.number().int().positive().default(1), amount:z.number().nonnegative().default(0), status:z.enum(TICKET_STATUSES).default("requested"), assignedTo:z.string().trim().default(""), notes:z.string().trim().default("") }).refine((data)=>Boolean(data.leadId||data.customerId),{path:["customerId"],message:"Select a customer or lead"});
+export const hotelReservationSchema = z.object({ leadId:z.string().trim().optional().or(z.literal("")), customerId:z.string().trim().optional().or(z.literal("")), hotelName:z.string().trim().min(2), destination:z.string().trim().min(2), confirmationNumber:z.string().trim().default(""), checkIn:z.string().trim().min(1), checkOut:z.string().trim().min(1), rooms:z.number().int().positive().default(1), guests:z.number().int().positive().default(1), roomType:z.string().trim().default(""), mealPlan:z.string().trim().default(""), amount:z.number().nonnegative().default(0), status:z.enum(HOTEL_RESERVATION_STATUSES).default("requested"), assignedTo:z.string().trim().default(""), notes:z.string().trim().default("") }).refine((data)=>Boolean(data.leadId||data.customerId),{path:["customerId"],message:"Select a customer or lead"}).refine((data)=>new Date(data.checkOut)>new Date(data.checkIn),{path:["checkOut"],message:"Check-out must be after check-in"});
 
 export const expenseSchema = z.object({
   title: z.string().trim().min(2),

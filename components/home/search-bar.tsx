@@ -140,7 +140,7 @@ export function SearchBar() {
       params.set("endDate", selectedMonthOption.endDate);
     }
 
-    router.push(`/packages?${params.toString()}`);
+    router.push(`/trips?${params.toString()}`);
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {

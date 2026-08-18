@@ -86,7 +86,7 @@ function DestinationPackageRow({
         {section.packages.map((item) => (
           <Link
             key={item._id}
-            href={withCountry("/packages/" + item.slug, country)}
+            href={withCountry("/trips/" + item.slug, country)}
             className="group min-w-[260px] max-w-[260px] snap-start sm:min-w-[300px] sm:max-w-[300px] lg:min-w-[310px] lg:max-w-[310px]"
           >
             <div className="relative aspect-[3/2] overflow-hidden rounded-2xl bg-secondary">

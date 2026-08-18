@@ -31,7 +31,7 @@ export function EventForm({ event, onSaved, onCancel }: { event?: EventDTO; onSa
     startDate: dateValue(event?.startDate),
     endDate: dateValue(event?.endDate),
     priceLabel: event?.priceLabel ?? "",
-    href: event?.href ?? "/packages",
+    href: event?.href ?? "/trips",
     ctaLabel: event?.ctaLabel ?? "Explore packages",
     status: event?.status ?? "active",
     featured: event?.featured ?? false,
@@ -67,7 +67,7 @@ export function EventForm({ event, onSaved, onCancel }: { event?: EventDTO; onSa
       startDate: form.startDate,
       endDate: form.endDate || undefined,
       priceLabel: form.priceLabel,
-      href: form.href || "/packages",
+      href: form.href || "/trips",
       ctaLabel: form.ctaLabel || "Explore packages",
       status: form.status,
       featured: form.featured,
@@ -139,7 +139,7 @@ export function EventForm({ event, onSaved, onCancel }: { event?: EventDTO; onSa
           </div>
           <div>
             <Label className="mb-1.5 block">Link</Label>
-            <Input value={form.href} onChange={(e) => set("href", e.target.value)} placeholder="/packages?category=Festival" />
+            <Input value={form.href} onChange={(e) => set("href", e.target.value)} placeholder="/trips?category=Festival" />
           </div>
           <div>
             <Label className="mb-1.5 block">Button label</Label>
