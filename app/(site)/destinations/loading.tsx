@@ -2,14 +2,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 function DestinationCardSkeleton({ index }: { index: number }) {
   return (
-    <div key={index} className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-      <Skeleton className="aspect-[4/3] w-full rounded-none" />
-      <div className="flex items-center justify-between gap-3 p-4">
-        <div className="space-y-2">
-          <Skeleton className="h-3 w-20" />
-          <Skeleton className="h-6 w-24" />
+    <div key={index} className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
+      <Skeleton className="aspect-[5/4] w-full rounded-none" />
+      <div className="p-4">
+        <div className="mb-4 flex gap-2">
+          <Skeleton className="h-5 w-16 rounded-full" />
+          <Skeleton className="h-5 w-20 rounded-full" />
         </div>
-        <Skeleton className="h-4 w-16" />
+        <div className="flex items-center justify-between gap-3 border-t border-border/60 pt-3">
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-6 w-28" />
+          </div>
+          <Skeleton className="size-10 rounded-full" />
+        </div>
       </div>
     </div>
   );

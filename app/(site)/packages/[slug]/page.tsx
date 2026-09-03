@@ -33,10 +33,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${trip.title} | ${trip.destination} Tour Package`,
     description: trip.description?.slice(0, 160),
     keywords: [trip.title, `${trip.destination} packages`, `${trip.destination} tour package`, `${trip.destination} holiday package`, trip.category, ...trip.tags],
-    alternates: { canonical: `/trips/${trip.slug}` },
+    alternates: { canonical: `/packages/${trip.slug}` },
     openGraph: {
       type: "website",
-      url: `/trips/${trip.slug}`,
+      url: `/packages/${trip.slug}`,
       title: `${trip.title} | ${trip.destination} Tour Package`,
       description: trip.description?.slice(0, 160),
       images: trip.images?.[0] ? [{ url: trip.images[0] }] : undefined,
@@ -63,10 +63,10 @@ export default async function TripDetailPage({ params }: Props) {
     "@graph": [
       {
         "@type": ["Product", "TouristTrip"],
-        "@id": `${appUrl}/trips/${trip.slug}#package`,
+        "@id": `${appUrl}/packages/${trip.slug}#package`,
         name: trip.title,
         description: trip.description,
-        url: `${appUrl}/trips/${trip.slug}`,
+        url: `${appUrl}/packages/${trip.slug}`,
         image: trip.images,
         category: "Travel Package",
         touristType: trip.category,
@@ -74,7 +74,7 @@ export default async function TripDetailPage({ params }: Props) {
         hasPart: trip.itinerary.map((item) => ({ "@type": "TouristAttraction", name: `Day ${item.day}: ${item.title}`, description: item.description })),
         offers: {
           "@type": "Offer",
-          url: `${appUrl}/trips/${trip.slug}`,
+          url: `${appUrl}/packages/${trip.slug}`,
           price: trip.basePrice,
           priceCurrency: "INR",
           availability: customDate || trip.availableSeats > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
@@ -85,8 +85,8 @@ export default async function TripDetailPage({ params }: Props) {
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: appUrl },
-          { "@type": "ListItem", position: 2, name: "Holiday Packages", item: `${appUrl}/trips` },
-          { "@type": "ListItem", position: 3, name: trip.title, item: `${appUrl}/trips/${trip.slug}` },
+          { "@type": "ListItem", position: 2, name: "Holiday Packages", item: `${appUrl}/packages` },
+          { "@type": "ListItem", position: 3, name: trip.title, item: `${appUrl}/packages/${trip.slug}` },
         ],
       },
     ],

@@ -9,6 +9,7 @@ import { getHomeDestinations, isIndiaCountry } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
 import { formatCurrencyForCountry, slugify } from "@/lib/utils";
 import type { DestinationDTO } from "@/types";
+import { DestinationSwitcher } from "@/components/site/destination-switcher";
 
 export const metadata: Metadata = {
   title: "Destinations",
@@ -56,20 +57,10 @@ export default async function DestinationsPage({ searchParams }: { searchParams:
       </section>
 
       <section className="mx-auto max-w-7xl space-y-12 px-4 py-12 sm:px-6 lg:px-8">
-        {showDomestic ? (
-          <DestinationSection
-            title="Domestic destinations"
-            subtitle="Popular places across India for quick holidays, family packages and group escapes."
-            destinations={homeDestinations.domestic}
-            country={country}
-          />
-        ) : null}
-
-        <DestinationSection
-          title="International destinations"
-          subtitle="Easy international escapes with curated packages and transparent starting prices."
-          destinations={homeDestinations.international}
-          country={country}
+        <DestinationSwitcher
+          hasIndia={showDomestic && homeDestinations.domestic.length > 0}
+          india={<DestinationSection title="India destinations" subtitle="Popular places across India for quick holidays, family packages and group escapes." destinations={homeDestinations.domestic} country={country} />}
+          global={<DestinationSection title="Global Escapes" subtitle="International escapes with curated packages and transparent starting prices." destinations={homeDestinations.international} country={country} />}
         />
 
         {total === 0 ? (
@@ -105,7 +96,7 @@ function DestinationSection({
           <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
         </div>
         <Button asChild variant="outline" size="sm">
-          <Link href={hrefWithCountry("/trips", country)}>
+          <Link href={hrefWithCountry("/packages", country)}>
             View packages <ArrowRight className="size-4" />
           </Link>
         </Button>
@@ -124,34 +115,45 @@ function DestinationCard({ destination, country }: { destination: DestinationDTO
   return (
     <Link
       href={hrefWithCountry(`/destinations/${slugify(destination.title)}`, country)}
-      className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10"
+      className="group overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/25 hover:shadow-xl hover:shadow-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
     >
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[5/4] overflow-hidden">
         <Image
           src={destination.images[0] || destinationImage(destination.title)}
           alt={destination.title}
           fill
           sizes="(max-width: 768px) 100vw, 25vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-        <div className="absolute left-3 top-3 flex flex-wrap gap-2">
-          {destination.featured ? <Badge variant="accent"><Sparkles className="size-3" /> Highlight</Badge> : null}
-          {destination.popular ? <Badge variant="glass">Popular</Badge> : null}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/5 transition-colors group-hover:from-black/75" />
+        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+          {destination.featured ? <Badge className="border-white/20 bg-white/90 text-foreground shadow-sm"><Sparkles className="size-3 text-primary" /> Featured</Badge> : null}
+          {destination.popular ? <Badge className="border-white/15 bg-primary text-primary-foreground shadow-sm">Popular</Badge> : null}
         </div>
-        <div className="absolute bottom-3 left-3 right-3 text-white">
-          <h3 className="text-lg font-bold leading-tight">{destination.title}</h3>
-          <p className="mt-1 flex items-center gap-1 text-xs text-white/85">
-            <MapPin className="size-3.5" /> {destination.country} ({destination.countryCode})
+        <div className="absolute bottom-4 left-4 right-4 text-white">
+          <p className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-white/80">
+            <MapPin className="size-3.5 text-primary-foreground" /> {destination.country}
           </p>
+          <h3 className="text-xl font-extrabold leading-tight tracking-tight">{destination.title}</h3>
         </div>
       </div>
-      <div className="flex items-center justify-between gap-3 p-4">
-        <div>
-          <p className="text-xs text-muted-foreground">Starting from</p>
-          <p className="text-lg font-bold">{formatCurrencyForCountry(destination.basePrice, country)}</p>
+      <div className="p-4">
+        {destination.tags.length ? (
+          <div className="mb-4 flex min-h-6 flex-wrap gap-1.5">
+            {destination.tags.slice(0, 2).map((tag) => <Badge key={tag} variant="secondary" className="font-medium">{tag}</Badge>)}
+            {destination.tags.length > 2 ? <Badge variant="outline">+{destination.tags.length - 2}</Badge> : null}
+          </div>
+        ) : null}
+        <div className="flex items-center justify-between gap-3 border-t border-border/60 pt-3">
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Packages from</p>
+            <p className="mt-0.5 text-lg font-extrabold text-foreground">{formatCurrencyForCountry(destination.basePrice, country)}</p>
+          </div>
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+            <span className="sr-only">View {destination.title} packages</span>
+          </span>
         </div>
-        <span className="text-sm font-semibold text-primary">View packages</span>
       </div>
     </Link>
   );

@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   title: "Holiday Packages",
   description:
     "Browse curated travel packages across India and beyond. Filter by destination, budget and package type.",
-  alternates: { canonical: "/trips" },
+  alternates: { canonical: "/packages" },
   openGraph: {
     title: "Holiday Packages | Voibee Holidays",
     description: "Browse curated travel packages across India and beyond, including Goa packages, family holidays and group trips.",
-    url: "/trips",
+    url: "/packages",
   },
 };
 
@@ -189,7 +189,7 @@ export default async function TripsPage({
                 ))}
               </div>
               <Pagination
-                base="/trips"
+                base="/packages"
                 params={linkParams}
                 page={result.page}
                 totalPages={result.totalPages}
@@ -202,7 +202,7 @@ export default async function TripsPage({
               description="Try widening your budget or clearing some filters to see more results."
               action={
                 <Button asChild variant="gradient">
-                  <Link href="/trips">Clear filters</Link>
+                  <Link href="/packages">Clear filters</Link>
                 </Button>
               }
             />

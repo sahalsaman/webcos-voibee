@@ -80,7 +80,11 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
   const [packageDuration, setPackageDuration] = useState(
     trip?.packageOptions?.[0]?.label ?? "3D/2N",
   );
-  const showDateAndSeats = !form.holidayPackage;
+  // `holidayPackage` is a legacy field where true means a flexible/custom-date
+  // package. Keep the persisted shape compatible while presenting the clearer
+  // fixed-departure choice in the form.
+  const fixedDeparture = !form.holidayPackage;
+  const showDateAndSeats = fixedDeparture;
 
   function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -134,7 +138,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
 
     try {
       const res = await fetch(
-        editing ? `/api/trips/${trip!._id}` : "/api/trips",
+        editing ? `/api/packages/${trip!._id}` : "/api/packages",
         {
           method: editing ? "PATCH" : "POST",
           headers: { "Content-Type": "application/json" },
@@ -144,7 +148,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || "Save failed");
       toast.success(editing ? "Package updated" : "Package created");
-      router.push("/admin/inventory/itinerary");
+      router.push("/admin/inventory/packages");
       router.refresh();
     } catch (err) {
       toast.error((err as Error).message);
@@ -255,11 +259,11 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
             <label className="flex items-center gap-2 text-sm font-medium">
               <input
                 type="checkbox"
-                checked={form.holidayPackage}
-                onChange={(e) => set("holidayPackage", e.target.checked)}
+                checked={fixedDeparture}
+                onChange={(e) => set("holidayPackage", !e.target.checked)}
                 className="size-4 accent-[var(--primary)]"
               />
-              Holiday package
+              Fixed Departures
             </label>
           </div>
           {showDateAndSeats ? (
@@ -278,13 +282,13 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
               </div>
               <div>
                 <Label className="mb-1.5 block">End date <RequiredMark /></Label>
-                <Input type="date" value={form.endDate} onChange={(e) => set("endDate", e.target.value)} required />
+                <Input type="date" min={form.startDate || undefined} value={form.endDate} onChange={(e) => set("endDate", e.target.value)} required />
               </div>
             </>
           ) : (
             <div className="rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4 text-sm text-muted-foreground sm:col-span-2">
-              <p className="font-medium text-foreground">Holiday package</p>
-              <p className="mt-1">Date and seats are handled per enquiry for this package.</p>
+              <p className="font-medium text-foreground">Flexible departure</p>
+              <p className="mt-1">Leave Fixed Departures unchecked when customers can choose their travel date. Dates and seats will be handled per enquiry.</p>
             </div>
           )}
         </CardContent>

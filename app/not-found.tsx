@@ -19,9 +19,6 @@ export default function NotFound() {
             <ArrowLeft className="size-4" /> Back home
           </Link>
         </Button>
-        <Button asChild variant="outline">
-          <Link href="/trips">Explore trips</Link>
-        </Button>
       </div>
     </div>
   );

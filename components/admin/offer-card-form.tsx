@@ -19,7 +19,7 @@ export function OfferCardForm({ offer, onSaved, onCancel }: { offer?: OfferCardD
   const [form, setForm] = useState({
     title: offer?.title ?? "",
     description: offer?.description ?? "",
-    href: offer?.href ?? "/trips",
+    href: offer?.href ?? "/packages",
     ctaLabel: offer?.ctaLabel ?? "View packages",
     priceLabel: offer?.priceLabel ?? "",
     status: offer?.status ?? "active",
@@ -51,7 +51,7 @@ export function OfferCardForm({ offer, onSaved, onCancel }: { offer?: OfferCardD
     const payload = {
       title: form.title,
       description: form.description,
-      href: form.href || "/trips",
+      href: form.href || "/packages",
       ctaLabel: form.ctaLabel || "View packages",
       priceLabel: form.priceLabel,
       status: form.status,
@@ -95,7 +95,7 @@ export function OfferCardForm({ offer, onSaved, onCancel }: { offer?: OfferCardD
           </div>
           <div>
             <Label className="mb-1.5 block">Link</Label>
-            <Input value={form.href} onChange={(e) => set("href", e.target.value)} placeholder="/trips?destination=Dubai" />
+            <Input value={form.href} onChange={(e) => set("href", e.target.value)} placeholder="/packages?destination=Dubai" />
           </div>
           <div>
             <Label className="mb-1.5 block">Button label</Label>

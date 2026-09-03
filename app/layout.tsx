@@ -79,7 +79,7 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@graph": [
       { "@type": "TravelAgency", "@id": `${appUrl}/#organization`, name: "Voibee Holidays", url: appUrl, logo: `${appUrl}/voibee-logo-with-name.png`, description: "Curated holiday packages, group trips and customized travel experiences across India and international destinations." },
-      { "@type": "WebSite", "@id": `${appUrl}/#website`, url: appUrl, name: "Voibee Holidays", publisher: { "@id": `${appUrl}/#organization` }, potentialAction: { "@type": "SearchAction", target: { "@type": "EntryPoint", urlTemplate: `${appUrl}/trips?q={search_term_string}` }, "query-input": "required name=search_term_string" } },
+      { "@type": "WebSite", "@id": `${appUrl}/#website`, url: appUrl, name: "Voibee Holidays", publisher: { "@id": `${appUrl}/#organization` }, potentialAction: { "@type": "SearchAction", target: { "@type": "EntryPoint", urlTemplate: `${appUrl}/packages?q={search_term_string}` }, "query-input": "required name=search_term_string" } },
     ],
   };
   return (

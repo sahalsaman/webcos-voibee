@@ -10,7 +10,7 @@ export function QuotationDrawer({ quotation, leads = [], customers = [], itinera
   const [open, setOpen] = useState(false);
   const [availableItineraries, setAvailableItineraries] = useState(itineraries);
   const editing = Boolean(quotation);
-  useEffect(() => { if (!open || availableItineraries.length) return; fetch("/api/trips").then((response) => response.json()).then((data) => setAvailableItineraries(data.data ?? [])).catch(() => undefined); }, [open, availableItineraries.length]);
+  useEffect(() => { if (!open || availableItineraries.length) return; fetch("/api/packages").then((response) => response.json()).then((data) => setAvailableItineraries(data.data ?? [])).catch(() => undefined); }, [open, availableItineraries.length]);
   return (
     <>
       {editing ? (

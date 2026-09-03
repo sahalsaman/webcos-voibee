@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Star, Calendar, Users } from "lucide-react";
+import { ArrowRight, MapPin, Star, Calendar, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PackageOptionsList } from "@/components/trip/package-options";
 import { isCustomDateTripCategory } from "@/lib/constants";
@@ -19,7 +19,7 @@ const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=70";
 
 export function TripCard({ trip, href, priceOverride, priceLabel }: TripCardProps) {
-  const link = href ?? `/trips/${trip.slug}`;
+  const link = href ?? `/packages/${trip.slug}`;
   const img = trip.images?.[0] || FALLBACK_IMG;
   const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
   const { label: duration } = tripDuration(trip.startDate, trip.endDate);
@@ -97,6 +97,12 @@ export function TripCard({ trip, href, priceOverride, priceLabel }: TripCardProp
             {customDate ? "" : formatDate(trip.startDate)}
           </span>
         </div>
+        <span
+          className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-all group-hover:bg-primary/90 group-hover:shadow-md"
+        >
+          {soldOut ? "View details" : "Book now"}
+          <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+        </span>
       </div>
     </Link>
   );

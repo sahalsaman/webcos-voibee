@@ -1,2 +1,2 @@
 import { redirect } from "next/navigation";
-export default function InventoryPage() { redirect("/admin/inventory/itinerary"); }
+export default function InventoryPage() { redirect("/admin/inventory/packages"); }

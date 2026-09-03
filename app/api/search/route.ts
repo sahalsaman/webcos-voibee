@@ -22,7 +22,7 @@ function escapeRegex(value: string) {
 
 function tripHref(params: Record<string, string>) {
   const search = new URLSearchParams(params);
-  return `/trips?${search.toString()}`;
+  return `/packages?${search.toString()}`;
 }
 
 export async function GET(request: Request) {
@@ -94,7 +94,7 @@ export async function GET(request: Request) {
         country: trip.country ?? "India",
         countryCode,
         flag: flagFromCode(countryCode),
-        href: `/trips/${trip.slug}${visitorCountry ? `?c=${encodeURIComponent(visitorCountry)}` : ""}`,
+        href: `/packages/${trip.slug}${visitorCountry ? `?c=${encodeURIComponent(visitorCountry)}` : ""}`,
       };
     });
 
