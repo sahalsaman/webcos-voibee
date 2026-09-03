@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getMajorEvents } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
-import { formatDate } from "@/lib/utils";
+import { formatDate, normalizePackageHref } from "@/lib/utils";
 import type { EventDTO } from "@/types";
 
 export const metadata: Metadata = {
@@ -107,7 +107,7 @@ function EventCard({ event, country }: { event: EventDTO; country?: string }) {
         {event.venue ? <p className="text-sm font-medium text-foreground">{event.venue}</p> : null}
         <p className="line-clamp-3 text-sm leading-6 text-muted-foreground">{event.description}</p>
         <Button asChild variant="outline" className="w-full">
-          <Link href={hrefWithCountry(event.href || "/packages", country)}>
+          <Link href={hrefWithCountry(normalizePackageHref(event.href), country)}>
             {event.ctaLabel || "Explore packages"} <ArrowRight className="size-4" />
           </Link>
         </Button>

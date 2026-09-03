@@ -23,7 +23,7 @@ import { SearchBar } from "@/components/home/search-bar";
 import { OfferCarousel, type OfferSlide } from "@/components/home/offer-carousel";
 import { getFeaturedTrips, getHomeDestinations, getOfferCards, isIndiaCountry } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
-import { formatCurrencyForCountry } from "@/lib/utils";
+import { formatCurrencyForCountry, normalizePackageHref } from "@/lib/utils";
 import type { TripCategory } from "@/lib/constants";
 import type { DestinationDTO, OfferCardDTO } from "@/types";
 import { DestinationSwitcher } from "@/components/site/destination-switcher";
@@ -592,7 +592,7 @@ function toOfferSlide(offer: OfferCardDTO, country?: string): OfferSlide {
     title: offer.title,
     description: offer.description,
     image: offer.images[0] || destinationImage(offer.title),
-    href: hrefWithCountry(offer.href || "/packages", country),
+    href: hrefWithCountry(normalizePackageHref(offer.href), country),
     price: offer.priceLabel || undefined,
     ctaLabel: offer.ctaLabel || "View packages",
   };

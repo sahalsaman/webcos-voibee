@@ -6,6 +6,7 @@ import {
   isCustomDateTripCategory,
 } from "../lib/constants";
 import { calculateQuotation } from "../lib/quotation";
+import { normalizePackageHref } from "../lib/utils";
 import {
   bookingSchema,
   campaignSchema,
@@ -17,6 +18,12 @@ import {
   expenseSchema,
   invoiceSchema,
 } from "../lib/validations";
+
+test("legacy public trip links resolve to the packages routes", () => {
+  assert.equal(normalizePackageHref("/trips?destination=Dubai"), "/packages?destination=Dubai");
+  assert.equal(normalizePackageHref("/trips/dubai-break"), "/packages/dubai-break");
+  assert.equal(normalizePackageHref("/packages?destination=Goa"), "/packages?destination=Goa");
+});
 
 test("quotation totals apply capped discount and tax after discount", () => {
   const result = calculateQuotation(

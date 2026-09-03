@@ -26,7 +26,7 @@ if (!URI) {
   process.exit(1);
 }
 
-const PASSWORD = process.env.SEED_PASSWORD || "123456";
+const PASSWORD = process.env.SEED_PASSWORD || "Password123!";
 const oid = () => new mongoose.Types.ObjectId();
 const now = new Date();
 const daysFromNow = (d) => new Date(now.getTime() + d * 86400000);

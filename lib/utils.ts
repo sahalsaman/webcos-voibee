@@ -60,6 +60,12 @@ export function slugify(text: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+/** Keep links stored before the public trips route was renamed working. */
+export function normalizePackageHref(href?: string) {
+  const value = href?.trim() || "/packages";
+  return value.replace(/^\/trips(?=\/|\?|#|$)/, "/packages");
+}
+
 /** Short, human-friendly unique-ish id (for booking numbers etc). */
 export function shortId(prefix = "") {
   const rand = Math.random().toString(36).slice(2, 8).toUpperCase();
