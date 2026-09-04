@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   TRIP_CATEGORIES,
+  PACKAGE_SERVICES,
   TRIP_STATUSES,
   OFFER_CARD_STATUSES,
   EVENT_STATUSES,
@@ -84,10 +85,15 @@ export const tripSchema = z.object({
         day: z.number().int().positive(),
         title: z.string(),
         description: z.string().default(""),
+        transports: z.array(z.object({ title: z.string().trim().min(1), description: z.string().default("") })).default([]),
+        hotels: z.array(z.object({ name: z.string().trim().min(1), description: z.string().default(""), image: z.string().default("") })).default([]),
+        meals: z.array(z.enum(["breakfast", "lunch", "dinner"])).default([]),
+        sightseeing: z.array(z.object({ name: z.string().trim().min(1), description: z.string().default(""), image: z.string().default("") })).default([]),
       }),
     )
     .default([]),
   inclusions: z.array(z.string()).default([]),
+  includedServices: z.array(z.enum(PACKAGE_SERVICES)).default([]),
   exclusions: z.array(z.string()).default([]),
   packageOptions: z
     .array(

@@ -145,12 +145,36 @@ export const TRIP_CATEGORIES = [
   "Honeymoon",
   "Family",
   "Group Trip",
+  "Luxury",
+  "Solo",
   "Strangers",
   "Wellness",
   "Spiritual",
   "Festival",
 ] as const;
 export type TripCategory = (typeof TRIP_CATEGORIES)[number];
+
+export const PACKAGE_SERVICES = [
+  "flights",
+  "hotels",
+  "sightseeing",
+  "visa",
+  "meals",
+  "tour-manager",
+  "transfers",
+  "travel-insurance",
+] as const;
+export type PackageService = (typeof PACKAGE_SERVICES)[number];
+export const PACKAGE_SERVICE_LABELS: Record<PackageService, string> = {
+  flights: "Flights",
+  hotels: "Hotels",
+  sightseeing: "Sightseeing",
+  visa: "Visa",
+  meals: "Meals",
+  "tour-manager": "Tour Manager",
+  transfers: "Transfers",
+  "travel-insurance": "Travel Insurance",
+};
 
 export const FIXED_DEPARTURE_TRIP_CATEGORIES = [
   "Holiday Package",

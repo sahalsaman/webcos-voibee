@@ -3,17 +3,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Plus, Trash2, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { COUNTRY_OPTIONS, TRIP_CATEGORIES, TRIP_STATUSES, type TripCategory } from "@/lib/constants";
-import type { DestinationDTO, TripDTO } from "@/types";
+import { COUNTRY_OPTIONS, PACKAGE_SERVICES, PACKAGE_SERVICE_LABELS, TRIP_CATEGORIES, TRIP_STATUSES, type PackageService, type TripCategory } from "@/lib/constants";
+import { resolveIncludedServices } from "@/components/trip/package-service-icons";
+import { emptyItineraryDay, ItineraryEditor, normalizeItineraryDay } from "@/components/admin/itinerary-editor";
+import type { DestinationDTO, ItineraryItem, TripDTO } from "@/types";
 
-type ItineraryItem = { day: number; title: string; description: string };
 function toDateInput(d?: string) {
   return d ? new Date(d).toISOString().slice(0, 10) : "";
 }
@@ -50,12 +51,15 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
   const router = useRouter();
   const editing = Boolean(trip);
   const [loading, setLoading] = useState(false);
+  const initialCountry = trip?.country
+    ?? destinations.find((destination) => destination.title === trip?.destination)?.country
+    ?? "India";
 
   const [form, setForm] = useState({
     title: trip?.title ?? "",
     holidayGroup: trip?.holidayGroup ?? "",
-    destination: trip?.destination ?? destinations[0]?.title ?? "",
-    country: trip?.country ?? destinations.find((destination) => destination.title === trip?.destination)?.country ?? "India",
+    destination: trip?.destination ?? destinations.find((destination) => destination.country === initialCountry)?.title ?? "",
+    country: initialCountry,
     description: trip?.description ?? "",
     basePrice: trip?.basePrice ?? 0,
     totalSeats: trip?.totalSeats ?? 0,
@@ -68,14 +72,15 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
     featured: trip?.featured ?? false,
     images: (trip?.images ?? []).join("\n"),
     inclusions: (trip?.inclusions ?? []).join("\n"),
+    includedServices: resolveIncludedServices(trip?.includedServices, trip?.inclusions),
     exclusions: (trip?.exclusions ?? []).join("\n"),
     tags: (trip?.tags ?? []).join(", "),
     holidayPackage: trip?.holidayPackage ?? true,
   });
   const [itinerary, setItinerary] = useState<ItineraryItem[]>(
     trip?.itinerary?.length
-      ? trip.itinerary
-      : [{ day: 1, title: "", description: "" }],
+      ? trip.itinerary.map(normalizeItineraryDay)
+      : [emptyItineraryDay(1)],
   );
   const [packageDuration, setPackageDuration] = useState(
     trip?.packageOptions?.[0]?.label ?? "3D/2N",
@@ -85,6 +90,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
   // fixed-departure choice in the form.
   const fixedDeparture = !form.holidayPackage;
   const showDateAndSeats = fixedDeparture;
+  const countryDestinations = destinations.filter((destination) => destination.country === form.country);
 
   function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -96,6 +102,26 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       ...current,
       destination: value,
       country: destination?.country ?? current.country,
+    }));
+  }
+
+  function onCountryChange(country: string) {
+    const destinationsForCountry = destinations.filter((destination) => destination.country === country);
+    setForm((current) => ({
+      ...current,
+      country,
+      destination: destinationsForCountry.some((destination) => destination.title === current.destination)
+        ? current.destination
+        : destinationsForCountry[0]?.title ?? "",
+    }));
+  }
+
+  function toggleIncludedService(service: PackageService) {
+    setForm((current) => ({
+      ...current,
+      includedServices: current.includedServices.includes(service)
+        ? current.includedServices.filter((item) => item !== service)
+        : [...current.includedServices, service],
     }));
   }
 
@@ -125,6 +151,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       featured: form.featured,
       images: lines(form.images),
       inclusions: lines(form.inclusions),
+      includedServices: form.includedServices,
       exclusions: lines(form.exclusions),
       packageOptions: packageDuration.trim()
         ? [{ label: packageDuration.trim(), price: Number(form.basePrice) || 0 }]
@@ -165,20 +192,23 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
             <Input value={form.title} onChange={(e) => set("title", e.target.value)} required />
           </div>
           <div>
-            <Label className="mb-1.5 block">Destination <RequiredMark /></Label>
-            <Select value={form.destination} onChange={(e) => onDestinationChange(e.target.value)} required>
-              {form.destination && !destinations.some((destination) => destination.title === form.destination) ? (
-                <option value={form.destination}>{form.destination}</option>
-              ) : null}
-              {destinations.map((destination) => (
-                <option key={destination._id} value={destination.title}>{destination.title}</option>
-              ))}
+            <Label className="mb-1.5 block">Country <RequiredMark /></Label>
+            <Select value={form.country} onChange={(e) => onCountryChange(e.target.value)} required>
+              {COUNTRY_OPTIONS.map((country) => <option key={country.code} value={country.name}>{country.name}</option>)}
             </Select>
           </div>
           <div>
-            <Label className="mb-1.5 block">Country</Label>
-            <Select value={form.country} onChange={(e) => set("country", e.target.value)}>
-              {COUNTRY_OPTIONS.map((country) => <option key={country.code} value={country.name}>{country.name}</option>)}
+            <Label className="mb-1.5 block">Destination <RequiredMark /></Label>
+            <Select value={form.destination} onChange={(e) => onDestinationChange(e.target.value)} required>
+              {form.destination && !countryDestinations.some((destination) => destination.title === form.destination) ? (
+                <option value={form.destination}>{form.destination} (Saved)</option>
+              ) : null}
+              {!countryDestinations.length ? <option value="">No destinations available</option> : null}
+              {countryDestinations.map((destination) => (
+                <option key={destination._id} value={destination.title}>
+                  {destination.title}{destination.status === "inactive" ? " (Inactive)" : ""}
+                </option>
+              ))}
             </Select>
           </div>
           <div>
@@ -295,8 +325,25 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       </Card>
 
       <Card>
-        <CardContent className="grid gap-4 p-6 sm:grid-cols-3">
-          <div className="sm:col-span-3">
+        <CardContent className="grid gap-5 p-6 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <Label className="mb-1.5 block">Package includes</Label>
+            <p className="mb-3 text-xs text-muted-foreground">Select the services included in this package. They will appear with icons on the website.</p>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              {PACKAGE_SERVICES.map((service) => (
+                <label key={service} className="flex min-h-11 cursor-pointer items-center gap-2.5 rounded-lg border border-border px-3 py-2 text-sm font-medium transition-colors hover:bg-secondary/50 has-checked:border-primary/40 has-checked:bg-primary/5">
+                  <input
+                    type="checkbox"
+                    checked={form.includedServices.includes(service)}
+                    onChange={() => toggleIncludedService(service)}
+                    className="size-4 accent-[var(--primary)]"
+                  />
+                  {PACKAGE_SERVICE_LABELS[service]}
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="sm:col-span-2">
             <Label className="mb-1.5 block">Image URLs (one per line)</Label>
             <Textarea
               value={form.images}
@@ -319,56 +366,8 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
         </CardContent>
       </Card>
 
-      {/* Itinerary */}
       <Card>
-        <CardContent className="space-y-4 p-6">
-          <div className="flex items-center justify-between">
-            <Label>Itinerary</Label>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                setItinerary((it) => [...it, { day: it.length + 1, title: "", description: "" }])
-              }
-            >
-              <Plus className="size-4" /> Add day
-            </Button>
-          </div>
-          {itinerary.map((item, i) => (
-            <div key={i} className="grid gap-2 rounded-lg border border-border p-3 sm:grid-cols-[80px_1fr_auto]">
-              <div className="flex items-center justify-center rounded-md bg-secondary font-semibold">
-                Day {i + 1}
-              </div>
-              <div className="space-y-2">
-                <Input
-                  placeholder="Title (e.g. Arrival & local sightseeing)"
-                  value={item.title}
-                  onChange={(e) =>
-                    setItinerary((it) => it.map((x, idx) => (idx === i ? { ...x, title: e.target.value } : x)))
-                  }
-                />
-                <Textarea
-                  placeholder="Details"
-                  value={item.description}
-                  onChange={(e) =>
-                    setItinerary((it) => it.map((x, idx) => (idx === i ? { ...x, description: e.target.value } : x)))
-                  }
-                  className="min-h-16"
-                />
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => setItinerary((it) => it.filter((_, idx) => idx !== i))}
-                disabled={itinerary.length === 1}
-              >
-                <Trash2 className="size-4 text-destructive" />
-              </Button>
-            </div>
-          ))}
-        </CardContent>
+        <CardContent className="p-6"><ItineraryEditor value={itinerary} onChange={setItinerary} /></CardContent>
       </Card>
 
       <div className="flex justify-end gap-3">

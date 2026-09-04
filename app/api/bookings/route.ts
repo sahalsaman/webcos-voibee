@@ -67,12 +67,12 @@ export async function POST(request: Request) {
       travellers: body.travelerDetails.travellers || body.seats,
     };
     const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
-    if (customDate && (!body.travelStartDate || !body.travelEndDate)) {
-      return fail("Travel start and end dates are required for this package", 422);
+    if (customDate && !body.travelStartDate) {
+      return fail("Travel start date is required for this package", 422);
     }
-    const travelStartDate = customDate ? new Date(body.travelStartDate!) : new Date(trip.startDate);
-    const travelEndDate = customDate ? new Date(body.travelEndDate!) : new Date(trip.endDate);
-    if (travelEndDate < travelStartDate) return fail("Travel end date must be on or after start date", 422);
+    const travelStartDate = customDate ? new Date(`${body.travelStartDate}T00:00:00.000Z`) : new Date(trip.startDate);
+    const configuredDuration = Math.max(0, new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime());
+    const travelEndDate = customDate ? new Date(travelStartDate.getTime() + configuredDuration) : new Date(trip.endDate);
 
     let travelerId: string;
     if (user?.role === "traveler") {

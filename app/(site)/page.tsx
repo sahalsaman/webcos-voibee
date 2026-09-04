@@ -25,8 +25,9 @@ import { getFeaturedTrips, getHomeDestinations, getOfferCards, isIndiaCountry } 
 import { destinationImage } from "@/lib/images";
 import { formatCurrencyForCountry, normalizePackageHref } from "@/lib/utils";
 import type { TripCategory } from "@/lib/constants";
-import type { DestinationDTO, OfferCardDTO } from "@/types";
+import type { OfferCardDTO } from "@/types";
 import { DestinationSwitcher } from "@/components/site/destination-switcher";
+import { DestinationCarousel } from "@/components/home/destination-carousel";
 
 // Re-fetch featured packages from the DB at most once a minute.
 export const revalidate = 60;
@@ -208,19 +209,12 @@ export default async function HomePage({
 
       {/* ---------------- Popular destinations ---------------- */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <SectionHeading
-          eyebrow="Where to next"
-          title={showDomestic ? "India and Global Escapes" : "Global Escapes"}
-          subtitle={
-            showDomestic
-              ? "Explore India favourites and easy international escapes loved by our community."
-              : "Browse international getaways curated for travelers opening Voibee from outside India."
-          }
-        />
         <DestinationSwitcher
           hasIndia={showDomestic && homeDestinations.domestic.length > 0}
-          india={<DestinationGrid title="India destinations" destinations={homeDestinations.domestic} country={country} />}
-          global={<DestinationGrid title="Global Escapes" destinations={homeDestinations.international} country={country} />}
+          inline
+          heading="Trending Holiday Destinations"
+          india={<DestinationCarousel title="India destinations" destinations={homeDestinations.domestic} country={country} hideTitle />}
+          global={<DestinationCarousel title="Global Escapes" destinations={homeDestinations.international} country={country} hideTitle />}
         />
       </section>
 
@@ -255,7 +249,7 @@ export default async function HomePage({
       {/* ---------------- Featured packages ---------------- */}
       <section className="bg-secondary/40 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-end justify-between">
+          <div className="mb-8 flex items-end justify-between gap-4 [&>div]:mb-0">
             <SectionHeading
               eyebrow="Featured"
               title="Trending packages this season"
@@ -536,53 +530,6 @@ function SectionHeading({
           {description}
         </p>
       ) : null}
-    </div>
-  );
-}
-
-function DestinationGrid({
-  title,
-  destinations,
-  country,
-}: {
-  title: string;
-  destinations: DestinationDTO[];
-  country?: string;
-}) {
-  return (
-    <div>
-      <div className="mb-4 flex items-center justify-between gap-4">
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <Button asChild variant="outline" size="sm">
-          <Link href={hrefWithCountry("/packages", country)}>
-            Explore <ArrowRight className="size-4" />
-          </Link>
-        </Button>
-      </div>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
-        {destinations.map((d) => (
-          <Link
-            key={d._id}
-            href={hrefWithCountry(`/packages?destination=${encodeURIComponent(d.title)}`, country)}
-            className="group relative aspect-[3/4] overflow-hidden rounded-xl"
-          >
-            <Image
-              src={d.images[0] || destinationImage(d.title)}
-              alt={d.title}
-              fill
-              sizes="(max-width:768px) 50vw, 20vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-            <div className="absolute bottom-3 left-3 right-3 text-white">
-              <span className="block font-semibold">{d.title}</span>
-              <span className="mt-1 block text-xs text-white/85">
-                From {formatCurrencyForCountry(d.basePrice, country)}
-              </span>
-            </div>
-          </Link>
-        ))}
-      </div>
     </div>
   );
 }

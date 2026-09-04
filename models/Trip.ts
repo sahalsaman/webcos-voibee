@@ -1,11 +1,24 @@
 import { Schema, model, models, type InferSchemaType } from "mongoose";
-import { TRIP_STATUSES, TRIP_CATEGORIES } from "@/lib/constants";
+import { PACKAGE_SERVICES, TRIP_STATUSES, TRIP_CATEGORIES } from "@/lib/constants";
 
 const ItinerarySchema = new Schema(
   {
     day: { type: Number, required: true },
     title: { type: String, required: true },
     description: { type: String, default: "" },
+    transports: {
+      type: [{ title: { type: String, required: true, trim: true }, description: { type: String, default: "" }, _id: false }],
+      default: [],
+    },
+    hotels: {
+      type: [{ name: { type: String, required: true, trim: true }, description: { type: String, default: "" }, image: { type: String, default: "" }, _id: false }],
+      default: [],
+    },
+    meals: { type: [String], enum: ["breakfast", "lunch", "dinner"], default: [] },
+    sightseeing: {
+      type: [{ name: { type: String, required: true, trim: true }, description: { type: String, default: "" }, image: { type: String, default: "" }, _id: false }],
+      default: [],
+    },
   },
   { _id: false },
 );
@@ -34,6 +47,7 @@ const TripSchema = new Schema(
     videos: { type: [String], default: [] },
     itinerary: { type: [ItinerarySchema], default: [] },
     inclusions: { type: [String], default: [] },
+    includedServices: { type: [String], enum: PACKAGE_SERVICES, default: [] },
     exclusions: { type: [String], default: [] },
     packageOptions: { type: [PackageOptionSchema], default: [] },
     holidayPackage: { type: Boolean, default: true, index: true },

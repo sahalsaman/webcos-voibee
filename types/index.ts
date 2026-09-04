@@ -2,6 +2,7 @@ import type {
   Role,
   TripStatus,
   TripCategory,
+  PackageService,
   PartnerStatus,
   PartnerType,
   BookingStatus,
@@ -35,6 +36,29 @@ export interface ItineraryItem {
   day: number;
   title: string;
   description: string;
+  transports?: ItineraryTransport[];
+  hotels?: ItineraryHotel[];
+  meals?: ItineraryMeal[];
+  sightseeing?: SightseeingPlace[];
+}
+
+export interface ItineraryTransport {
+  title: string;
+  description: string;
+}
+
+export interface ItineraryHotel {
+  name: string;
+  description: string;
+  image: string;
+}
+
+export type ItineraryMeal = "breakfast" | "lunch" | "dinner";
+
+export interface SightseeingPlace {
+  name: string;
+  description: string;
+  image: string;
 }
 
 export interface PackageOption {
@@ -53,6 +77,7 @@ export interface TripDTO {
   videos: string[];
   itinerary: ItineraryItem[];
   inclusions: string[];
+  includedServices?: PackageService[];
   exclusions: string[];
   packageOptions: PackageOption[];
   holidayPackage?: boolean;

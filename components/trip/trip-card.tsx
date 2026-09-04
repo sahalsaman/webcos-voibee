@@ -2,10 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, MapPin, Star, Calendar, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { PackageOptionsList } from "@/components/trip/package-options";
+import { PackageServiceIcons } from "@/components/trip/package-service-icons";
 import { isCustomDateTripCategory } from "@/lib/constants";
 import { formatINR, tripDuration, formatDate } from "@/lib/utils";
 import type { TripDTO } from "@/types";
+import { cn } from "@/lib/utils";
 
 interface TripCardProps {
   trip: TripDTO;
@@ -13,27 +14,29 @@ interface TripCardProps {
   /** Override the displayed "from" price (e.g. partner selling price). */
   priceOverride?: number;
   priceLabel?: string;
+  view?: "grid" | "list";
 }
 
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=70";
 
-export function TripCard({ trip, href, priceOverride, priceLabel }: TripCardProps) {
+export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" }: TripCardProps) {
   const link = href ?? `/packages/${trip.slug}`;
   const img = trip.images?.[0] || FALLBACK_IMG;
   const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
   const { label: duration } = tripDuration(trip.startDate, trip.endDate);
   const price = priceOverride ?? trip.basePrice;
-  const priceOffset = priceOverride != null ? priceOverride - trip.basePrice : 0;
-  const visiblePackageOptions = trip.packageOptions?.slice(0, 3) ?? [];
   const soldOut = customDate ? false : trip.availableSeats <= 0;
 
   return (
     <Link
       href={link}
-      className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10"
+      className={cn(
+        "group relative flex h-full overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-xl hover:shadow-primary/10",
+        view === "list" ? "flex-col sm:flex-row" : "flex-col",
+      )}
     >
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className={cn("relative aspect-[4/3] overflow-hidden", view === "list" && "sm:aspect-auto sm:min-h-64 sm:w-[38%] sm:shrink-0")}>
         <Image
           src={img}
           alt={trip.title}
@@ -79,9 +82,12 @@ export function TripCard({ trip, href, priceOverride, priceLabel }: TripCardProp
           ) : null}
         </div>
 
-        {visiblePackageOptions.length ? (
-          <PackageOptionsList options={visiblePackageOptions} priceOffset={priceOffset} compact className="mt-3" />
-        ) : null}
+        <PackageServiceIcons
+          includedServices={trip.includedServices}
+          inclusions={trip.inclusions}
+          compact
+          className="mt-3"
+        />
 
         <div className="mt-4 flex items-end justify-between border-t border-border pt-3">
           <div>

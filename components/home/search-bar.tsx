@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, MapPin, Search } from "lucide-react";
+import { Loader2, MapPin, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -11,12 +12,12 @@ const MONTH_OPTION_COUNT = 18;
 
 type SearchResult = {
   id: string;
-  type: "destination" | "trip" | "country";
   title: string;
   destination: string;
   country: string;
   countryCode: string;
   flag: string;
+  image?: string;
   href: string;
 };
 
@@ -46,12 +47,6 @@ function buildMonthOptions() {
   });
 }
 
-function resultLabel(type: SearchResult["type"]) {
-  if (type === "trip") return "Package";
-  if (type === "country") return "Country";
-  return "Destination";
-}
-
 export function SearchBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -68,7 +63,47 @@ export function SearchBar() {
 
   const monthOptions = buildMonthOptions();
   const selectedMonthOption = monthOptions.find((option) => option.value === selectedMonth);
-  const showResults = open && (results.length > 0 || loading || destination.trim().length >= 2);
+  const showResults = results.length > 0 || loading || destination.trim().length >= 2;
+
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [open]);
+
+  async function openSearch() {
+    setOpen(true);
+    if (results.length || destination.trim().length >= 2) return;
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/destinations?c=${encodeURIComponent(visitorCountry)}`);
+      const payload = await response.json();
+      const items = Array.isArray(payload.data) ? payload.data.slice(0, 10) : [];
+      setResults(items.map((item: { _id: string; title: string; country: string; countryCode: string; images?: string[] }) => ({
+        id: `destination-${item._id}`,
+        title: item.title,
+        destination: item.title,
+        country: item.country,
+        countryCode: item.countryCode,
+        flag: "",
+        image: item.images?.[0] ?? "",
+        href: `/packages?destination=${encodeURIComponent(item.title)}&c=${encodeURIComponent(visitorCountry)}`,
+      })));
+      setActiveIndex(-1);
+    } catch {
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   function withMonth(href: string) {
     const [path, query = ""] = href.split("?");
@@ -82,7 +117,7 @@ export function SearchBar() {
   }
 
   function goToResult(item: SearchResult) {
-    setDestination(item.type === "country" ? item.country : item.destination);
+    setDestination(item.destination);
     setOpen(false);
     setActiveIndex(-1);
     router.push(withMonth(item.href));
@@ -160,40 +195,58 @@ export function SearchBar() {
   }
 
   return (
-    <form
-      onSubmit={submit}
-      className="glass relative mx-auto grid w-full max-w-3xl gap-3 rounded-2xl p-3 shadow-xl shadow-slate-950/10 md:grid-cols-[minmax(0,1fr)_220px_auto] md:items-center dark:shadow-xl"
-    >
-      <label className="flex min-w-0 items-center gap-2 rounded-xl border border-border/60 bg-card/90 px-3 py-2 shadow-sm">
-        <MapPin className="size-4 shrink-0 text-muted-foreground" />
+    <>
+      <button
+        type="button"
+        onClick={openSearch}
+        className="glass mx-auto grid w-full max-w-3xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl p-3 text-left shadow-xl shadow-slate-950/10 dark:shadow-xl"
+      >
+        <span className="flex min-w-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm">
+          <MapPin className="size-4 shrink-0 text-slate-500" />
+          <span className="h-10 flex-1 py-2 text-sm text-slate-500">{destination || "Search destinations"}</span>
+        </span>
+        <span className="flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+          <Search className="size-5" />
+        </span>
+      </button>
+
+      {open ? (
+        <div className="fixed inset-0 z-[100] flex items-start justify-center bg-slate-950/70 px-4 pb-8 pt-[10vh] backdrop-blur-sm" onMouseDown={() => setOpen(false)}>
+          <form
+            onSubmit={submit}
+            onMouseDown={(event) => event.stopPropagation()}
+            className="w-full max-w-4xl overflow-hidden rounded-[28px] bg-white text-slate-900 shadow-2xl"
+          >
+            <div className="flex items-center gap-3 border-b border-slate-200 px-5 py-4 sm:px-7">
+              <Search className="size-6 shrink-0 text-primary" />
+              <label className="flex min-w-0 flex-1 items-center">
+        <MapPin className="size-4 shrink-0 text-slate-500" />
         <span className="sr-only">Destination</span>
         <Input
           value={destination}
           onChange={(e) => onDestinationChange(e.target.value)}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setTimeout(() => setOpen(false), 120)}
           onKeyDown={onKeyDown}
-          placeholder="Search destination, package or country"
+          placeholder="Search your destination"
           autoComplete="off"
-          className="h-10 border-0 bg-transparent px-0 shadow-none focus-visible:ring-0"
+          autoFocus
+          className="h-12 border-0 bg-transparent px-3 text-lg font-semibold text-slate-900 caret-slate-900 shadow-none placeholder:text-slate-500 focus-visible:ring-0"
         />
-      </label>
+              </label>
+              <Button type="button" variant="ghost" size="icon" onClick={() => setOpen(false)} aria-label="Close search">
+                <X className="size-5" />
+              </Button>
+            </div>
 
-
-
-      <Button type="submit" variant="gradient" size="lg" className="h-12 md:px-6">
-        <Search className="size-4" /> Search
-      </Button>
-
-      {showResults ? (
-        <div className="md:col-span-3">
-          <div className="overflow-hidden rounded-xl border border-border bg-card/98 text-foreground shadow-2xl shadow-slate-950/15 backdrop-blur-xl dark:border-white/15 dark:bg-background/95">
+            <div className="max-h-[65vh] overflow-y-auto p-5 sm:p-7">
+              <h3 className="mb-4 text-base font-bold text-slate-900">
+                {destination.trim().length >= 2 ? "Matching destinations" : "Popular destinations"}
+              </h3>
             {loading ? (
-              <div className="flex items-center gap-2 px-4 py-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 py-10 text-sm text-slate-500">
                 <Loader2 className="size-4 animate-spin" /> Searching
               </div>
             ) : results.length ? (
-              <div className="max-h-72 overflow-y-auto py-1">
+              <div className="grid gap-3 sm:grid-cols-2">
                 {results.map((item, index) => (
                   <button
                     key={item.id}
@@ -201,32 +254,29 @@ export function SearchBar() {
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => goToResult(item)}
                     className={cn(
-                      "grid w-full grid-cols-[42px_minmax(0,1fr)_auto] items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-secondary/70",
-                      index > 0 && "border-t border-border/60",
-                      activeIndex === index && "bg-secondary",
+                      "grid w-full grid-cols-[52px_minmax(0,1fr)] items-center gap-3 rounded-2xl border border-slate-200 p-2.5 text-left transition hover:border-primary/35 hover:bg-primary/5",
+                      activeIndex === index && "border-primary/40 bg-primary/5",
                     )}
                   >
-                    <span className="flex size-10 items-center justify-center rounded-full bg-secondary text-xl shadow-sm">
-                      {item.flag || "•"}
+                    <span className="relative flex size-13 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-xl shadow-sm">
+                      {item.image ? <Image src={item.image} alt="" fill sizes="52px" className="object-cover" /> : item.flag || <MapPin className="size-5 text-primary" />}
                     </span>
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-semibold leading-5">{item.title}</span>
-                      <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                        {item.destination} · {item.country}
+                      <span className="block truncate text-sm font-bold leading-5 text-slate-900">{item.title}</span>
+                      <span className="mt-1 block truncate text-xs font-semibold text-primary">
+                        View packages · {item.country}
                       </span>
-                    </span>
-                    <span className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary">
-                      {resultLabel(item.type)}
                     </span>
                   </button>
                 ))}
               </div>
             ) : (
-              <div className="px-4 py-4 text-sm text-muted-foreground">No matched destinations or packages</div>
+              <div className="py-10 text-center text-sm text-slate-500">No matching destinations</div>
             )}
-          </div>
+            </div>
+          </form>
         </div>
       ) : null}
-    </form>
+    </>
   );
 }

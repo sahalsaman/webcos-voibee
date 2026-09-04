@@ -10,7 +10,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* Brand panel */}
       <div className="relative hidden lg:block">
-        <Image src={SIDE_IMG} alt="" fill priority className="object-cover" />
+        <Image src={SIDE_IMG} alt="" fill priority sizes="50vw" className="object-cover" />
         <div className="absolute inset-0 bg-brand-gradient/55 mix-blend-multiply" />
         <div className="absolute inset-0 bg-slate-950/15" />
         <div className="relative flex h-full flex-col justify-between p-12 text-white">

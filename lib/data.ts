@@ -140,6 +140,46 @@ export interface TripFilters {
   pageSize?: number;
 }
 
+function buildTripQuery(filters: TripFilters, includeCategory = true) {
+  const query: Record<string, unknown> = { status: "active" };
+  if (filters.destination) query.destination = new RegExp(filters.destination, "i");
+  if (filters.country) query.country = new RegExp(`^${filters.country}$`, "i");
+  if (includeCategory && filters.category) {
+    query.category = filters.category === "Group Trip" ? { $in: ["Group Trip", "Group"] } : filters.category;
+  }
+  if (filters.q) query.$text = { $search: filters.q };
+  if (filters.startDate || filters.endDate) {
+    const rangeStart = filters.startDate ? new Date(`${filters.startDate}T00:00:00.000Z`) : undefined;
+    const rangeEnd = filters.endDate ? new Date(`${filters.endDate}T23:59:59.999Z`) : rangeStart;
+    if (rangeStart && rangeEnd && !Number.isNaN(rangeStart.getTime()) && !Number.isNaN(rangeEnd.getTime())) {
+      query.startDate = { $lte: rangeEnd };
+      query.endDate = { $gte: rangeStart };
+    }
+  }
+  if (filters.minPrice != null || filters.maxPrice != null) {
+    query.basePrice = {
+      ...(filters.minPrice != null ? { $gte: filters.minPrice } : {}),
+      ...(filters.maxPrice != null ? { $lte: filters.maxPrice } : {}),
+    };
+  }
+  return query;
+}
+
+export async function getTripCategoryCounts(filters: TripFilters = {}) {
+  return safe(async () => {
+    const rows = await Trip.aggregate<{ _id: string; count: number }>([
+      { $match: buildTripQuery(filters, false) },
+      { $group: { _id: "$category", count: { $sum: 1 } } },
+    ]);
+    const counts: Record<string, number> = {};
+    for (const row of rows) {
+      const category = row._id === "Group" ? "Group Trip" : row._id;
+      counts[category] = (counts[category] ?? 0) + row.count;
+    }
+    return counts;
+  }, {} as Record<string, number>);
+}
+
 export async function getTrips(filters: TripFilters = {}) {
   const {
     q,
@@ -157,26 +197,7 @@ export async function getTrips(filters: TripFilters = {}) {
 
   return safe(
     async () => {
-      const query: Record<string, unknown> = { status: "active" };
-      if (destination) query.destination = new RegExp(destination, "i");
-      if (country) query.country = new RegExp(`^${country}$`, "i");
-      if (category) query.category = category;
-      if (q) query.$text = { $search: q };
-      if (startDate || endDate) {
-        const rangeStart = startDate ? new Date(`${startDate}T00:00:00.000Z`) : undefined;
-        const rangeEnd = endDate ? new Date(`${endDate}T23:59:59.999Z`) : rangeStart;
-
-        if (rangeStart && rangeEnd && !Number.isNaN(rangeStart.getTime()) && !Number.isNaN(rangeEnd.getTime())) {
-          query.startDate = { $lte: rangeEnd };
-          query.endDate = { $gte: rangeStart };
-        }
-      }
-      if (minPrice != null || maxPrice != null) {
-        query.basePrice = {
-          ...(minPrice != null ? { $gte: minPrice } : {}),
-          ...(maxPrice != null ? { $lte: maxPrice } : {}),
-        };
-      }
+      const query = buildTripQuery({ q, destination, country, category, startDate, endDate, minPrice, maxPrice });
 
       const sortMap: Record<string, Record<string, 1 | -1>> = {
         newest: { createdAt: -1 },

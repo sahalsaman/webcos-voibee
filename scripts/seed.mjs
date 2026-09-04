@@ -190,6 +190,7 @@ const trips = tripDefs.map((t, i) => {
     videos: [],
     itinerary,
     inclusions,
+    includedServices: ["hotels", "sightseeing", "meals", "tour-manager", "transfers"],
     exclusions,
     basePrice: t.basePrice,
     totalSeats: t.seats,

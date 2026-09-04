@@ -13,7 +13,8 @@ import { Avatar } from "@/components/ui/avatar";
 import { Gallery } from "@/components/trip/gallery";
 import { TripCard } from "@/components/trip/trip-card";
 import { BookingBox } from "@/components/booking/booking-box";
-import { PackageOptionsList } from "@/components/trip/package-options";
+import { PackageServiceIcons, resolveIncludedServices } from "@/components/trip/package-service-icons";
+import { DetailedItinerary } from "@/components/trip/detailed-itinerary";
 import {
   getTripBySlug,
   getReviewsForTrip,
@@ -56,7 +57,8 @@ export default async function TripDetailPage({ params }: Props) {
 
   const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
   const { label: duration } = tripDuration(trip.startDate, trip.endDate);
-  const scheduleLabel = customDate ? "Custom date" : duration;
+  const scheduleLabel = duration;
+  const includedServices = resolveIncludedServices(trip.includedServices, trip.inclusions);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -127,6 +129,14 @@ export default async function TripDetailPage({ params }: Props) {
         <div className="space-y-10">
           <Gallery images={trip.images} title={trip.title} />
 
+          {includedServices.length ? (
+            <section className="rounded-2xl border border-border/70 bg-secondary/20 p-5 sm:p-6">
+              <p className="text-sm font-semibold text-primary">Everything arranged</p>
+              <h2 className="mb-4 mt-1 text-xl font-bold">Included in this package</h2>
+              <PackageServiceIcons includedServices={includedServices} />
+            </section>
+          ) : null}
+
           {/* Overview */}
           <section>
             <h2 className="mb-3 text-xl font-semibold">Overview</h2>
@@ -144,36 +154,7 @@ export default async function TripDetailPage({ params }: Props) {
             ) : null}
           </section>
 
-          {trip.packageOptions?.length ? (
-            <section>
-              <h2 className="mb-3 text-xl font-semibold">Package options</h2>
-              <PackageOptionsList options={trip.packageOptions} />
-            </section>
-          ) : null}
-
-          {/* Itinerary */}
-          {trip.itinerary?.length ? (
-            <section>
-              <h2 className="mb-4 text-xl font-semibold">Itinerary</h2>
-              <ol className="relative space-y-6 border-l-2 border-border pl-6">
-                {trip.itinerary.map((item) => (
-                  <li key={item.day} className="relative">
-                    <span className="absolute -left-[31px] flex size-6 items-center justify-center rounded-full bg-brand-gradient text-xs font-bold text-white">
-                      {item.day}
-                    </span>
-                    <h3 className="font-semibold">
-                      Day {item.day}: {item.title}
-                    </h3>
-                    {item.description ? (
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {item.description}
-                      </p>
-                    ) : null}
-                  </li>
-                ))}
-              </ol>
-            </section>
-          ) : null}
+          {trip.itinerary?.length ? <DetailedItinerary days={trip.itinerary} /> : null}
 
           {/* Inclusions / Exclusions */}
           <section className="grid gap-6 sm:grid-cols-2">

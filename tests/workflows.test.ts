@@ -17,6 +17,7 @@ import {
   visaSchema,
   expenseSchema,
   invoiceSchema,
+  tripSchema,
 } from "../lib/validations";
 
 test("legacy public trip links resolve to the packages routes", () => {
@@ -68,6 +69,31 @@ test("booking validation accepts fixed and custom date payloads but rejects inva
   assert.equal(bookingSchema.safeParse(base).success, true);
   assert.equal(bookingSchema.safeParse({ ...base, travelStartDate: "2026-10-01", travelEndDate: "2026-10-05" }).success, true);
   assert.equal(bookingSchema.safeParse({ ...base, travelerDetails: { ...base.travelerDetails, mobile: "123" } }).success, false);
+});
+
+test("package itinerary accepts multiple structured items per day", () => {
+  const result = tripSchema.safeParse({
+    title: "Swiss Highlights",
+    destination: "Zurich",
+    country: "Switzerland",
+    basePrice: 120000,
+    startDate: "2026-10-01",
+    endDate: "2026-10-08",
+    includedServices: ["flights", "hotels", "meals", "sightseeing"],
+    itinerary: [{
+      day: 1,
+      title: "Welcome to Zurich",
+      description: "Arrival day",
+      transports: [{ title: "Airport transfer", description: "Private coach" }],
+      hotels: [{ name: "Central Hotel", description: "Three-star stay", image: "https://example.com/hotel.jpg" }],
+      meals: ["breakfast", "dinner"],
+      sightseeing: [
+        { name: "Old Town", description: "Guided walking tour", image: "https://example.com/old-town.jpg" },
+        { name: "Lake Zurich", description: "Evening lake visit", image: "https://example.com/lake.jpg" },
+      ],
+    }],
+  });
+  assert.equal(result.success, true);
 });
 
 test("custom-date classification and workflow statuses cover implemented paths", () => {

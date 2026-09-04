@@ -83,7 +83,7 @@ export default function RootLayout({
     ],
   };
   return (
-    <html lang="en" suppressHydrationWarning className={`${jakarta.variable} h-full`}>
+    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className={`${jakarta.variable} h-full`}>
       <body className="min-h-full bg-background text-foreground antialiased">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
         <Analytics/>

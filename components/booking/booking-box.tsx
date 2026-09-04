@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { formatINR, formatDate } from "@/lib/utils";
+import { formatINR, formatDate, tripDuration } from "@/lib/utils";
 import { appConfig } from "@/app/app,config";
 
 declare global {
@@ -67,6 +67,14 @@ export function BookingBox({
   const soldOut = customDate ? false : availableSeats <= 0;
   const maxSeats = customDate ? 20 : Math.min(availableSeats, 20);
   const total = pricePerPerson * seats;
+  const packageDays = tripDuration(startDate, endDate).days;
+
+  function calculatedEndDate(value: string) {
+    if (!value) return "";
+    const date = new Date(`${value}T00:00:00.000Z`);
+    date.setUTCDate(date.getUTCDate() + packageDays - 1);
+    return date.toISOString().slice(0, 10);
+  }
 
   function setField(k: keyof typeof form, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -77,12 +85,8 @@ export function BookingBox({
       toast.error("Please enter your name, email and a valid 10-digit mobile.");
       return;
     }
-    if (customDate && (!form.travelStartDate || !form.travelEndDate)) {
-      toast.error("Please select your travel start and end dates.");
-      return;
-    }
-    if (customDate && new Date(form.travelEndDate) < new Date(form.travelStartDate)) {
-      toast.error("Travel end date must be on or after the start date.");
+    if (customDate && !form.travelStartDate) {
+      toast.error("Please select your travel start date.");
       return;
     }
 
@@ -164,12 +168,11 @@ export function BookingBox({
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || "Verification failed");
       toast.success(`Booking confirmed! Ref: ${data.data.bookingNumber}`);
-      if (session?.user) {
-        router.push(`/traveler/bookings?success=${data.data.bookingNumber}`);
-      } else {
-        setLoading(false);
+      const successParams = new URLSearchParams({ booking: data.data.bookingNumber });
+      if (typeof payload.confirmationToken === "string") {
+        successParams.set("token", payload.confirmationToken);
       }
-      router.refresh();
+      router.push(`/booking-success?${successParams.toString()}`);
     } catch (err) {
       toast.error((err as Error).message);
       setLoading(false);
@@ -193,7 +196,7 @@ export function BookingBox({
       <div className="mt-4 space-y-2 text-sm text-muted-foreground">
         <p className="flex items-center gap-2">
           <Calendar className="size-4 text-primary" />
-          {customDate ? "Custom date" : `${formatDate(startDate)} → ${formatDate(endDate)}`}
+          {customDate ? `${packageDays} days / ${Math.max(0, packageDays - 1)} nights` : `${formatDate(startDate)} → ${formatDate(endDate)}`}
         </p>
         {pickupLocation ? (
           <p className="flex items-center gap-2">
@@ -239,11 +242,25 @@ export function BookingBox({
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label htmlFor="bk-start-date" className="mb-1 block">Start date <span className="text-destructive">*</span></Label>
-                    <Input id="bk-start-date" type="date" min={new Date().toISOString().slice(0, 10)} value={form.travelStartDate} onChange={(e) => setField("travelStartDate", e.target.value)} required />
+                    <Input
+                      id="bk-start-date"
+                      type="date"
+                      min={new Date().toISOString().slice(0, 10)}
+                      value={form.travelStartDate}
+                      onChange={(e) => {
+                        const travelStartDate = e.target.value;
+                        setForm((current) => ({
+                          ...current,
+                          travelStartDate,
+                          travelEndDate: calculatedEndDate(travelStartDate),
+                        }));
+                      }}
+                      required
+                    />
                   </div>
                   <div>
-                    <Label htmlFor="bk-end-date" className="mb-1 block">End date <span className="text-destructive">*</span></Label>
-                    <Input id="bk-end-date" type="date" min={form.travelStartDate || new Date().toISOString().slice(0, 10)} value={form.travelEndDate} onChange={(e) => setField("travelEndDate", e.target.value)} required />
+                    <Label htmlFor="bk-end-date" className="mb-1 block">End date ({packageDays} days)</Label>
+                    <Input id="bk-end-date" type="date" value={form.travelEndDate} readOnly disabled={!form.travelStartDate} />
                   </div>
                 </div>
               ) : null}
