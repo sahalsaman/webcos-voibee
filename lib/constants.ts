@@ -146,7 +146,6 @@ export const TRIP_CATEGORIES = [
   "Family",
   "Group Trip",
   "Luxury",
-  "Solo",
   "Strangers",
   "Wellness",
   "Spiritual",

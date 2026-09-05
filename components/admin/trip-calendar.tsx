@@ -90,6 +90,46 @@ function calendarDays(month: Date) {
   });
 }
 
+type WeekSegment = {
+  trip: CalendarTrip;
+  startColumn: number;
+  endColumn: number;
+  lane: number;
+  startsHere: boolean;
+  endsHere: boolean;
+};
+
+function weekSegments(week: Date[], trips: CalendarTrip[]) {
+  const weekStart = startOfDay(week[0]);
+  const weekEnd = startOfDay(week[6]);
+  const segments = trips
+    .flatMap((trip) => {
+      const tripStart = startOfDay(new Date(trip.startDate));
+      const tripEndValue = startOfDay(new Date(trip.endDate || trip.startDate));
+      const tripEnd = tripEndValue >= tripStart ? tripEndValue : tripStart;
+      if (tripEnd < weekStart || tripStart > weekEnd) return [];
+      const visibleStart = tripStart > weekStart ? tripStart : weekStart;
+      const visibleEnd = tripEnd < weekEnd ? tripEnd : weekEnd;
+      return [{
+        trip,
+        startColumn: Math.round((visibleStart.getTime() - weekStart.getTime()) / 86_400_000),
+        endColumn: Math.round((visibleEnd.getTime() - weekStart.getTime()) / 86_400_000),
+        lane: 0,
+        startsHere: tripStart >= weekStart,
+        endsHere: tripEnd <= weekEnd,
+      } satisfies WeekSegment];
+    })
+    .sort((a, b) => a.startColumn - b.startColumn || b.endColumn - a.endColumn);
+
+  const occupiedUntil: number[] = [];
+  for (const segment of segments) {
+    const openLane = occupiedUntil.findIndex((endColumn) => endColumn < segment.startColumn);
+    segment.lane = openLane === -1 ? occupiedUntil.length : openLane;
+    occupiedUntil[segment.lane] = segment.endColumn;
+  }
+  return { segments, laneCount: occupiedUntil.length };
+}
+
 export function AdminTripCalendar({ trips }: { trips: CalendarTrip[] }) {
   const [selectedPackage, setSelectedPackage] = useState("all");
   const [visibleStates, setVisibleStates] = useState<Set<TripCalendarState>>(
@@ -109,31 +149,7 @@ export function AdminTripCalendar({ trips }: { trips: CalendarTrip[] }) {
     if (selectedPackage !== "all" && trip.packageId !== selectedPackage) return false;
     return visibleStates.has(tripState(trip, today));
   }), [selectedPackage, trips, today, visibleStates]);
-  const tripsByDate = useMemo(() => {
-    const map = new Map<string, CalendarTrip[]>();
-    filteredTrips.forEach((trip) => {
-      if (!trip.startDate) return;
-      const key = dateKey(trip.startDate);
-      map.set(key, [...(map.get(key) ?? []), trip]);
-    });
-    return map;
-  }, [filteredTrips]);
-  const activeTripsByDate = useMemo(() => {
-    const map = new Map<string, CalendarTrip[]>();
-    filteredTrips.forEach((trip) => {
-      if (!trip.startDate) return;
-      const start = startOfDay(new Date(trip.startDate));
-      const end = startOfDay(new Date(trip.endDate || trip.startDate));
-      const lastDay = end >= start ? end : start;
-      const cursor = new Date(start);
-      while (cursor <= lastDay) {
-        const key = dateKey(cursor);
-        map.set(key, [...(map.get(key) ?? []), trip]);
-        cursor.setDate(cursor.getDate() + 1);
-      }
-    });
-    return map;
-  }, [filteredTrips]);
+  const weeks = useMemo(() => Array.from({ length: 6 }, (_, index) => days.slice(index * 7, index * 7 + 7)), [days]);
 
   function moveMonth(delta: number) {
     setMonth((current) => new Date(current.getFullYear(), current.getMonth() + delta, 1));
@@ -209,74 +225,71 @@ export function AdminTripCalendar({ trips }: { trips: CalendarTrip[] }) {
                 <div key={day} className="px-3 py-2">{day}</div>
               ))}
             </div>
-            <div className="grid grid-cols-7">
-              {days.map((day) => {
-                const key = dateKey(day);
-                const dayTrips = tripsByDate.get(key) ?? [];
-                const activeTrips = activeTripsByDate.get(key) ?? [];
-                const continuingTrips = activeTrips.filter((trip) => dateKey(trip.startDate) !== key);
-                const inMonth = day.getMonth() === month.getMonth();
-                const isToday = dateKey(day) === dateKey(today);
-
+            <div>
+              {weeks.map((week) => {
+                const { segments, laneCount } = weekSegments(week, filteredTrips);
+                const rowHeight = Math.max(150, 54 + laneCount * 62);
                 return (
-                  <div key={key} className={cn("min-h-36 border-b border-r border-border p-2", !inMonth && "bg-secondary/30 text-muted-foreground", isToday && "bg-primary/5", activeTrips.length && "bg-blue-50/55 dark:bg-blue-500/5")}>
-                    <div className="mb-2 flex items-center justify-between">
-                      <span className={cn("flex size-7 items-center justify-center rounded-full text-xs font-semibold", isToday && "bg-primary text-primary-foreground")}>
-                        {day.getDate()}
-                      </span>
-                      {dayTrips.length ? <span className="text-[11px] text-muted-foreground">{dayTrips.length} package{dayTrips.length > 1 ? "s" : ""}</span> : null}
+                  <div key={dateKey(week[0])} className="relative border-b border-border" style={{ height: rowHeight }}>
+                    <div className="absolute inset-0 grid grid-cols-7">
+                      {week.map((day) => {
+                        const inMonth = day.getMonth() === month.getMonth();
+                        const isToday = dateKey(day) === dateKey(today);
+                        const activeCount = filteredTrips.filter((trip) => {
+                          const start = startOfDay(new Date(trip.startDate));
+                          const end = startOfDay(new Date(trip.endDate || trip.startDate));
+                          return day >= start && day <= end;
+                        }).length;
+                        return (
+                          <div key={dateKey(day)} className={cn("border-r border-border p-2", !inMonth && "bg-secondary/30 text-muted-foreground", isToday && "bg-primary/5")}>
+                            <div className="flex items-center justify-between">
+                              <span className={cn("flex size-7 items-center justify-center rounded-full text-xs font-semibold", isToday && "bg-primary text-primary-foreground")}>{day.getDate()}</span>
+                              {activeCount ? <span className="text-[11px] text-muted-foreground">{activeCount} package{activeCount > 1 ? "s" : ""}</span> : null}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                    {continuingTrips.length ? (
-                      <div className="mb-1.5 space-y-1">
-                        {continuingTrips.slice(0, 3).map((trip) => {
-                          const duration = tripDuration(trip);
-                          const isLastDay = dateKey(trip.endDate || trip.startDate) === key;
-                          return (
-                            <Link
-                              key={`continuation-${trip._id}`}
-                              href={trip.source === "booking" ? `/admin/bookings?view=list&q=${encodeURIComponent(trip.bookingNumber || "")}` : `/admin/inventory/packages/${trip.packageId}/edit`}
-                              className="flex items-center gap-1.5 rounded-full bg-blue-600 px-2 py-1 text-[10px] font-semibold text-white shadow-sm"
-                              title={`${trip.title}: ${duration.range}`}
-                            >
-                              <span className="size-1.5 shrink-0 rounded-full bg-white" />
-                              <span className="truncate">{isLastDay ? "Ends" : "Continues"}: {trip.title}</span>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    ) : null}
-                    <div className="space-y-1.5">
-                      {dayTrips.slice(0, 3).map((trip) => {
+                    <div className="pointer-events-none absolute inset-x-0 top-12 grid grid-cols-7 gap-y-2 px-1">
+                      {segments.map((segment) => {
+                        const trip = segment.trip;
                         const totalSeats = Number(trip.totalSeats || 0);
                         const bookedSeats = Math.max(0, totalSeats - Number(trip.availableSeats || 0));
                         const state = tripState(trip, today);
                         const duration = tripDuration(trip);
                         return (
                           <Link
-                            key={trip._id}
+                            key={`${trip._id}-${dateKey(week[0])}`}
                             href={trip.source === "booking" ? `/admin/bookings?view=list&q=${encodeURIComponent(trip.bookingNumber || "")}` : `/admin/inventory/packages/${trip.packageId}/edit`}
-                            className={cn("block rounded-md border px-2 py-1.5 text-xs transition hover:brightness-95", stateStyles[state])}
+                            className={cn(
+                              "pointer-events-auto z-10 mx-1 min-w-0 border px-3 py-2 text-xs shadow-sm transition hover:z-20 hover:brightness-95",
+                              segment.startsHere ? "rounded-l-xl" : "-ml-px border-l-0 rounded-l-none",
+                              segment.endsHere ? "rounded-r-xl" : "-mr-px border-r-0 rounded-r-none",
+                              stateStyles[state],
+                            )}
+                            style={{
+                              gridColumn: `${segment.startColumn + 1} / ${segment.endColumn + 2}`,
+                              gridRow: segment.lane + 1,
+                              minHeight: 54,
+                            }}
+                            title={`${trip.title}: ${duration.range}`}
                           >
-                            <span className="flex items-center justify-between gap-1 font-semibold">
-                              <span className="truncate">{trip.title}</span>
-                              <span className="shrink-0 rounded bg-white/55 px-1.5 py-0.5 text-[10px]">{duration.total} day{duration.total === 1 ? "" : "s"}</span>
+                          {segment.startsHere ?<> <span className="flex items-center justify-between gap-2 font-semibold">
+                             <span> <span className="truncate">{ trip.title}</span> - 
+                            <span className=" truncate opacity-85">{trip.destination}</span>
+                             </span>
+                              <span className="shrink-0 rounded bg-white/60 px-2 py-0.5 text-[10px]">{duration.total} day{duration.total === 1 ? "" : "s"}</span>
                             </span>
-                            <span className="block truncate opacity-85">{trip.destination}</span>
-                            <span className="block truncate font-medium opacity-90">{duration.range}</span>
+                            {/* <span className="block truncate font-medium opacity-90">{duration.range}</span> */}
                             {trip.source === "booking" ? (
-                              <>
-                                <span className="block truncate opacity-85">{trip.travelerName || trip.bookingNumber}</span>
-                                <span className="mt-1 block font-medium">{trip.totalSeats} traveler{trip.totalSeats === 1 ? "" : "s"} · Booked</span>
-                              </>
-                            ) : <span className="mt-1 block font-medium">{bookedSeats}/{totalSeats} seats booked</span>}
+                              <span className="flex items-center justify-between gap-2">
+                                <span className=" truncate opacity-85">{trip.travelerName || trip.bookingNumber} </span>
+                                <span className=" font-medium">{trip.totalSeats} traveler{trip.totalSeats === 1 ? "" : "s"} · Booked</span>
+                              </span>
+                            ) : <span className=" font-medium">{bookedSeats}/{totalSeats} seats booked</span>}</> :<span className="truncate">Continues..</span>}
                           </Link>
                         );
                       })}
-                      {dayTrips.length > 3 ? (
-                        <div className="rounded-md border border-border bg-background px-2 py-1 text-xs text-muted-foreground">
-                          +{dayTrips.length - 3} more packages
-                        </div>
-                      ) : null}
                     </div>
                   </div>
                 );

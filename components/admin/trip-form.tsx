@@ -43,7 +43,6 @@ function normalizeTripCategory(category?: string): TripCategory {
   const legacy: Record<string, TripCategory> = {
     Adventure: "Holiday Package",
     Group: "Group Trip",
-    Solo: "Strangers",
     Luxury: "Holiday Package",
     "Wellness & spa": "Wellness",
   };
