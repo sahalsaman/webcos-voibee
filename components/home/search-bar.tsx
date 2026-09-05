@@ -53,6 +53,7 @@ export function SearchBar() {
   const visitorCountry = searchParams.get("c") ?? "IN";
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const requestRef = useRef(0);
+  const abortRef = useRef<AbortController | null>(null);
 
   const [destination, setDestination] = useState("");
   const [selectedMonth] = useState("");
@@ -126,6 +127,7 @@ export function SearchBar() {
   function fetchResults(value: string) {
     const q = value.trim();
     if (timerRef.current) clearTimeout(timerRef.current);
+    abortRef.current?.abort();
     if (q.length < 2) {
       setResults([]);
       setLoading(false);
@@ -137,14 +139,17 @@ export function SearchBar() {
     const requestId = requestRef.current + 1;
     requestRef.current = requestId;
     timerRef.current = setTimeout(async () => {
+      const controller = new AbortController();
+      abortRef.current = controller;
       try {
         const params = new URLSearchParams({ q, c: visitorCountry });
-        const res = await fetch(`/api/search?${params.toString()}`);
+        const res = await fetch(`/api/search?${params.toString()}`, { signal: controller.signal });
         const data = await res.json();
         if (requestRef.current !== requestId) return;
         setResults(data.success ? data.data : []);
         setActiveIndex(data.success && data.data.length ? 0 : -1);
-      } catch {
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
         if (requestRef.current === requestId) setResults([]);
       } finally {
         if (requestRef.current === requestId) setLoading(false);

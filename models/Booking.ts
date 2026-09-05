@@ -50,9 +50,17 @@ const BookingSchema = new Schema(
     status: { type: String, enum: BOOKING_STATUSES, default: "pending", index: true },
     paymentStatus: { type: String, enum: PAYMENT_STATUSES, default: "created", index: true },
     payment: { type: Schema.Types.ObjectId, ref: "Payment", default: null },
+    // Tracks whether this booking currently occupies fixed-departure inventory.
+    // This makes payment verification and cancellation idempotent.
+    inventoryReserved: { type: Boolean, default: false, index: true },
   },
   { timestamps: true },
 );
+
+BookingSchema.index({ paymentStatus: 1, createdAt: -1 });
+BookingSchema.index({ paymentStatus: 1, trip: 1 });
+BookingSchema.index({ traveler: 1, createdAt: -1 });
+BookingSchema.index({ partner: 1, createdAt: -1 });
 
 export type BookingDoc = InferSchemaType<typeof BookingSchema> & { _id: string };
 

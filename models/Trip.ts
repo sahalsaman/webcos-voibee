@@ -62,6 +62,10 @@ const TripSchema = new Schema(
 
 // Full-text search across the fields used by the search bar.
 TripSchema.index({ title: "text", destination: "text", description: "text", tags: "text" });
+TripSchema.index({ status: 1, featured: -1, createdAt: -1 });
+TripSchema.index({ status: 1, destination: 1, rating: -1, createdAt: -1 });
+TripSchema.index({ status: 1, category: 1, startDate: 1 });
+TripSchema.index({ status: 1, basePrice: 1 });
 
 export type TripDoc = InferSchemaType<typeof TripSchema> & { _id: string };
 

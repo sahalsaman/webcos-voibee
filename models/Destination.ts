@@ -20,6 +20,8 @@ const DestinationSchema = new Schema(
 
 // Full-text search across the fields used by the search bar.
 DestinationSchema.index({ title: "text", description: "text", tags: "text" });
+DestinationSchema.index({ status: 1, popular: -1, featured: -1, title: 1 });
+DestinationSchema.index({ status: 1, countryCode: 1, popular: -1 });
 
 export type DestinationDoc = InferSchemaType<typeof DestinationSchema> & { _id: string };
 

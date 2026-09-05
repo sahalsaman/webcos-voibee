@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
       { protocol: "https", hostname: "ui-avatars.com" },
       { protocol: "https", hostname: "upload.wikimedia.org" },
+      { protocol: "https", hostname: "www.savaari.com", pathname: "/blog/wp-content/uploads/**" },
       {
         protocol: "https",
         hostname: "d3gz7d9rg09miz.cloudfront.net",

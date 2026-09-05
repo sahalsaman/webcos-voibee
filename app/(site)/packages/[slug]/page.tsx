@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { notFound } from "next/navigation";
 import {
   MapPin,
@@ -103,10 +102,9 @@ export default async function TripDetailPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-white">
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <Script
-        id={`package-${slug}-jsonld`}
+      <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
 
       <Gallery images={trip.images} title={trip.title} />

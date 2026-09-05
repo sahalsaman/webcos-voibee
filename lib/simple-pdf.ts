@@ -11,14 +11,27 @@ export function pdfLine(text: string, x: number, y: number, size = 10, bold = fa
 }
 
 export function buildSinglePagePdf(commands: string[]) {
-  const stream = commands.join("\n");
+  return buildMultiPagePdf([commands]);
+}
+
+export function buildMultiPagePdf(pages: string[][]) {
+  const pageCount = Math.max(1, pages.length);
+  const fontRegularRef = pageCount + 3;
+  const fontBoldRef = pageCount + 4;
+  const firstContentRef = pageCount + 5;
+  const pageRefs = Array.from({ length: pageCount }, (_, index) => `${index + 3} 0 R`).join(" ");
   const objects = [
     "<< /Type /Catalog /Pages 2 0 R >>",
-    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>",
+    `<< /Type /Pages /Kids [${pageRefs}] /Count ${pageCount} >>`,
+    ...Array.from({ length: pageCount }, (_, index) =>
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 ${fontRegularRef} 0 R /F2 ${fontBoldRef} 0 R >> >> /Contents ${firstContentRef + index} 0 R >>`,
+    ),
     "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
     "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>",
-    `<< /Length ${Buffer.byteLength(stream)} >>\nstream\n${stream}\nendstream`,
+    ...pages.map((commands) => {
+      const stream = commands.join("\n");
+      return `<< /Length ${Buffer.byteLength(stream)} >>\nstream\n${stream}\nendstream`;
+    }),
   ];
 
   let pdf = "%PDF-1.4\n%Voibee\n";

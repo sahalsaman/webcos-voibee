@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
   Plane,
-  PlaneTakeoff,
+  MapPin,
   CalendarCheck,
   IndianRupee,
   Users,
@@ -49,9 +49,9 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Total Packages" value={stats.trips} icon={Plane} hint={`${stats.activeTrips} active`} />
-        <StatCard label="Active Packages" value={stats.activeTrips} icon={PlaneTakeoff} accent="success" />
-        <StatCard label="Total Bookings" value={stats.bookings} icon={CalendarCheck} accent="accent" />
+        <StatCard label="Destinations" value={stats.destinations} icon={MapPin} hint={`${stats.activeDestinations} active`} />
+        <StatCard label="Packages" value={stats.trips} icon={Plane} hint={`${stats.activeTrips} active`} />
+        <StatCard label="Bookings" value={stats.bookings} icon={CalendarCheck} accent="accent" />
         <StatCard label="Gross Revenue" value={formatINR(stats.revenue)} icon={IndianRupee} accent="success" hint={`${formatINR(stats.adminRevenue)} to operator`} />
         <StatCard label="Partners" value={stats.partners} icon={Users} accent="primary" />
         <StatCard label="Travelers" value={stats.travelers} icon={UserCircle} accent="warning" />

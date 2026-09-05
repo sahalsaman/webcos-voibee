@@ -3,6 +3,7 @@ import { currentUser } from "@/lib/api";
 import { serialize } from "@/lib/utils";
 import "@/models";
 import Booking from "@/models/Booking";
+import type { ItineraryItem } from "@/types";
 
 export interface BookingConfirmation {
   _id: string;
@@ -34,6 +35,7 @@ export interface BookingConfirmation {
     country: string;
     pickupLocation?: string;
     images: string[];
+    itinerary: ItineraryItem[];
   };
   payment?: {
     razorpayOrderId?: string;
@@ -48,7 +50,7 @@ export async function getAuthorizedBookingConfirmation(reference: string, token?
   if (!reference) return null;
   await connectDB();
   const booking = await Booking.findOne({ bookingNumber: reference })
-    .populate("trip", "title slug destination country pickupLocation images")
+    .populate("trip", "title slug destination country pickupLocation images itinerary")
     .populate("payment", "razorpayOrderId razorpayPaymentId method currency notes")
     .lean();
   if (!booking) return null;

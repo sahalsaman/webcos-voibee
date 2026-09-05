@@ -11,7 +11,7 @@ export default function SiteLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
-      <main className="flex-1">{children}</main>
+      <div className="flex-1">{children}</div>
       <Suspense fallback={null}>
         <Footer />
       </Suspense>

@@ -16,6 +16,7 @@ import Booking from "@/models/Booking";
 import Payment from "@/models/Payment";
 import User from "@/models/User";
 import { getSettings } from "@/models/Settings";
+import { isCustomDateTripCategory } from "@/lib/constants";
 
 export async function POST(request: Request) {
   try {
@@ -27,7 +28,8 @@ export async function POST(request: Request) {
     if (!trip || trip.status !== "active") {
       return fail("This package is not available for booking", 404);
     }
-    if (trip.availableSeats < body.seats) {
+    const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
+    if (!customDate && trip.availableSeats < body.seats) {
       return fail(`Only ${trip.availableSeats} seat(s) left`, 409);
     }
 
@@ -101,26 +103,51 @@ export async function POST(request: Request) {
       travelerId = String(traveler._id);
     }
 
-    const booking = await Booking.create({
-      bookingNumber,
-      trip: trip._id,
-      traveler: travelerId,
-      partner: partnerId,
-      partnerTrip: partnerTripId,
-      travelerDetails,
-      seats: body.seats,
-      travelStartDate,
-      travelEndDate,
-      basePrice: breakdown.basePrice,
-      commission: breakdown.commission,
-      platformFee: breakdown.platformFee,
-      sellingPrice: breakdown.sellingPrice,
-      totalAmount: breakdown.travelerPays,
-      partnerEarnings: breakdown.partnerEarns,
-      adminEarnings: breakdown.adminReceives,
-      status: "pending",
-      paymentStatus: "created",
-    });
+    let inventoryReserved = false;
+    if (!customDate) {
+      const inventory = await Trip.updateOne(
+        { _id: trip._id, availableSeats: { $gte: body.seats } },
+        { $inc: { availableSeats: -body.seats } },
+      );
+      if (inventory.modifiedCount !== 1) {
+        const current = await Trip.findById(trip._id).select("availableSeats").lean();
+        return fail(`Only ${Number(current?.availableSeats || 0)} seat(s) left`, 409);
+      }
+      inventoryReserved = true;
+    }
+
+    let booking;
+    try {
+      booking = await Booking.create({
+        bookingNumber,
+        trip: trip._id,
+        traveler: travelerId,
+        partner: partnerId,
+        partnerTrip: partnerTripId,
+        travelerDetails,
+        seats: body.seats,
+        travelStartDate,
+        travelEndDate,
+        basePrice: breakdown.basePrice,
+        commission: breakdown.commission,
+        platformFee: breakdown.platformFee,
+        sellingPrice: breakdown.sellingPrice,
+        totalAmount: breakdown.travelerPays,
+        partnerEarnings: breakdown.partnerEarns,
+        adminEarnings: breakdown.adminReceives,
+        status: "pending",
+        paymentStatus: "created",
+        inventoryReserved,
+      });
+    } catch (error) {
+      if (inventoryReserved) {
+        await Trip.updateOne(
+          { _id: trip._id },
+          { $inc: { availableSeats: body.seats } },
+        );
+      }
+      throw error;
+    }
 
     // Offline bookings are stored immediately and remain unpaid until an admin
     // records an advance or full payment.

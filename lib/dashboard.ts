@@ -55,8 +55,10 @@ function lastMonths(n: number) {
 export async function getAdminStats() {
   return safe(
     async () => {
-      const [trips, activeTrips, bookings, partners, travelers, revenueAgg] =
+      const [destinations, activeDestinations, trips, activeTrips, bookings, partners, travelers, revenueAgg] =
         await Promise.all([
+          Destination.countDocuments({}),
+          Destination.countDocuments({ status: "active" }),
           Trip.countDocuments({}),
           Trip.countDocuments({ status: "active" }),
           Booking.countDocuments({ paymentStatus: "paid" }),
@@ -74,6 +76,8 @@ export async function getAdminStats() {
           ]),
         ]);
       return {
+        destinations,
+        activeDestinations,
         trips,
         activeTrips,
         bookings,
@@ -84,6 +88,8 @@ export async function getAdminStats() {
       };
     },
     {
+      destinations: 0,
+      activeDestinations: 0,
       trips: 0,
       activeTrips: 0,
       bookings: 0,
@@ -166,7 +172,10 @@ export async function getRecentBookings(limit = 8) {
 }
 
 export async function listAdminTrips() {
-  return safe(async () => serialize(await Trip.find({}).sort({ createdAt: -1 }).lean()), []);
+  return safe(async () => serialize(await Trip.find({})
+    .sort({ createdAt: -1 })
+    .select("title slug destination country images featured category holidayPackage startDate endDate itinerary.day availableSeats totalSeats basePrice status")
+    .lean()), []);
 }
 
 export async function listAdminBookableTrips() {
@@ -224,7 +233,7 @@ export async function getAdminDestinationById(id: string) {
 
 export async function listAdminTravelers() {
   return safe(async () => {
-    const travelers = await User.find({ role: "traveler" }).sort({ createdAt: -1 }).lean();
+    const travelers = await User.find({ role: "traveler" }).sort({ createdAt: -1 }).select("name email mobile image status createdAt").lean();
     const ids = travelers.map((traveler) => traveler._id);
     const bookingAgg = await Booking.aggregate([
       { $match: { traveler: { $in: ids } } },

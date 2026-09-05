@@ -3,7 +3,7 @@ import { TripForm } from "@/components/admin/trip-form";
 import { getAdminTripById, listAdminDestinations } from "@/lib/dashboard";
 import type { DestinationDTO, TripDTO } from "@/types";
 
-export default async function EditItineraryPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditPackagePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const [trip, destinations] = await Promise.all([
     getAdminTripById(id) as Promise<TripDTO | null>,

@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Compass, Quote } from "lucide-react";
 import { appConfig } from "../app,config";
 
-const SIDE_IMG = "/login-experience.png";
+const SIDE_IMG = "/login-experience.webp";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -43,27 +43,43 @@ export async function POST(request: Request) {
     const totalAmount = trip.basePrice * body.seats;
     const bookingNumber = shortId("VOI-");
 
-    const booking = await Booking.create({
-      bookingNumber,
-      trip: trip._id,
-      traveler: traveler._id,
-      travelerDetails: {
-        ...body.travelerDetails,
-        travellers: body.travelerDetails.travellers || body.seats,
-      },
-      seats: body.seats,
-      travelStartDate: trip.startDate,
-      travelEndDate: trip.endDate,
-      basePrice: trip.basePrice,
-      commission: 0,
-      platformFee: 0,
-      sellingPrice: trip.basePrice,
-      totalAmount,
-      partnerEarnings: 0,
-      adminEarnings: totalAmount,
-      status: body.status,
-      paymentStatus: body.paymentStatus,
-    });
+    const inventory = await Trip.updateOne(
+      { _id: trip._id, availableSeats: { $gte: body.seats } },
+      { $inc: { availableSeats: -body.seats } },
+    );
+    if (inventory.modifiedCount !== 1) {
+      const current = await Trip.findById(trip._id).select("availableSeats").lean();
+      return fail(`Only ${Number(current?.availableSeats || 0)} seat(s) left`, 409);
+    }
+
+    let booking;
+    try {
+      booking = await Booking.create({
+        bookingNumber,
+        trip: trip._id,
+        traveler: traveler._id,
+        travelerDetails: {
+          ...body.travelerDetails,
+          travellers: body.travelerDetails.travellers || body.seats,
+        },
+        seats: body.seats,
+        travelStartDate: trip.startDate,
+        travelEndDate: trip.endDate,
+        basePrice: trip.basePrice,
+        commission: 0,
+        platformFee: 0,
+        sellingPrice: trip.basePrice,
+        totalAmount,
+        partnerEarnings: 0,
+        adminEarnings: totalAmount,
+        status: body.status,
+        paymentStatus: body.paymentStatus,
+        inventoryReserved: true,
+      });
+    } catch (error) {
+      await Trip.updateOne({ _id: trip._id }, { $inc: { availableSeats: body.seats } });
+      throw error;
+    }
 
     if (["created", "paid", "failed", "refunded"].includes(body.paymentStatus)) {
       const payment = await Payment.create({
@@ -76,11 +92,6 @@ export async function POST(request: Request) {
       booking.payment = payment._id;
       await booking.save();
     }
-
-    await Trip.updateOne(
-      { _id: trip._id },
-      { $set: { availableSeats: Math.max(0, Number(trip.availableSeats || 0) - body.seats) } },
-    );
 
     return ok({ id: String(booking._id), bookingNumber }, 201);
   } catch (err) {

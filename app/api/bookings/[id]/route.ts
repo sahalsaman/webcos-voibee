@@ -33,10 +33,16 @@ export async function PATCH(request: Request, { params }: Ctx) {
       const trip = await Trip.findById(booking.trip).select("category holidayPackage");
       const customDate = trip?.holidayPackage ?? isCustomDateTripCategory(trip?.category);
       if (!customDate) {
-        await Trip.updateOne(
-          { _id: booking.trip },
-          { $inc: { availableSeats: booking.seats } },
+        const released = await Booking.updateOne(
+          { _id: booking._id, inventoryReserved: true },
+          { $set: { inventoryReserved: false } },
         );
+        if (released.modifiedCount === 1) {
+          await Trip.updateOne(
+            { _id: booking.trip },
+            { $inc: { availableSeats: booking.seats } },
+          );
+        }
       }
       if (booking.partner && booking.partnerEarnings > 0) {
         await Partner.updateOne(

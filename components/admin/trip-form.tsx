@@ -197,11 +197,20 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <Card>
-        <CardContent className="grid gap-4 p-6 sm:grid-cols-2">
+        <CardContent className="grid gap-4 p-6 sm:grid-cols-3">
           <div className="sm:col-span-2">
             <Label className="mb-1.5 block">Package name <RequiredMark /></Label>
             <Input value={form.title} onChange={(e) => set("title", e.target.value)} required />
           </div>
+             <div>
+              <Label className="mb-1.5 block">Duration <RequiredMark /></Label>
+              <Input
+                placeholder="3D/2N"
+                value={packageDuration}
+                onChange={(e) => setPackageDuration(e.target.value)}
+                required
+              />
+            </div>
           <div>
             <Label className="mb-1.5 block">Country <RequiredMark /></Label>
             <Select value={form.country} onChange={(e) => onCountryChange(e.target.value)} required>
@@ -222,42 +231,6 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
               ))}
             </Select>
           </div>
-          <div>
-            <Label className="mb-1.5 block">Pickup location</Label>
-            <Input value={form.pickupLocation} onChange={(e) => set("pickupLocation", e.target.value)} />
-          </div>
-          {form.country !== "India" ? <div className="sm:col-span-2">
-            <Label className="mb-1.5 block">Departure cities <RequiredMark /></Label>
-            <Textarea value={form.departureCities} onChange={(e) => set("departureCities", e.target.value)} placeholder={"Delhi\nMumbai\nKochi"} className="min-h-24" required />
-            <p className="mt-1 text-xs text-muted-foreground">Add one departure city per line. These cities appear in the customer booking dropdown.</p>
-          </div> : null}
-          <div className="sm:col-span-2">
-            <Label className="mb-1.5 block">Description</Label>
-            <Textarea
-              value={form.description}
-              onChange={(e) => set("description", e.target.value)}
-              className="min-h-28"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="space-y-4 p-6">
-          <div>
-            <Label>Package price</Label>
-            <p className="mt-1 text-xs text-muted-foreground">One package can have one duration and one price.</p>
-          </div>
-          <div className="grid gap-4 rounded-lg border border-border p-4 sm:grid-cols-2">
-            <div>
-              <Label className="mb-1.5 block">Duration <RequiredMark /></Label>
-              <Input
-                placeholder="3D/2N"
-                value={packageDuration}
-                onChange={(e) => setPackageDuration(e.target.value)}
-                required
-              />
-            </div>
             <div>
               <Label className="mb-1.5 block">Price (₹) <RequiredMark /></Label>
               <Input
@@ -268,13 +241,11 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
                 required
               />
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="grid gap-4 p-6 sm:grid-cols-3">
           <div>
+            <Label className="mb-1.5 block">Pickup location</Label>
+            <Input value={form.pickupLocation} onChange={(e) => set("pickupLocation", e.target.value)} />
+          </div>
+                   <div>
             <Label className="mb-1.5 block">Category</Label>
             <Select value={form.category} onChange={(e) => set("category", e.target.value as typeof form.category)}>
               {TRIP_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -301,7 +272,26 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
               Featured package
             </label>
           </div>
-          <div className="flex items-center sm:pt-5">
+          {form.country !== "India" ? <div className="sm:col-span-2">
+            <Label className="mb-1.5 block">Departure cities <RequiredMark /></Label>
+            <Textarea value={form.departureCities} onChange={(e) => set("departureCities", e.target.value)} placeholder={"Delhi\nMumbai\nKochi"} className="min-h-24" required />
+            <p className="mt-1 text-xs text-muted-foreground">Add one departure city per line. These cities appear in the customer booking dropdown.</p>
+          </div> : null}
+          <div className="sm:col-span-2">
+            <Label className="mb-1.5 block">Description</Label>
+            <Textarea
+              value={form.description}
+              onChange={(e) => set("description", e.target.value)}
+              className="min-h-28"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="grid gap-4 p-6 sm:grid-cols-3">
+ 
+          <div className="flex items-center sm:pt-5 sm:col-span-3">
             <label className="flex items-center gap-2 text-sm font-medium">
               <input
                 type="checkbox"

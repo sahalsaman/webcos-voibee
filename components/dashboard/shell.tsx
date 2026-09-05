@@ -40,7 +40,7 @@ export function DashboardShell({
   const SidebarContent = (
     <div className="flex h-full flex-col">
       <Link href="/" className="flex items-center gap-2 px-5 py-5 font-bold text-lg">
-          <Image src={appLogo} alt="Voibee" width={112} height={40} />
+          <Image src={appLogo} alt="Voibee" width={112} height={40} loading="eager" />
       </Link>
       <div className="px-5 pb-3">
         <Badge variant="secondary">{roleLabel}</Badge>

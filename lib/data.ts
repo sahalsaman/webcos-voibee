@@ -10,6 +10,7 @@ import PartnerTrip from "@/models/PartnerTrip";
 import Review from "@/models/Review";
 import User from "@/models/User";
 import Booking from "@/models/Booking";
+import { unstable_cache } from "next/cache";
 import type { TripDTO, PartnerDTO, ReviewDTO, DestinationDTO, OfferCardDTO, EventDTO } from "@/types";
 
 /** Run a DB query, returning `fallback` if the DB is unreachable/unconfigured. */
@@ -27,7 +28,7 @@ export function isIndiaCountry(code?: string) {
   return (code ?? "IN").toUpperCase() === "IN";
 }
 
-export async function getDestinations(countryCode?: string) {
+const getCachedDestinations = unstable_cache(async (countryCode: string) => {
   return safe(async () => {
     const query: Record<string, unknown> = { status: "active" };
     if (!isIndiaCountry(countryCode)) query.countryCode = { $ne: "IN" };
@@ -69,6 +70,10 @@ export async function getDestinations(countryCode?: string) {
       createdAt: new Date().toISOString(),
     })) as DestinationDTO[];
   }, [] as DestinationDTO[]);
+}, ["public-destinations"], { revalidate: 60, tags: ["destinations"] });
+
+export async function getDestinations(countryCode?: string) {
+  return getCachedDestinations(countryCode?.toUpperCase() || "IN");
 }
 
 export async function getHomeDestinations(countryCode?: string) {
@@ -84,8 +89,11 @@ export async function getHomeDestinations(countryCode?: string) {
 
 export async function getDestinationLanding(slug: string) {
   return safe(async () => {
-    const destinations = await Destination.find({ status: "active" }).lean();
-    const destinationRecord = destinations.find((item) => slugify(String(item.title)) === slugify(slug));
+    const destinationTitle = slug.replaceAll("-", " ");
+    const destinationRecord = await Destination.findOne({
+      status: "active",
+      title: new RegExp(`^${destinationTitle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i"),
+    }).lean();
     const destinationName = destinationRecord?.title || slug.replaceAll("-", " ");
     const trips = await Trip.find({ status: "active", destination: new RegExp(`^${destinationName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") })
       .sort({ featured: -1, rating: -1, createdAt: -1 })
@@ -226,7 +234,7 @@ export async function getTrips(filters: TripFilters = {}) {
   );
 }
 
-export async function getFeaturedTrips(limit = 6) {
+const getCachedFeaturedTrips = unstable_cache(async (limit: number) => {
   return safe(async () => {
     const items = await Trip.find({ status: "active", featured: true })
       .sort({ createdAt: -1 })
@@ -242,6 +250,10 @@ export async function getFeaturedTrips(limit = 6) {
     }
     return serialize(items) as TripDTO[];
   }, [] as TripDTO[]);
+}, ["featured-trips"], { revalidate: 60, tags: ["trips"] });
+
+export async function getFeaturedTrips(limit = 6) {
+  return getCachedFeaturedTrips(limit);
 }
 
 export async function getTripsByCategory(category: string, limit = 4) {
@@ -266,7 +278,7 @@ export async function getRelatedTrips(tripId: string, destination: string, limit
     const items = await Trip.find({
       _id: { $ne: tripId },
       status: "active",
-      destination: new RegExp(destination, "i"),
+      destination: new RegExp(`^${destination.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i"),
     })
       .limit(limit)
       .lean();

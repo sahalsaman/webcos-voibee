@@ -1,6 +1,7 @@
 "use client";
 
-import { Binoculars, BusFront, Hotel, Plus, Trash2, Utensils } from "lucide-react";
+import { useState } from "react";
+import { Binoculars, BusFront, ChevronDown, Hotel, Plus, Trash2, Utensils } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,25 +30,49 @@ export function normalizeItineraryDay(item: ItineraryItem, index: number): Itine
 }
 
 export function ItineraryEditor({ value, onChange }: { value: ItineraryItem[]; onChange: (items: ItineraryItem[]) => void }) {
+  const [openDays, setOpenDays] = useState<Set<number>>(() => new Set([0]));
   const updateDay = (index: number, update: Partial<ItineraryItem>) => onChange(value.map((day, dayIndex) => dayIndex === index ? { ...day, ...update } : day));
-  const removeDay = (index: number) => onChange(value.filter((_, dayIndex) => dayIndex !== index).map(normalizeItineraryDay));
+  const removeDay = (index: number) => {
+    onChange(value.filter((_, dayIndex) => dayIndex !== index).map(normalizeItineraryDay));
+    setOpenDays((current) => new Set([...current].flatMap((dayIndex) => dayIndex === index ? [] : [dayIndex > index ? dayIndex - 1 : dayIndex])));
+  };
+  const addDay = () => {
+    const nextIndex = value.length;
+    onChange([...value, emptyItineraryDay(nextIndex + 1)]);
+    setOpenDays((current) => new Set([...current, nextIndex]));
+  };
+  const toggleDay = (index: number) => setOpenDays((current) => {
+    const next = new Set(current);
+    if (next.has(index)) next.delete(index);
+    else next.add(index);
+    return next;
+  });
 
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div><Label className="text-base">Detailed itinerary</Label><p className="mt-1 text-xs text-muted-foreground">Add everything included on each day.</p></div>
-        <Button type="button" variant="outline" size="sm" onClick={() => onChange([...value, emptyItineraryDay(value.length + 1)])}><Plus /> Add day</Button>
+        <Button type="button" variant="outline" size="sm" onClick={addDay}><Plus /> Add day</Button>
       </div>
 
       {value.map((day, dayIndex) => (
         <section key={dayIndex} className="overflow-hidden rounded-xl border border-border bg-background">
           <div className="flex items-center gap-3 border-b bg-secondary/50 p-4">
-            <span className="shrink-0 rounded-lg bg-primary px-3 py-2 text-sm font-bold text-primary-foreground">Day {dayIndex + 1}</span>
+            <button
+              type="button"
+              onClick={() => toggleDay(dayIndex)}
+              aria-expanded={openDays.has(dayIndex)}
+              aria-controls={`itinerary-day-${dayIndex}`}
+              className="flex shrink-0 items-center gap-2 rounded-lg bg-primary px-3 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+            >
+              Day {dayIndex + 1}
+              <ChevronDown className={`size-4 transition-transform ${openDays.has(dayIndex) ? "rotate-180" : ""}`} />
+            </button>
             <Input required value={day.title} onChange={(event) => updateDay(dayIndex, { title: event.target.value })} placeholder="Day title, e.g. Arrival in Zurich" className="bg-card" />
             <Button type="button" variant="ghost" size="icon" disabled={value.length === 1} onClick={() => removeDay(dayIndex)} aria-label={`Remove day ${dayIndex + 1}`}><Trash2 className="text-destructive" /></Button>
           </div>
 
-          <div className="space-y-5 p-4 sm:p-5">
+          <div id={`itinerary-day-${dayIndex}`} hidden={!openDays.has(dayIndex)} className="space-y-5 p-4 sm:p-5">
             <div><Label className="mb-1.5 block">Day overview</Label><Textarea value={day.description} onChange={(event) => updateDay(dayIndex, { description: event.target.value })} placeholder="Short summary of the day" className="min-h-20" /></div>
 
             <DayGroup icon={BusFront} title="Transport" action="Add transport" onAdd={() => updateDay(dayIndex, { transports: [...(day.transports ?? []), { title: "", description: "" }] })}>

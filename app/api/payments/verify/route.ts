@@ -1,7 +1,6 @@
 import { connectDB } from "@/lib/db";
 import { ok, fail, handleError, currentUser } from "@/lib/api";
-import { verifySignature, razorpayConfigured, refundPayment } from "@/lib/razorpay";
-import { isCustomDateTripCategory } from "@/lib/constants";
+import { verifySignature, razorpayConfigured } from "@/lib/razorpay";
 import "@/models";
 import Booking from "@/models/Booking";
 import Payment from "@/models/Payment";
@@ -74,32 +73,7 @@ export async function POST(request: Request) {
       return fail("Payment confirmation is already being processed", 409);
     }
 
-    const trip = await Trip.findById(booking.trip).select("title category holidayPackage");
-    const customDate = trip?.holidayPackage ?? isCustomDateTripCategory(trip?.category);
-    if (!customDate) {
-      const inventory = await Trip.updateOne(
-        { _id: booking.trip, availableSeats: { $gte: booking.seats } },
-        { $inc: { availableSeats: -booking.seats } },
-      );
-      if (inventory.modifiedCount !== 1) {
-        const paymentId = typeof body.razorpay_payment_id === "string" ? body.razorpay_payment_id : payment?.razorpayPaymentId;
-        const refund: { id?: string } | null = !isMock && paymentId
-          ? await refundPayment(paymentId, booking.totalAmount).catch(() => null)
-          : null;
-        booking.status = "cancelled";
-        booking.paymentStatus = refund ? "refunded" : "failed";
-        await booking.save();
-        if (payment) {
-          payment.status = refund ? "refunded" : "failed";
-          if (refund) {
-            payment.refundId = refund.id || "refund-pending-reference";
-            payment.refundAmount = booking.totalAmount;
-          }
-          await payment.save();
-        }
-        return fail(refund ? "Seats sold out during payment. Your payment was refunded." : "Seats are no longer available. Please contact support with your payment reference.", 409);
-      }
-    }
+    const trip = await Trip.findById(booking.trip).select("title");
 
     if (payment) {
       payment.status = "paid";

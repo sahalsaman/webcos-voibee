@@ -37,7 +37,7 @@ export function Gallery({ images, title }: { images: string[]; title: string }) 
         className={cn(
           "overflow-hidden rounded-2xl sm:rounded-3xl",
           visible.length === 1
-            ? "relative aspect-[16/7] min-h-[300px] sm:min-h-[430px]"
+            ? "relative h-[260px] sm:h-[360px] lg:h-[390px]"
             : "grid gap-3 sm:grid-cols-[1.4fr_1fr] sm:grid-rows-2",
         )}
       >
@@ -48,7 +48,7 @@ export function Gallery({ images, title }: { images: string[]; title: string }) 
             "group relative w-full overflow-hidden text-left",
             visible.length === 1
               ? "absolute inset-0"
-              : "aspect-[16/10] sm:row-span-2 sm:aspect-auto sm:min-h-[430px]",
+              : "aspect-[16/10] sm:row-span-2 sm:aspect-auto sm:min-h-[380px]",
           )}
           aria-label={`View ${title} image 1`}
         >

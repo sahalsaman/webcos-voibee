@@ -26,19 +26,19 @@ import { ThemeCarousel } from "@/components/home/theme-carousel";
 // Re-fetch featured packages from the DB at most once a minute.
 export const revalidate = 60;
 
-const HERO_BG = "/hero-experience.png";
+const HERO_BG = "/hero-experience.webp";
 
 const WHY = [
   {
-    image: "/why-authentic.png",
+    image: "/why-authentic.webp",
     title: "Enjoy authentic and unique packages you can't find anywhere else",
   },
   {
-    image: "/why-verified.png",
+    image: "/why-verified.webp",
     title: "Connect with verified package experts and travel buddies",
   },
   {
-    image: "/why-community.png",
+    image: "/why-community.webp",
     title: "Become part of Voibee's growing Travel Buddy Community",
   },
 ] as const;
@@ -268,7 +268,7 @@ export default async function HomePage({
           </div>
           <div className="relative min-h-[420px] overflow-hidden sm:min-h-[520px] lg:min-h-[600px]">
             <Image
-              src="/moments-road-collage.png"
+              src="/moments-road-collage.webp"
               alt="Voibee travelers sharing adventure moments"
               fill
               sizes="(min-width: 1024px) 720px, 100vw"

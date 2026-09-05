@@ -47,7 +47,13 @@ export async function POST(_request: Request, { params }: Ctx) {
       const trip = await Trip.findById(booking.trip).select("category holidayPackage");
       const customDate = trip?.holidayPackage ?? isCustomDateTripCategory(trip?.category);
       if (!customDate) {
-        await Trip.updateOne({ _id: booking.trip }, { $inc: { availableSeats: booking.seats } });
+        const released = await Booking.updateOne(
+          { _id: booking._id, inventoryReserved: true },
+          { $set: { inventoryReserved: false } },
+        );
+        if (released.modifiedCount === 1) {
+          await Trip.updateOne({ _id: booking.trip }, { $inc: { availableSeats: booking.seats } });
+        }
       }
       if (booking.partner && Number(booking.partnerEarnings) > 0) {
         const commission = await Commission.findOneAndDelete({ booking: booking._id });
