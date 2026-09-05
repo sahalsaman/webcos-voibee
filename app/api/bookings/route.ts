@@ -16,7 +16,6 @@ import Booking from "@/models/Booking";
 import Payment from "@/models/Payment";
 import User from "@/models/User";
 import { getSettings } from "@/models/Settings";
-import { isCustomDateTripCategory } from "@/lib/constants";
 
 export async function POST(request: Request) {
   try {
@@ -66,13 +65,10 @@ export async function POST(request: Request) {
       email: body.travelerDetails.email.toLowerCase(),
       travellers: body.travelerDetails.travellers || body.seats,
     };
-    const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
-    if (customDate && !body.travelStartDate) {
-      return fail("Travel start date is required for this package", 422);
-    }
-    const travelStartDate = customDate ? new Date(`${body.travelStartDate}T00:00:00.000Z`) : new Date(trip.startDate);
-    const configuredDuration = Math.max(0, new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime());
-    const travelEndDate = customDate ? new Date(travelStartDate.getTime() + configuredDuration) : new Date(trip.endDate);
+    const travelStartDate = body.travelStartDate ? new Date(`${body.travelStartDate}T00:00:00.000Z`) : new Date(trip.startDate);
+    const configuredDays = Math.max(1, Number(trip.durationDays) || trip.itinerary?.length || Math.round((new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) / 86_400_000) + 1);
+    const configuredDuration = (configuredDays - 1) * 86_400_000;
+    const travelEndDate = new Date(travelStartDate.getTime() + configuredDuration);
 
     let travelerId: string;
     if (user?.role === "traveler") {
@@ -126,7 +122,16 @@ export async function POST(request: Request) {
       paymentStatus: "created",
     });
 
-    // Create the payment + Razorpay order (or fall back to demo mode).
+    // Offline bookings are stored immediately and remain unpaid until an admin
+    // records an advance or full payment.
+    if (body.bookingMode === "offline") {
+      const payment = await Payment.create({ booking: booking._id, amount: breakdown.travelerPays, status: "created", notes: { offline: true, confirmationToken } });
+      booking.payment = payment._id;
+      await booking.save();
+      return ok({ bookingId: String(booking._id), bookingNumber, amount: breakdown.travelerPays, confirmationToken, offline: true });
+    }
+
+    // Online booking: create the Razorpay order (or use demo mode locally).
     if (razorpayConfigured) {
       try {
         const order = await createOrder(breakdown.travelerPays, bookingNumber);

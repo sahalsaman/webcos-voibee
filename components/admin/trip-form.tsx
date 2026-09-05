@@ -28,6 +28,13 @@ function todayInput() {
   return dateToInput(new Date());
 }
 
+function initialDurationDays(trip?: TripDTO) {
+  if (!trip) return 3;
+  if (trip.durationDays) return trip.durationDays;
+  if (trip.itinerary.length) return trip.itinerary.length;
+  return Math.max(1, Math.round((new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) / 86_400_000) + 1);
+}
+
 function RequiredMark() {
   return <span className="text-destructive">*</span>;
 }
@@ -57,7 +64,6 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
 
   const [form, setForm] = useState({
     title: trip?.title ?? "",
-    holidayGroup: trip?.holidayGroup ?? "",
     destination: trip?.destination ?? destinations.find((destination) => destination.country === initialCountry)?.title ?? "",
     country: initialCountry,
     description: trip?.description ?? "",
@@ -67,6 +73,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
     startDate: toDateInput(trip?.startDate),
     endDate: toDateInput(trip?.endDate),
     pickupLocation: trip?.pickupLocation ?? "",
+    departureCities: (trip?.departureCities ?? []).join("\n"),
     category: normalizeTripCategory(trip?.category),
     status: trip?.status ?? "draft",
     featured: trip?.featured ?? false,
@@ -82,8 +89,9 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       ? trip.itinerary.map(normalizeItineraryDay)
       : [emptyItineraryDay(1)],
   );
+  const savedDurationDays = initialDurationDays(trip);
   const [packageDuration, setPackageDuration] = useState(
-    trip?.packageOptions?.[0]?.label ?? "3D/2N",
+    `${savedDurationDays}D/${savedDurationDays - 1}N`,
   );
   // `holidayPackage` is a legacy field where true means a flexible/custom-date
   // package. Keep the persisted shape compatible while presenting the clearer
@@ -129,6 +137,11 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const durationMatch = packageDuration.trim().match(/^(\d+)\s*D\s*\/\s*(\d+)\s*N$/i);
+    if (!durationMatch || Number(durationMatch[1]) < 1 || Number(durationMatch[2]) !== Number(durationMatch[1]) - 1) {
+      toast.error("Enter duration in the format 3D/2N.");
+      return;
+    }
     setLoading(true);
     const startDate = showDateAndSeats ? form.startDate : form.startDate || todayInput();
     const endDate = showDateAndSeats ? form.endDate : form.endDate || startDate;
@@ -136,16 +149,17 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
     const availableSeats = showDateAndSeats ? Number(form.availableSeats) || totalSeats : 999;
     const payload = {
       title: form.title,
-      holidayGroup: form.holidayGroup,
       destination: form.destination,
       country: form.country,
       description: form.description,
       basePrice: Number(form.basePrice),
+      durationDays: Number(durationMatch[1]),
       totalSeats,
       availableSeats,
       startDate,
       endDate,
       pickupLocation: form.pickupLocation,
+      departureCities: lines(form.departureCities),
       category: form.category,
       status: form.status,
       featured: form.featured,
@@ -153,9 +167,6 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       inclusions: lines(form.inclusions),
       includedServices: form.includedServices,
       exclusions: lines(form.exclusions),
-      packageOptions: packageDuration.trim()
-        ? [{ label: packageDuration.trim(), price: Number(form.basePrice) || 0 }]
-        : [],
       holidayPackage: form.holidayPackage,
       tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
       itinerary: itinerary
@@ -215,6 +226,11 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
             <Label className="mb-1.5 block">Pickup location</Label>
             <Input value={form.pickupLocation} onChange={(e) => set("pickupLocation", e.target.value)} />
           </div>
+          {form.country !== "India" ? <div className="sm:col-span-2">
+            <Label className="mb-1.5 block">Departure cities <RequiredMark /></Label>
+            <Textarea value={form.departureCities} onChange={(e) => set("departureCities", e.target.value)} placeholder={"Delhi\nMumbai\nKochi"} className="min-h-24" required />
+            <p className="mt-1 text-xs text-muted-foreground">Add one departure city per line. These cities appear in the customer booking dropdown.</p>
+          </div> : null}
           <div className="sm:col-span-2">
             <Label className="mb-1.5 block">Description</Label>
             <Textarea

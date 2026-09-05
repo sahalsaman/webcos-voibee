@@ -61,11 +61,6 @@ export interface SightseeingPlace {
   image: string;
 }
 
-export interface PackageOption {
-  label: string;
-  price: number;
-}
-
 export interface TripDTO {
   _id: string;
   title: string;
@@ -74,20 +69,19 @@ export interface TripDTO {
   country: string;
   description: string;
   images: string[];
-  videos: string[];
   itinerary: ItineraryItem[];
   inclusions: string[];
   includedServices?: PackageService[];
   exclusions: string[];
-  packageOptions: PackageOption[];
   holidayPackage?: boolean;
-  holidayGroup?: string;
   basePrice: number;
+  durationDays?: number;
   totalSeats: number;
   availableSeats: number;
   startDate: string;
   endDate: string;
   pickupLocation: string;
+  departureCities?: string[];
   category: TripCategory;
   status: TripStatus;
   featured: boolean;
@@ -102,7 +96,6 @@ export interface DestinationDTO {
   title: string;
   description: string;
   images: string[];
-  videos: string[];
   basePrice: number;
   status: "active" | "inactive";
   featured: boolean;
@@ -118,7 +111,6 @@ export interface OfferCardDTO {
   title: string;
   description: string;
   images: string[];
-  videos: string[];
   href: string;
   ctaLabel: string;
   priceLabel: string;
@@ -136,7 +128,6 @@ export interface EventDTO {
   title: string;
   description: string;
   images: string[];
-  videos: string[];
   venue: string;
   city: string;
   country: string;

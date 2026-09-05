@@ -7,7 +7,7 @@ export async function GET(request: Request, { params }: Context) {
   const { id } = await params;
   const token = new URL(request.url).searchParams.get("token") ?? undefined;
   const booking = await getAuthorizedBookingConfirmation(id, token);
-  if (!booking || booking.paymentStatus !== "paid") {
+  if (!booking) {
     return Response.json({ success: false, message: "Booking confirmation not found" }, { status: 404 });
   }
 

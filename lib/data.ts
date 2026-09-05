@@ -59,7 +59,6 @@ export async function getDestinations(countryCode?: string) {
       title: String(d._id),
       description: "",
       images: d.image ? [d.image] : [],
-      videos: [],
       basePrice: Number(d.basePrice) || 0,
       status: "active",
       featured: false,
@@ -94,7 +93,7 @@ export async function getDestinationLanding(slug: string) {
     if (!destinationRecord && trips.length === 0) return null;
     const destination = destinationRecord
       ? serialize(destinationRecord) as DestinationDTO
-      : { _id: destinationName, title: trips[0].destination, description: `Explore curated ${trips[0].destination} holiday packages and trips.`, images: trips[0].images, videos: [], basePrice: Math.min(...trips.map((trip) => trip.basePrice)), status: "active" as const, featured: false, tags: [], popular: false, country: trips[0].country, countryCode: trips[0].country === "India" ? "IN" : "INTL", createdAt: new Date().toISOString() };
+      : { _id: destinationName, title: trips[0].destination, description: `Explore curated ${trips[0].destination} holiday packages and trips.`, images: trips[0].images, basePrice: Math.min(...trips.map((trip) => trip.basePrice)), status: "active" as const, featured: false, tags: [], popular: false, country: trips[0].country, countryCode: trips[0].country === "India" ? "IN" : "INTL", createdAt: new Date().toISOString() };
     return { destination, trips: serialize(trips) as TripDTO[] };
   }, null as { destination: DestinationDTO; trips: TripDTO[] } | null);
 }

@@ -9,6 +9,7 @@ import { TripCard } from "@/components/trip/trip-card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getPartnerStorefront } from "@/lib/data";
 import { appConfig } from "@/app/app,config";
+import { withCountryParam as hrefWithCountry } from "@/lib/utils";
 
 const BANNER_FALLBACK =
   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=70";
@@ -20,10 +21,6 @@ type Props = {
 
 function str(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
-}
-
-function hrefWithCountry(path: string, country?: string) {
-  return country ? `${path}${path.includes("?") ? "&" : "?"}c=${encodeURIComponent(country)}` : path;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

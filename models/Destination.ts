@@ -7,7 +7,6 @@ const DestinationSchema = new Schema(
     title: { type: String, required: true, trim: true },
     description: { type: String, default: "" },
     images: { type: [String], default: [] },
-    videos: { type: [String], default: [] },
     basePrice: { type: Number, default: 0},
     status: { type: String, enum: DESTINATION_STATUSES, default: "active", index: true },
     featured: { type: Boolean, default: false, index: true },

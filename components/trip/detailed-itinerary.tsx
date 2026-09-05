@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Binoculars, BusFront, Check, Hotel, MapPin, Utensils } from "lucide-react";
+import { Binoculars, BusFront, Check, ChevronDown, Hotel, MapPin, Utensils } from "lucide-react";
 import type { ItineraryItem } from "@/types";
 
 const FALLBACK_PLACE = "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=75";
@@ -18,11 +18,12 @@ export function DetailedItinerary({ days }: { days: ItineraryItem[] }) {
 function ItineraryDay({ day, index }: { day: ItineraryItem; index: number }) {
   const hasStructuredContent = Boolean(day.transports?.length || day.hotels?.length || day.meals?.length || day.sightseeing?.length);
   return (
-    <article className="relative overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
-      <header className="flex items-center gap-4 bg-brand-gradient px-5 py-4 text-white sm:px-6">
+    <details open={index === 0} className="group relative overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
+      <summary className="flex cursor-pointer list-none items-center gap-4 bg-brand-gradient px-5 py-4 text-white select-none sm:px-6 [&::-webkit-details-marker]:hidden">
         <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-white font-extrabold text-primary shadow-sm">{index + 1}</span>
-        <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/75">Day {index + 1}</p><h3 className="mt-0.5 text-lg font-bold sm:text-xl">{day.title}</h3></div>
-      </header>
+        <div className="min-w-0 flex-1"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/75">Day {index + 1}</p><h3 className="mt-0.5 truncate text-lg font-bold sm:text-xl">{day.title}</h3></div>
+        <ChevronDown className="size-5 shrink-0 transition-transform duration-300 group-open:rotate-180" />
+      </summary>
       <div className="space-y-4 p-4 sm:p-6">
         {day.description ? <p className="leading-7 text-muted-foreground">{day.description}</p> : null}
 
@@ -36,7 +37,7 @@ function ItineraryDay({ day, index }: { day: ItineraryItem; index: number }) {
 
         {!hasStructuredContent && !day.description ? <p className="text-sm text-muted-foreground">Day details will be updated soon.</p> : null}
       </div>
-    </article>
+    </details>
   );
 }
 

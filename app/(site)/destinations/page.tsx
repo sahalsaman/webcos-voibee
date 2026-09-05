@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getHomeDestinations, isIndiaCountry } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
-import { formatCurrencyForCountry, slugify } from "@/lib/utils";
+import { formatCurrencyForCountry, slugify, withCountryParam as hrefWithCountry } from "@/lib/utils";
 import type { DestinationDTO } from "@/types";
 import { DestinationSwitcher } from "@/components/site/destination-switcher";
 
@@ -20,11 +20,6 @@ type SP = Record<string, string | string[] | undefined>;
 
 function str(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
-}
-
-function hrefWithCountry(path: string, country?: string) {
-  const code = country?.toUpperCase();
-  return code ? `${path}${path.includes("?") ? "&" : "?"}c=${encodeURIComponent(code)}` : path;
 }
 
 export default async function DestinationsPage({ searchParams }: { searchParams: Promise<SP> }) {

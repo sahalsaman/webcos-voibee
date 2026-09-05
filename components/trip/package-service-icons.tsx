@@ -36,11 +36,13 @@ export function PackageServiceIcons({
   includedServices,
   inclusions,
   compact = false,
+  showcase = false,
   className,
 }: {
   includedServices?: PackageService[];
   inclusions?: string[];
   compact?: boolean;
+  showcase?: boolean;
   className?: string;
 }) {
   const services = resolveIncludedServices(includedServices, inclusions);
@@ -48,13 +50,18 @@ export function PackageServiceIcons({
   const visible = compact ? services.slice(0, 6) : services;
 
   return (
-    <div className={cn(compact ? "flex flex-wrap gap-2" : "grid grid-cols-2 gap-3 sm:grid-cols-4", className)}>
+    <div className={cn(compact ? "flex flex-wrap gap-2" : showcase ? "flex flex-wrap gap-x-7 gap-y-4 sm:gap-x-10" : "grid grid-cols-2 gap-3 sm:grid-cols-4", className)}>
       {visible.map((service) => {
         const { label, icon: Icon } = SERVICE_DETAILS[service];
         return compact ? (
           <span key={service} title={label} aria-label={label} className="flex size-8 items-center justify-center rounded-lg bg-primary/8 text-primary ring-1 ring-primary/10">
             <Icon className="size-4" />
           </span>
+        ) : showcase ? (
+          <div key={service} className="flex min-w-16 flex-col items-center gap-2 text-center">
+            <span className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary"><Icon className="size-6" /></span>
+            <span className="text-xs font-bold text-slate-700">{label}</span>
+          </div>
         ) : (
           <div key={service} className="flex items-center gap-3 rounded-xl border border-border/70 bg-card p-3 shadow-sm">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"><Icon className="size-5" /></span>

@@ -12,6 +12,11 @@ export interface BookingConfirmation {
     email: string;
     mobile: string;
     travellers: number;
+    departureCity?: string;
+    adults?: number;
+    childrenWithBed?: number;
+    childrenWithoutBed?: number;
+    infants?: number;
     notes?: string;
   };
   seats: number;

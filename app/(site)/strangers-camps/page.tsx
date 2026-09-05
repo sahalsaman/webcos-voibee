@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getTrips } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
+import { withCountryParam as hrefWithCountry } from "@/lib/utils";
 
 type SP = Record<string, string | string[] | undefined>;
 
@@ -18,11 +19,6 @@ export const metadata: Metadata = {
 
 function str(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
-}
-
-function hrefWithCountry(path: string, country?: string) {
-  const code = country?.toUpperCase();
-  return code ? `${path}${path.includes("?") ? "&" : "?"}c=${encodeURIComponent(code)}` : path;
 }
 
 export default async function StrangersCampsPage({ searchParams }: { searchParams: Promise<SP> }) {

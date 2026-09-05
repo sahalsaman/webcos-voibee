@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getMajorEvents } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
-import { formatDate, normalizePackageHref } from "@/lib/utils";
+import { formatDate, normalizePackageHref, withCountryParam as hrefWithCountry } from "@/lib/utils";
 import type { EventDTO } from "@/types";
 
 export const metadata: Metadata = {
@@ -19,11 +19,6 @@ type SP = Record<string, string | string[] | undefined>;
 
 function str(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
-}
-
-function hrefWithCountry(path: string, country?: string) {
-  const code = country?.toUpperCase();
-  return code ? `${path}${path.includes("?") ? "&" : "?"}c=${encodeURIComponent(code)}` : path;
 }
 
 function dateRange(event: EventDTO) {

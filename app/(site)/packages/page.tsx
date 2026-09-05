@@ -74,6 +74,7 @@ export default async function TripsPage({
   }
 
   return (
+    <main className="min-h-screen bg-white">
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="relative mb-8 overflow-hidden rounded-[28px] bg-slate-950 px-6 py-16 text-white shadow-xl sm:px-10 lg:px-12">
         <Image
@@ -141,5 +142,6 @@ export default async function TripsPage({
           )}
       </div>
     </div>
+    </main>
   );
 }

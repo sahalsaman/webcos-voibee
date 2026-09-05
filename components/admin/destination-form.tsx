@@ -60,7 +60,6 @@ export function DestinationForm({ destination, onSaved, onCancel }: { destinatio
       countryCode: form.countryCode,
       images: lines(form.images),
       tags: form.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
-      videos: [],
     };
 
     try {

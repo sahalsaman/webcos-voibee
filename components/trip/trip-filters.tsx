@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
-import { ArrowUpDown, Grid2X2, List } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowUpDown, ChevronLeft, ChevronRight, Grid2X2, List } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
@@ -32,6 +32,7 @@ export function TripFilters({
 }) {
   const router = useRouter();
   const params = useSearchParams();
+  const categoryRef = useRef<HTMLDivElement>(null);
 
   const [category, setCategory] = useState(initialFilters.category);
   const [startDate, setStartDate] = useState(initialFilters.startDate);
@@ -41,6 +42,13 @@ export function TripFilters({
   const [sort, setSort] = useState(initialFilters.sort);
   const [view, setView] = useState(initialFilters.view || "grid");
   const [compare, setCompare] = useState(initialFilters.compare === "1");
+
+  function scrollCategories(direction: -1 | 1) {
+    categoryRef.current?.scrollBy({
+      left: direction * Math.max(240, categoryRef.current.clientWidth * 0.7),
+      behavior: "smooth",
+    });
+  }
 
   function apply(overrides: Partial<TripFilterValues> = {}) {
     const next = new URLSearchParams();
@@ -118,7 +126,7 @@ export function TripFilters({
           Compare
         </label>
         <div className="hidden h-8 w-px bg-border lg:block" />
-        <div className="flex min-w-[280px] flex-1 items-center gap-2 lg:max-w-[360px]">
+        <div className="flex min-w-[280px] flex-1 items-center gap-2 lg:max-w-[280px] bg-card rounded-xl border border-border p-1 shadow-sm pl-2" aria-label="Package sort">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <ArrowUpDown className="size-4" />
           </span>
@@ -158,7 +166,16 @@ export function TripFilters({
       </div>
       </div>
 
-      <div className="mt-5 overflow-x-auto rounded-2xl border border-border/70 bg-secondary/35 px-2 shadow-sm">
+      <div className="relative mt-5 overflow-hidden rounded-2xl border border-border/70 bg-secondary/35 shadow-sm">
+        <button
+          type="button"
+          onClick={() => scrollCategories(-1)}
+          aria-label="Previous package types"
+          className="absolute left-1 top-1/2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background shadow-md transition hover:bg-secondary"
+        >
+          <ChevronLeft className="size-4" />
+        </button>
+        <div ref={categoryRef} className="mx-12 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="flex min-w-max items-center gap-1">
           <button
             type="button"
@@ -180,6 +197,15 @@ export function TripFilters({
             </button>
           ))}
         </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => scrollCategories(1)}
+          aria-label="Next package types"
+          className="absolute right-1 top-1/2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background shadow-md transition hover:bg-secondary"
+        >
+          <ChevronRight className="size-4" />
+        </button>
       </div>
 
     </div>

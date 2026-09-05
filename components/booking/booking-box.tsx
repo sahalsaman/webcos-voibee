@@ -1,342 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Minus, Plus, ShieldCheck, Loader2, Calendar, MapPin } from "lucide-react";
+import { Calendar, Check, Loader2, Minus, Plus, ShieldCheck, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { formatINR, formatDate, tripDuration } from "@/lib/utils";
-import { appConfig } from "@/app/app,config";
+import { Select } from "@/components/ui/select";
+import { formatDate, formatINR, tripDuration } from "@/lib/utils";
 
-declare global {
-  interface Window {
-    Razorpay?: new (options: Record<string, unknown>) => { open: () => void };
-  }
+interface BookingBoxProps { tripId: string; slug: string; pricePerPerson: number; availableSeats: number; startDate: string; endDate: string; pickupLocation: string; durationDays?: number; country?: string; departureCities?: string[]; partnerSlug?: string; customDate?: boolean; }
+
+export interface BookingDraft { tripId: string; slug: string; partnerSlug?: string; departureCity: string; travelStartDate: string; travelEndDate: string; adults: number; childrenWithBed: number; childrenWithoutBed: number; infants: number; seats: number; name: string; email: string; mobile: string; pricePerPerson: number; totalAmount: number; }
+
+function Counter({ label, hint, value, onChange, min = 0, max = 20 }: { label: string; hint: string; value: number; onChange: (value: number) => void; min?: number; max?: number }) {
+  return <div><p className="mb-2 text-sm font-semibold">{label}</p><div className="flex h-12 items-center justify-between rounded-xl border border-border px-2"><button type="button" aria-label={`Reduce ${label}`} onClick={() => onChange(Math.max(min, value - 1))} disabled={value <= min} className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary disabled:opacity-30"><Minus className="size-4" /></button><span className="text-lg font-extrabold">{value}</span><button type="button" aria-label={`Add ${label}`} onClick={() => onChange(Math.min(max, value + 1))} disabled={value >= max} className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary disabled:opacity-30"><Plus className="size-4" /></button></div><p className="mt-1 text-xs text-muted-foreground">{hint}</p></div>;
 }
 
-function loadRazorpay(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (window.Razorpay) return resolve(true);
-    const s = document.createElement("script");
-    s.src = "https://checkout.razorpay.com/v1/checkout.js";
-    s.onload = () => resolve(true);
-    s.onerror = () => resolve(false);
-    document.body.appendChild(s);
-  });
-}
-
-interface BookingBoxProps {
-  tripId: string;
-  slug: string;
-  pricePerPerson: number; // selling price shown to traveler
-  availableSeats: number;
-  startDate: string;
-  endDate: string;
-  pickupLocation: string;
-  partnerSlug?: string;
-  customDate?: boolean;
-}
-
-export function BookingBox({
-  tripId,
-  pricePerPerson,
-  availableSeats,
-  startDate,
-  endDate,
-  pickupLocation,
-  partnerSlug,
-  customDate = false,
-}: BookingBoxProps) {
-  const router = useRouter();
+export function BookingBox(props: BookingBoxProps) {
   const { data: session } = useSession();
-  const [seats, setSeats] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
-    name: session?.user?.name ?? "",
-    email: session?.user?.email ?? "",
-    mobile: "",
-    notes: "",
-    travelStartDate: "",
-    travelEndDate: "",
-  });
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [calculated, setCalculated] = useState(false);
+  const [continuing, setContinuing] = useState(false);
+  const packageDays = tripDuration(props.startDate, props.endDate, props.durationDays).days;
+  const soldOut = !props.customDate && props.availableSeats <= 0;
+  const international = (props.country || "India").trim().toLowerCase() !== "india";
+  const departureCities = props.departureCities?.filter(Boolean) ?? [];
+  const [form, setForm] = useState({ departureCity: international ? departureCities[0] || "" : "Joining Direct", travelStartDate: "", adults: 1, childrenWithBed: 0, childrenWithoutBed: 0, infants: 0, name: session?.user?.name ?? "", email: session?.user?.email ?? "", mobile: "", accepted: false });
 
-  const soldOut = customDate ? false : availableSeats <= 0;
-  const maxSeats = customDate ? 20 : Math.min(availableSeats, 20);
-  const total = pricePerPerson * seats;
-  const packageDays = tripDuration(startDate, endDate).days;
+  useEffect(() => { if (open) document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, [open]);
 
-  function calculatedEndDate(value: string) {
-    if (!value) return "";
-    const date = new Date(`${value}T00:00:00.000Z`);
-    date.setUTCDate(date.getUTCDate() + packageDays - 1);
-    return date.toISOString().slice(0, 10);
-  }
+  const travelers = form.adults + form.childrenWithBed + form.childrenWithoutBed + form.infants;
+  const total = props.pricePerPerson * travelers;
+  const endDate = (() => { if (!form.travelStartDate) return ""; const value = new Date(`${form.travelStartDate}T00:00:00.000Z`); value.setUTCDate(value.getUTCDate() + packageDays - 1); return value.toISOString().slice(0, 10); })();
 
-  function setField(k: keyof typeof form, v: string) {
-    setForm((f) => ({ ...f, [k]: v }));
-  }
+  function update<K extends keyof typeof form>(key: K, value: (typeof form)[K]) { setForm((current) => ({ ...current, [key]: value })); setCalculated(false); }
+  function validate() { if (!form.departureCity.trim()) return "Enter your departure city."; if (!form.travelStartDate) return "Select your date of travel."; if (form.name.trim().length < 2) return "Enter the lead traveler name."; if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return "Enter a valid email address."; if (!/^[6-9]\d{9}$/.test(form.mobile)) return "Enter a valid 10-digit mobile number."; if (!form.accepted) return "Accept the booking terms to continue."; if (!props.customDate && travelers > props.availableSeats) return `Only ${props.availableSeats} seats are available.`; return ""; }
+  function calculate() { const error = validate(); if (error) return toast.error(error); setCalculated(true); }
+  function continueToReview() { const error = validate(); if (error) return toast.error(error); setContinuing(true); const draft: BookingDraft = { tripId: props.tripId, slug: props.slug, partnerSlug: props.partnerSlug, departureCity: form.departureCity.trim(), travelStartDate: form.travelStartDate, travelEndDate: endDate, adults: form.adults, childrenWithBed: form.childrenWithBed, childrenWithoutBed: form.childrenWithoutBed, infants: form.infants, seats: travelers, name: form.name.trim(), email: form.email.trim(), mobile: form.mobile, pricePerPerson: props.pricePerPerson, totalAmount: total }; sessionStorage.setItem("voibee-booking-draft", JSON.stringify(draft)); router.push(`/booking-review?package=${encodeURIComponent(props.slug)}`); }
 
-  async function handleBook() {
-    if (!form.name || !form.email || !/^[6-9]\d{9}$/.test(form.mobile)) {
-      toast.error("Please enter your name, email and a valid 10-digit mobile.");
-      return;
-    }
-    if (customDate && !form.travelStartDate) {
-      toast.error("Please select your travel start date.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await fetch("/api/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tripId,
-          partnerSlug,
-          seats,
-          travelStartDate: form.travelStartDate || undefined,
-          travelEndDate: form.travelEndDate || undefined,
-          travelerDetails: {
-            name: form.name,
-            email: form.email,
-            mobile: form.mobile,
-            notes: form.notes,
-            travellers: seats,
-          },
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || "Could not create booking");
-      }
-
-      const { bookingId, razorpayOrderId, amount, keyId, mock, confirmationToken } = data.data;
-
-      // Demo mode: Razorpay not configured server-side -> confirm directly.
-      if (mock) {
-        await confirm({ bookingId, confirmationToken, mock: true });
-        return;
-      }
-
-      const ready = await loadRazorpay();
-      if (!ready) throw new Error("Failed to load payment gateway");
-
-      const rzp = new window.Razorpay!({
-        key: keyId,
-        amount: amount * 100,
-        currency: "INR",
-        name: appConfig.appName,
-        description: "Package booking",
-        order_id: razorpayOrderId,
-        prefill: { name: form.name, email: form.email, contact: form.mobile },
-        theme: { color: "#0060E6" },
-        handler: async (resp: Record<string, string>) => {
-          await confirm({
-            bookingId,
-            confirmationToken,
-            razorpay_order_id: resp.razorpay_order_id,
-            razorpay_payment_id: resp.razorpay_payment_id,
-            razorpay_signature: resp.razorpay_signature,
-          });
-        },
-        modal: {
-          ondismiss: () => {
-            setLoading(false);
-            toast.message("Payment cancelled. Your booking is on hold.");
-          },
-        },
-      });
-      rzp.open();
-    } catch (err) {
-      toast.error((err as Error).message);
-      setLoading(false);
-    }
-  }
-
-  async function confirm(payload: Record<string, unknown>) {
-    try {
-      const res = await fetch("/api/payments/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.message || "Verification failed");
-      toast.success(`Booking confirmed! Ref: ${data.data.bookingNumber}`);
-      const successParams = new URLSearchParams({ booking: data.data.bookingNumber });
-      if (typeof payload.confirmationToken === "string") {
-        successParams.set("token", payload.confirmationToken);
-      }
-      router.push(`/booking-success?${successParams.toString()}`);
-    } catch (err) {
-      toast.error((err as Error).message);
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="sticky top-20 rounded-2xl border border-border bg-card p-6 shadow-lg">
-      <div className="flex items-baseline justify-between">
-        <div>
-          <span className="text-2xl font-bold">{formatINR(pricePerPerson)}</span>
-          <span className="text-sm text-muted-foreground"> /person</span>
-        </div>
-        {!soldOut && !customDate ? (
-          <span className="text-xs font-medium text-success">
-            {availableSeats} seats left
-          </span>
-        ) : null}
-      </div>
-
-      <div className="mt-4 space-y-2 text-sm text-muted-foreground">
-        <p className="flex items-center gap-2">
-          <Calendar className="size-4 text-primary" />
-          {customDate ? `${packageDays} days / ${Math.max(0, packageDays - 1)} nights` : `${formatDate(startDate)} → ${formatDate(endDate)}`}
-        </p>
-        {pickupLocation ? (
-          <p className="flex items-center gap-2">
-            <MapPin className="size-4 text-primary" /> Pickup: {pickupLocation}
-          </p>
-        ) : null}
-      </div>
-
-      {soldOut ? (
-        <Button disabled className="mt-5 w-full" size="lg">
-          Sold Out
-        </Button>
-      ) : (
-        <>
-          <div className="mt-5 space-y-3">
-            <div>
-              <Label className="mb-1.5 block">Travellers</Label>
-              <div className="flex items-center justify-between rounded-lg border border-border p-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setSeats((s) => Math.max(1, s - 1))}
-                  disabled={seats <= 1}
-                >
-                  <Minus className="size-4" />
-                </Button>
-                <span className="text-lg font-semibold">{seats}</span>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setSeats((s) => Math.min(maxSeats, s + 1))}
-                  disabled={seats >= maxSeats}
-                >
-                  <Plus className="size-4" />
-                </Button>
-              </div>
-            </div>
-
-          <div className="grid gap-3">
-              {customDate ? (
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="bk-start-date" className="mb-1 block">Start date <span className="text-destructive">*</span></Label>
-                    <Input
-                      id="bk-start-date"
-                      type="date"
-                      min={new Date().toISOString().slice(0, 10)}
-                      value={form.travelStartDate}
-                      onChange={(e) => {
-                        const travelStartDate = e.target.value;
-                        setForm((current) => ({
-                          ...current,
-                          travelStartDate,
-                          travelEndDate: calculatedEndDate(travelStartDate),
-                        }));
-                      }}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="bk-end-date" className="mb-1 block">End date ({packageDays} days)</Label>
-                    <Input id="bk-end-date" type="date" value={form.travelEndDate} readOnly disabled={!form.travelStartDate} />
-                  </div>
-                </div>
-              ) : null}
-              <div>
-                <Label htmlFor="bk-name" className="mb-1 block">Full name <span className="text-destructive">*</span></Label>
-                <Input
-                  id="bk-name"
-                  value={form.name}
-                  onChange={(e) => setField("name", e.target.value)}
-                  placeholder="Your name"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label htmlFor="bk-email" className="mb-1 block">Email <span className="text-destructive">*</span></Label>
-                  <Input
-                    id="bk-email"
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => setField("email", e.target.value)}
-                    placeholder="you@email.com"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="bk-mobile" className="mb-1 block">Mobile <span className="text-destructive">*</span></Label>
-                  <Input
-                    id="bk-mobile"
-                    value={form.mobile}
-                    onChange={(e) => setField("mobile", e.target.value)}
-                    placeholder="10-digit"
-                    maxLength={10}
-                  />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="bk-notes" className="mb-1 block">Notes (optional)</Label>
-                <Textarea
-                  id="bk-notes"
-                  value={form.notes}
-                  onChange={(e) => setField("notes", e.target.value)}
-                  placeholder="Any special requirements?"
-                  className="min-h-16"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">
-                {formatINR(pricePerPerson)} × {seats}
-              </span>
-              <span>{formatINR(total)}</span>
-            </div>
-            <div className="flex justify-between text-base font-bold">
-              <span>Total</span>
-              <span>{formatINR(total)}</span>
-            </div>
-          </div>
-
-          <Button
-            onClick={handleBook}
-            disabled={loading}
-            variant="gradient"
-            size="lg"
-            className="mt-4 w-full"
-          >
-            {loading ? <Loader2 className="size-4 animate-spin" /> : null}
-            {loading ? "Processing…" : "Book Now"}
-          </Button>
-          <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-            <ShieldCheck className="size-3.5 text-success" /> Secure payment via
-            Razorpay
-          </p>
-        </>
-      )}
-    </div>
-  );
+  return <>
+    <div className="sticky top-24 rounded-2xl border border-primary/15 bg-white p-5 shadow-lg shadow-primary/5"><p className="text-sm text-muted-foreground">Starting from</p><p className="mt-1 text-3xl font-extrabold text-slate-950">{formatINR(props.pricePerPerson)} <span className="text-sm font-medium text-muted-foreground">/ person</span></p><p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground"><Calendar className="size-4 text-primary" />{props.customDate ? `${packageDays} days · select your date` : `${formatDate(props.startDate)} – ${formatDate(props.endDate)}`}</p><Button disabled={soldOut} variant="gradient" size="lg" className="mt-5 w-full" onClick={() => setOpen(true)}>{soldOut ? "Sold Out" : "Book Now"}</Button><p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground"><ShieldCheck className="size-3.5 text-success" />Online and offline booking available</p></div>
+    {open ? <div className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/55 backdrop-blur-sm sm:items-center sm:p-5" role="dialog" aria-modal="true" aria-labelledby="booking-title" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}><div className="max-h-[94vh] w-full max-w-5xl overflow-y-auto rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl"><div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-white px-5 py-4 sm:px-7"><div><p className="text-xs font-bold uppercase tracking-wider text-primary">Plan your booking</p><h2 id="booking-title" className="text-xl font-extrabold sm:text-2xl">Traveler and trip details</h2></div><button type="button" onClick={() => setOpen(false)} className="flex size-10 items-center justify-center rounded-full bg-secondary hover:bg-slate-200" aria-label="Close booking form"><X className="size-5" /></button></div>
+      <div className="space-y-7 p-5 sm:p-7"><div className="grid gap-5 sm:grid-cols-2"><div><Label htmlFor="departure-city" className="mb-2 block">{international ? "Departure city" : "Departure"} <span className="text-destructive">*</span></Label>{international ? <Select id="departure-city" value={form.departureCity} onChange={(e) => update("departureCity", e.target.value)} className="h-12" required><option value="" disabled>Select departure city</option>{departureCities.map((city) => <option key={city} value={city}>{city}</option>)}</Select> : <div id="departure-city" className="flex h-12 items-center rounded-md border border-input bg-secondary/40 px-3 font-semibold text-slate-700">Joining Direct</div>}{international && !departureCities.length ? <p className="mt-1 text-xs text-destructive">Departure cities are not configured for this package.</p> : null}</div><div><Label htmlFor="travel-date" className="mb-2 block">Date of travel <span className="text-destructive">*</span></Label><Input id="travel-date" type="date" value={form.travelStartDate} min={new Date().toISOString().slice(0, 10)} onChange={(e) => update("travelStartDate", e.target.value)} className="h-12" required /></div></div>
+      <div className="border-y border-dashed border-border py-6"><h3 className="mb-5 text-lg font-extrabold">Travelers <span className="text-sm font-normal text-muted-foreground">(maximum 20)</span></h3><div className="grid grid-cols-2 gap-4 lg:grid-cols-4"><Counter label="Adult" hint="12+ years" value={form.adults} min={1} onChange={(value) => update("adults", value)} /><Counter label="Child (with bed)" hint="Below 12 years" value={form.childrenWithBed} onChange={(value) => update("childrenWithBed", value)} /><Counter label="Child (without bed)" hint="Below 12 years" value={form.childrenWithoutBed} onChange={(value) => update("childrenWithoutBed", value)} /><Counter label="Infant" hint="0–2 years" value={form.infants} onChange={(value) => update("infants", value)} /></div></div>
+      <div><h3 className="mb-5 text-lg font-extrabold">Contact details <span className="text-sm font-normal text-muted-foreground">(Booking updates will be sent here)</span></h3><div className="grid gap-4 sm:grid-cols-3"><div><Label htmlFor="traveler-name" className="mb-2 block">Full name <span className="text-destructive">*</span></Label><Input id="traveler-name" value={form.name} onChange={(e) => update("name", e.target.value)} className="h-12" /></div><div><Label htmlFor="traveler-mobile" className="mb-2 block">Mobile number <span className="text-destructive">*</span></Label><Input id="traveler-mobile" inputMode="numeric" maxLength={10} value={form.mobile} onChange={(e) => update("mobile", e.target.value.replace(/\D/g, ""))} className="h-12" /></div><div><Label htmlFor="traveler-email" className="mb-2 block">Email <span className="text-destructive">*</span></Label><Input id="traveler-email" type="email" value={form.email} onChange={(e) => update("email", e.target.value)} className="h-12" /></div></div></div>
+      <label className="flex cursor-pointer items-start gap-3 text-sm"><input type="checkbox" checked={form.accepted} onChange={(e) => update("accepted", e.target.checked)} className="mt-0.5 size-5 accent-primary" /><span>I accept the <a href="/terms" target="_blank" className="font-semibold text-primary underline">Terms & Conditions</a> and <a href="/privacy" target="_blank" className="font-semibold text-primary underline">Privacy Policy</a>. <span className="text-destructive">*</span></span></label>
+      <div className="flex flex-col items-stretch justify-end gap-4 border-t border-border pt-5 sm:flex-row sm:items-center">{!calculated ? <Button type="button" variant="gradient" size="lg" onClick={calculate}>Calculate Price</Button> : <><div className="mr-auto rounded-2xl bg-primary/5 px-5 py-3"><p className="text-xs font-semibold text-muted-foreground">Total for {travelers} traveler{travelers === 1 ? "" : "s"}</p><p className="text-2xl font-extrabold text-primary">{formatINR(total)}</p></div><Button type="button" variant="gradient" size="lg" disabled={continuing} onClick={continueToReview}>{continuing ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}Continue</Button></>}</div></div></div></div> : null}
+  </>;
 }

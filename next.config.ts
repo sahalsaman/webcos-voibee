@@ -13,6 +13,16 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
       { protocol: "https", hostname: "ui-avatars.com" },
       { protocol: "https", hostname: "upload.wikimedia.org" },
+      {
+        protocol: "https",
+        hostname: "d3gz7d9rg09miz.cloudfront.net",
+        pathname: "/travel/**",
+      },
+      {
+        protocol: "https",
+        hostname: "ak-d.tripcdn.com",
+        pathname: "/images/**",
+      },
     ],
   },
   // Mongoose ships native/optional deps that should not be bundled for RSC.

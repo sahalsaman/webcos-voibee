@@ -1,0 +1,17 @@
+import { getTripBySlug } from "@/lib/data";
+import { createPackageDetailPdf } from "@/lib/package-detail-pdf";
+
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const trip = await getTripBySlug(id);
+  if (!trip) return Response.json({ error: "Package not found" }, { status: 404 });
+
+  const pdf = createPackageDetailPdf(trip);
+  return new Response(new Uint8Array(pdf), {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="Voibee-${trip.slug}.pdf"`,
+      "Cache-Control": "public, max-age=300",
+    },
+  });
+}

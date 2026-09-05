@@ -23,14 +23,6 @@ const ItinerarySchema = new Schema(
   { _id: false },
 );
 
-const PackageOptionSchema = new Schema(
-  {
-    label: { type: String, required: true, trim: true },
-    price: { type: Number, required: true, min: 0 },
-  },
-  { _id: false },
-);
-
 const TripSchema = new Schema(
   {
     title: { type: String, required: true, trim: true },
@@ -44,20 +36,19 @@ const TripSchema = new Schema(
     destination: { type: String, required: true, trim: true, index: true },
     description: { type: String, default: "" },
     images: { type: [String], default: [] },
-    videos: { type: [String], default: [] },
     itinerary: { type: [ItinerarySchema], default: [] },
     inclusions: { type: [String], default: [] },
     includedServices: { type: [String], enum: PACKAGE_SERVICES, default: [] },
     exclusions: { type: [String], default: [] },
-    packageOptions: { type: [PackageOptionSchema], default: [] },
     holidayPackage: { type: Boolean, default: true, index: true },
-    holidayGroup: { type: String, default: "", trim: true },
     basePrice: { type: Number, required: true, min: 0 },
+    durationDays: { type: Number, required: true, min: 1, default: 1 },
     totalSeats: { type: Number, default: 0, min: 0 },
     availableSeats: { type: Number, default: 0, min: 0 },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     pickupLocation: { type: String, default: "" },
+    departureCities: { type: [String], default: [] },
     category: { type: String, enum: TRIP_CATEGORIES, default: "Holiday Package", index: true },
     status: { type: String, enum: TRIP_STATUSES, default: "draft", index: true },
     featured: { type: Boolean, default: false, index: true },

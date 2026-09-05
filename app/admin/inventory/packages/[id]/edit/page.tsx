@@ -10,5 +10,5 @@ export default async function EditItineraryPage({ params }: { params: Promise<{ 
     listAdminDestinations() as Promise<DestinationDTO[]>,
   ]);
   if (!trip) notFound();
-  return <div className="space-y-6"><div><h1 className="text-2xl font-bold">Edit Itinerary</h1><p className="text-muted-foreground">{trip.title}</p></div><TripForm trip={trip} destinations={destinations} /></div>;
+  return <div className="space-y-6"><div><h1 className="text-2xl font-bold">Edit Package</h1><p className="text-muted-foreground">{trip.title}</p></div><TripForm trip={trip} destinations={destinations} /></div>;
 }

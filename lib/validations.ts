@@ -78,7 +78,6 @@ export const tripSchema = z.object({
   country: z.string().trim().default("India"),
   description: z.string().default(""),
   images: z.array(z.string()).default([]),
-  videos: z.array(z.string()).default([]),
   itinerary: z
     .array(
       z.object({
@@ -95,23 +94,15 @@ export const tripSchema = z.object({
   inclusions: z.array(z.string()).default([]),
   includedServices: z.array(z.enum(PACKAGE_SERVICES)).default([]),
   exclusions: z.array(z.string()).default([]),
-  packageOptions: z
-    .array(
-      z.object({
-        label: z.string().trim().min(1),
-        price: z.number().nonnegative(),
-      }),
-    )
-    .max(1, "One package can have only one duration and one price")
-    .default([]),
   holidayPackage: z.boolean().default(true),
-  holidayGroup: z.string().trim().default(""),
   basePrice: z.number().nonnegative(),
+  durationDays: z.number().int().positive().default(1),
   totalSeats: z.number().int().nonnegative().default(0),
   availableSeats: z.number().int().nonnegative().default(0),
   startDate: z.string(),
   endDate: z.string(),
   pickupLocation: z.string().default(""),
+  departureCities: z.array(z.string().trim().min(2)).default([]),
   category: z.enum(TRIP_CATEGORIES).default("Holiday Package"),
   status: z.enum(TRIP_STATUSES).default("draft"),
   featured: z.boolean().default(false),
@@ -122,7 +113,6 @@ export const destinationSchema = z.object({
   title: z.string().trim().min(2),
   description: z.string().default(""),
   images: z.array(z.string()).default([]),
-  videos: z.array(z.string()).default([]),
   basePrice: z.number().nonnegative().default(0),
   status: z.enum(DESTINATION_STATUSES).default("active"),
   featured: z.boolean().default(false),
@@ -158,7 +148,6 @@ export const offerCardSchema = z.object({
   title: z.string().trim().min(2),
   description: z.string().default(""),
   images: z.array(z.string()).default([]),
-  videos: z.array(z.string()).default([]),
   href: z.string().trim().min(1).default("/packages"),
   ctaLabel: z.string().trim().default("View packages"),
   priceLabel: z.string().trim().default(""),
@@ -174,7 +163,6 @@ export const eventSchema = z.object({
   title: z.string().trim().min(2),
   description: z.string().default(""),
   images: z.array(z.string()).default([]),
-  videos: z.array(z.string()).default([]),
   venue: z.string().trim().default(""),
   city: z.string().trim().min(2),
   country: z.string().trim().default("India"),
@@ -366,6 +354,7 @@ export const hrTaskSchema=z.object({employeeId:z.string().min(1),title:z.string(
 export const bookingSchema = z.object({
   tripId: z.string().min(1),
   partnerSlug: z.string().optional(),
+  bookingMode: z.enum(["online", "offline"]).default("online"),
   seats: z.number().int().positive().max(50),
   travelStartDate: z.string().trim().optional().or(z.literal("")),
   travelEndDate: z.string().trim().optional().or(z.literal("")),
@@ -374,6 +363,11 @@ export const bookingSchema = z.object({
     email: z.string().email(),
     mobile,
     travellers: z.number().int().positive(),
+    departureCity: z.string().trim().default(""),
+    adults: z.number().int().nonnegative().default(1),
+    childrenWithBed: z.number().int().nonnegative().default(0),
+    childrenWithoutBed: z.number().int().nonnegative().default(0),
+    infants: z.number().int().nonnegative().default(0),
     notes: z.string().optional(),
   }),
 });

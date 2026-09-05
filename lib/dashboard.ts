@@ -334,7 +334,7 @@ export async function listAdminBookings() {
   return safe(async () => {
     const bookings = await Booking.find({})
       .sort({ createdAt: -1 })
-      .populate({ path: "trip", model: Trip, select: "title destination" })
+      .populate({ path: "trip", model: Trip, select: "title destination holidayPackage" })
       .populate({ path: "traveler", model: User, select: "name email" })
       .populate({ path: "partner", model: Partner, select: "businessName" })
       .lean();

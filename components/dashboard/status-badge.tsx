@@ -31,7 +31,7 @@ const MAP: Record<string, Variant> = {
 export function StatusBadge({ status }: { status: string }) {
   return (
     <Badge variant={MAP[status] ?? "secondary"} className="capitalize">
-      {status}
+      {status === "created" ? "Not paid" : status}
     </Badge>
   );
 }

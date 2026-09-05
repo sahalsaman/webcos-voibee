@@ -24,7 +24,7 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
   const link = href ?? `/packages/${trip.slug}`;
   const img = trip.images?.[0] || FALLBACK_IMG;
   const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
-  const { label: duration } = tripDuration(trip.startDate, trip.endDate);
+  const { label: duration } = tripDuration(trip.startDate, trip.endDate, trip.durationDays || trip.itinerary?.length);
   const price = priceOverride ?? trip.basePrice;
   const soldOut = customDate ? false : trip.availableSeats <= 0;
 
@@ -106,7 +106,7 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
         <span
           className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-all group-hover:bg-primary/90 group-hover:shadow-md"
         >
-          {soldOut ? "View details" : "Book now"}
+          View details
           <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
         </span>
       </div>

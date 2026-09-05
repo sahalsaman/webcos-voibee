@@ -23,7 +23,8 @@ function Detail({ label, value }: { label: string; value: React.ReactNode }) {
 export default async function BookingSuccessPage({ searchParams }: { searchParams: SearchParams }) {
   const { booking: reference = "", token } = await searchParams;
   const booking = await getAuthorizedBookingConfirmation(reference, token);
-  if (!booking || booking.paymentStatus !== "paid") notFound();
+  if (!booking) notFound();
+  const paid = booking.paymentStatus === "paid";
 
   const downloadParams = new URLSearchParams();
   if (token) downloadParams.set("token", token);
@@ -31,16 +32,16 @@ export default async function BookingSuccessPage({ searchParams }: { searchParam
   const tripImage = booking.trip?.images?.[0];
 
   return (
-    <main className="bg-gradient-to-b from-emerald-50/80 via-background to-background px-4 py-10 sm:px-6 sm:py-14">
+    <main className={`${paid ? "bg-gradient-to-b from-emerald-50/80" : "bg-gradient-to-b from-blue-50/80"} via-background to-background px-4 py-10 sm:px-6 sm:py-14`}>
       <div className="mx-auto max-w-5xl">
         <section className="overflow-hidden rounded-[30px] border border-emerald-200/70 bg-card shadow-xl shadow-emerald-950/5">
-          <div className="bg-gradient-to-r from-emerald-600 to-teal-500 px-6 py-9 text-center text-white sm:px-10">
+          <div className={`${paid ? "from-emerald-600 to-teal-500" : "from-primary to-blue-500"} bg-gradient-to-r px-6 py-9 text-center text-white sm:px-10`}>
             <span className="mx-auto flex size-16 items-center justify-center rounded-full bg-white/20 ring-1 ring-white/35">
               <CheckCircle2 className="size-9" />
             </span>
-            <p className="mt-4 text-sm font-bold uppercase tracking-[0.18em] text-emerald-50">Payment successful</p>
-            <h1 className="mt-2 text-3xl font-extrabold sm:text-4xl">Your trip is confirmed!</h1>
-            <p className="mx-auto mt-3 max-w-xl text-emerald-50">Thank you, {booking.travelerDetails.name}. Keep this confirmation for your journey.</p>
+            <p className="mt-4 text-sm font-bold uppercase tracking-[0.18em] text-white/85">{paid ? "Payment successful" : "Offline booking received"}</p>
+            <h1 className="mt-2 text-3xl font-extrabold sm:text-4xl">{paid ? "Your trip is confirmed!" : "Your booking request is saved!"}</h1>
+            <p className="mx-auto mt-3 max-w-xl text-white/85">{paid ? `Thank you, ${booking.travelerDetails.name}. Keep this confirmation for your journey.` : `Thank you, ${booking.travelerDetails.name}. The Voibee team will contact you to confirm payment and availability.`}</p>
             <div className="mt-5 inline-flex rounded-full bg-white/15 px-4 py-2 font-mono text-sm font-bold ring-1 ring-white/25">
               Booking ID: {booking.bookingNumber}
             </div>
@@ -79,8 +80,8 @@ export default async function BookingSuccessPage({ searchParams }: { searchParam
                 <dl className="mt-5 space-y-3 text-sm">
                   <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Price per traveler</dt><dd className="font-semibold">{formatINR(booking.sellingPrice)}</dd></div>
                   <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Travelers</dt><dd className="font-semibold">{booking.seats}</dd></div>
-                  <div className="flex justify-between gap-3 border-t border-border pt-3 text-base"><dt className="font-bold">Amount paid</dt><dd className="font-extrabold text-primary">{formatINR(booking.totalAmount)}</dd></div>
-                  <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Payment status</dt><dd className="font-bold capitalize text-emerald-600">{booking.paymentStatus}</dd></div>
+                  <div className="flex justify-between gap-3 border-t border-border pt-3 text-base"><dt className="font-bold">{paid ? "Amount paid" : "Amount payable"}</dt><dd className="font-extrabold text-primary">{formatINR(booking.totalAmount)}</dd></div>
+                  <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Payment status</dt><dd className={`font-bold ${paid ? "text-emerald-600" : "text-amber-600"}`}>{paid ? "Paid" : "Not paid"}</dd></div>
                 </dl>
               </article>
 

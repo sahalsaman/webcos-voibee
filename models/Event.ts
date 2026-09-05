@@ -6,7 +6,6 @@ const EventSchema = new Schema(
     title: { type: String, required: true, trim: true },
     description: { type: String, default: "" },
     images: { type: [String], default: [] },
-    videos: { type: [String], default: [] },
     venue: { type: String, default: "" },
     city: { type: String, required: true, trim: true },
     country: { type: String, default: "India" },

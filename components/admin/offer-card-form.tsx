@@ -61,7 +61,6 @@ export function OfferCardForm({ offer, onSaved, onCancel }: { offer?: OfferCardD
       countryCode: (form.countryCode || "IN").toUpperCase(),
       images: lines(form.images),
       tags: form.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
-      videos: [],
     };
 
     try {

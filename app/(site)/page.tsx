@@ -4,14 +4,7 @@ import {
   Compass,
   ArrowRight,
   Star,
-  Mountain,
-  Heart,
   Users,
-  UserRound,
-  Leaf,
-  Sparkles,
-  Flower2,
-  PartyPopper,
   Camera,
   Share2,
 } from "lucide-react";
@@ -23,11 +16,12 @@ import { SearchBar } from "@/components/home/search-bar";
 import { OfferCarousel, type OfferSlide } from "@/components/home/offer-carousel";
 import { getFeaturedTrips, getHomeDestinations, getOfferCards, isIndiaCountry } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
-import { formatCurrencyForCountry, normalizePackageHref } from "@/lib/utils";
+import { normalizePackageHref, withCountryParam as hrefWithCountry } from "@/lib/utils";
 import type { TripCategory } from "@/lib/constants";
 import type { OfferCardDTO } from "@/types";
 import { DestinationSwitcher } from "@/components/site/destination-switcher";
 import { DestinationCarousel } from "@/components/home/destination-carousel";
+import { ThemeCarousel } from "@/components/home/theme-carousel";
 
 // Re-fetch featured packages from the DB at most once a minute.
 export const revalidate = 60;
@@ -87,28 +81,24 @@ const TRUST_AVATARS = [
 
 
 const TRIP_THEME_DETAILS = [
-  { name: "Holiday Package", icon: Mountain },
-  { name: "Honeymoon", icon: Heart },
-  { name: "Family", icon: Users },
-  { name: "Group Trip", icon: Sparkles },
-  { name: "Strangers", icon: UserRound },
-  { name: "Wellness", icon: Leaf },
-  { name: "Spiritual", icon: Flower2 },
-  { name: "Festival", icon: PartyPopper },
+  { name: "Holiday Package", image: destinationImage("Goa"), description: "Classic escapes" },
+  { name: "Honeymoon", image: destinationImage("Maldives"), description: "Romantic getaways" },
+  { name: "Family", image: destinationImage("Singapore"), description: "Fun for every age" },
+  { name: "Group Trip", image: destinationImage("Ladakh"), description: "Better together" },
+  { name: "Strangers", image: destinationImage("Rishikesh"), description: "Meet your travel tribe" },
+  { name: "Wellness", image: destinationImage("Kerala"), description: "Rest and recharge" },
+  { name: "Spiritual", image: destinationImage("Varanasi"), description: "Meaningful journeys" },
+  { name: "Festival", image: destinationImage("Jaipur"), description: "Celebrate the world" },
 ] satisfies Array<{
   name: TripCategory;
-  icon: typeof Compass;
+  image: string;
+  description: string;
 }>;
 
 type SP = Record<string, string | string[] | undefined>;
 
 function str(v: string | string[] | undefined) {
   return Array.isArray(v) ? v[0] : v;
-}
-
-function hrefWithCountry(path: string, country?: string) {
-  const code = country?.toUpperCase();
-  return code ? `${path}${path.includes("?") ? "&" : "?"}c=${encodeURIComponent(code)}` : path;
 }
 
 export default async function HomePage({
@@ -127,24 +117,12 @@ export default async function HomePage({
   const heroDestinations = showDomestic
     ? [...homeDestinations.domestic.slice(0, 3), ...homeDestinations.international.slice(0, 3)]
     : homeDestinations.international.slice(0, 6);
-  const offerDestinations = showDomestic
-    ? [...homeDestinations.international, ...homeDestinations.domestic]
-    : homeDestinations.international;
-  const offers: OfferSlide[] = offerCards.length > 0
-    ? offerCards.map((offer) => toOfferSlide(offer, country))
-    : offerDestinations.slice(0, 4).map((d) => ({
-      title: `${d.title} package deals`,
-      description: `Book curated ${d.title} packages with verified stays, flexible plans and smooth support.`,
-      image: d.images[0] || destinationImage(d.title),
-      href: hrefWithCountry(`/packages?destination=${encodeURIComponent(d.title)}`, country),
-      price: `From ${formatCurrencyForCountry(d.basePrice, country)}`,
-      ctaLabel: "View packages",
-    }));
+  const offers: OfferSlide[] = offerCards.map((offer) => toOfferSlide(offer, country));
 
   return (
-    <>
+    <main className="min-h-screen bg-white">
       {/* ---------------- Hero ---------------- */}
-      <section className="relative overflow-hidden bg-background">
+      <section className="relative overflow-hidden bg-white">
         <div className="absolute inset-0">
           <Image
             src={HERO_BG}
@@ -154,8 +132,8 @@ export default async function HomePage({
             sizes="100vw"
             className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/78 to-background/10" />
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/78 to-white/10" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white to-transparent" />
         </div>
         <div className="relative mx-auto grid min-h-[600px] max-w-7xl items-center px-4 pb-12 pt-20 sm:min-h-[640px] sm:px-6 lg:min-h-[680px] lg:grid-cols-[minmax(0,0.9fr)_minmax(320px,0.7fr)] lg:px-8 lg:pb-20 lg:pt-28">
           <div className="max-w-3xl">
@@ -219,39 +197,22 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Package themes ---------------- */}
-      <section className="bg-secondary/40 py-16">
+      <section className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            eyebrow="Browse by theme"
-            title="Choose the trip mood that fits you"
-          />
-          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-8">
-            {TRIP_THEME_DETAILS.map((theme) => {
-              const Icon = theme.icon;
-
-              return (
-                <Link
-                  key={theme.name}
-                  href={hrefWithCountry(`/packages?category=${encodeURIComponent(theme.name)}`, country)}
-                  className="group flex min-h-28 flex-col items-center justify-center rounded-xl border border-border bg-card p-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10"
-                >
-                  <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                    <Icon className="size-5" />
-                  </div>
-                  <h3 className="text-sm font-semibold leading-tight group-hover:text-primary">{theme.name}</h3>
-                </Link>
-              );
-            })}
+          <div className="mx-auto mb-9 max-w-2xl text-center">
+            <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">Find your kind of holiday</p>
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">Choose the trip mood that fits you</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-500 sm:text-base">Pick a travel style and discover packages selected around the experience you want.</p>
           </div>
+          <ThemeCarousel themes={TRIP_THEME_DETAILS} country={country} />
         </div>
       </section>
 
       {/* ---------------- Featured packages ---------------- */}
-      <section className="bg-secondary/40 py-16">
+      <section className="bg-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-end justify-between gap-4 [&>div]:mb-0">
             <SectionHeading
-              eyebrow="Featured"
               title="Trending packages this season"
               subtitle="Our most-loved packages, ready to book."
               align="left"
@@ -285,7 +246,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Moments ---------------- */}
-      <section className="overflow-hidden bg-white px-4 py-16 sm:px-6 lg:px-8">
+      <section className="overflow-hidden bg-sky-50  px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
           <div className="max-w-xl lg:pr-8">
             <SectionHeading
@@ -349,7 +310,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Testimonials ---------------- */}
-      <section className="bg-background px-4 py-16 sm:px-6 lg:px-8">
+      <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <SectionHeading eyebrow="Loved by" title="What our community says" />
           <div className="grid gap-8 md:grid-cols-3">
@@ -423,7 +384,7 @@ export default async function HomePage({
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 }
 

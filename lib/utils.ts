@@ -6,6 +6,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/** Preserve the selected storefront country while navigating between pages. */
+export function withCountryParam(path: string, country?: string) {
+  const code = country?.trim().toUpperCase();
+  return code ? `${path}${path.includes("?") ? "&" : "?"}c=${encodeURIComponent(code)}` : path;
+}
+
 /** Format a number as Indian Rupees (no decimals by default). */
 export function formatINR(amount: number, opts?: { decimals?: boolean }) {
   return new Intl.NumberFormat("en-IN", {
@@ -41,10 +47,11 @@ export function formatDate(date: Date | string | number) {
 }
 
 /** Inclusive day count between two dates: "5D / 4N" friendly. */
-export function tripDuration(start: Date | string, end: Date | string) {
+export function tripDuration(start: Date | string, end: Date | string, configuredDays?: number) {
   const s = new Date(start).getTime();
   const e = new Date(end).getTime();
-  const days = Math.max(1, Math.round((e - s) / 86_400_000) + 1);
+  const dateDays = Math.max(1, Math.round((e - s) / 86_400_000) + 1);
+  const days = configuredDays && configuredDays > 0 ? Math.round(configuredDays) : dateDays;
   const nights = Math.max(0, days - 1);
   return { days, nights, label: `${days}D / ${nights}N` };
 }

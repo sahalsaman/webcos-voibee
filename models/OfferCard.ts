@@ -6,7 +6,6 @@ const OfferCardSchema = new Schema(
     title: { type: String, required: true, trim: true },
     description: { type: String, default: "" },
     images: { type: [String], default: [] },
-    videos: { type: [String], default: [] },
     href: { type: String, default: "/packages" },
     ctaLabel: { type: String, default: "View packages" },
     priceLabel: { type: String, default: "" },

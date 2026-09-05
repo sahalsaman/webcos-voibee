@@ -14,7 +14,6 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { Gallery } from "@/components/trip/gallery";
 import { BookingBox } from "@/components/booking/booking-box";
-import { PackageOptionsList } from "@/components/trip/package-options";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getWhiteLabelTrip, trackPartnerTripClick } from "@/lib/data";
 import { isCustomDateTripCategory } from "@/lib/constants";
@@ -51,7 +50,8 @@ export default async function WhiteLabelTripPage({ params }: Props) {
 
   const { partner: biz, trip: t, sellingPrice, commission } = wl;
   const customDate = t.holidayPackage ?? isCustomDateTripCategory(t.category);
-  const { label: duration } = tripDuration(t.startDate, t.endDate);
+  const configuredDays = t.durationDays || t.itinerary.length;
+  const { label: duration } = tripDuration(t.startDate, t.endDate, configuredDays);
   const scheduleLabel = customDate ? "Custom date" : duration;
   const price = sellingPrice || t.basePrice + commission;
 
@@ -119,12 +119,7 @@ export default async function WhiteLabelTripPage({ params }: Props) {
               </p>
             </section>
 
-            {t.packageOptions?.length ? (
-              <section>
-                <h2 className="mb-3 text-xl font-semibold">Package options</h2>
-                <PackageOptionsList options={t.packageOptions} priceOffset={commission} />
-              </section>
-            ) : null}
+          
 
             {t.itinerary?.length ? (
               <section>
@@ -186,6 +181,9 @@ export default async function WhiteLabelTripPage({ params }: Props) {
               startDate={t.startDate}
               endDate={t.endDate}
               pickupLocation={t.pickupLocation}
+              country={t.country}
+              departureCities={t.departureCities}
+              durationDays={configuredDays}
               partnerSlug={partner}
               customDate={customDate}
             />
