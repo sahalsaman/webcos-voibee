@@ -255,6 +255,14 @@ export default async function TripDetailPage({ params }: Props) {
             departureCities={trip.departureCities}
             durationDays={configuredDays}
             customDate={customDate}
+            visaRequired={trip.visaRequired}
+            visaNote={trip.visaNote}
+            visaDocuments={trip.visaDocuments}
+            visaFee={trip.visaFee}
+            permitRequired={trip.permitRequired}
+            permitNote={trip.permitNote}
+            permitDocuments={trip.permitDocuments}
+            permitFee={trip.permitFee}
           />
         </aside>
       </div>

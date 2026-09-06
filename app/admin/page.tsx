@@ -80,7 +80,7 @@ export default async function AdminDashboard() {
         <CardHeader className="flex-row items-center justify-between">
           <CardTitle>Recent Bookings</CardTitle>
           <Button asChild variant="ghost" size="sm">
-            <Link href="/admin/bookings">View all</Link>
+            <Link href="/admin/lms/bookings">View all</Link>
           </Button>
         </CardHeader>
         <CardContent>

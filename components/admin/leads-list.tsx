@@ -2,13 +2,14 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Filter, RotateCcw, UserRoundSearch } from "lucide-react";
+import { Filter, RotateCcw, Search, UserRoundSearch } from "lucide-react";
 import { LeadDrawer } from "@/components/admin/lead-drawer";
 import { QuotationDrawer } from "@/components/admin/quotation-drawer";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { cn, formatDate, formatINR } from "@/lib/utils";
 import type { CampaignDTO, LeadDTO } from "@/types";
@@ -27,12 +28,16 @@ const statusStyles: Record<(typeof statuses)[number], string> = {
 
 export function LeadsList({ leads, campaigns, defaultCampaignId }: { leads: LeadDTO[]; campaigns: CampaignDTO[]; defaultCampaignId?: string }) {
   const [source, setSource] = useState("all");
+  const [search, setSearch] = useState("");
   const [visibleStatuses, setVisibleStatuses] = useState<Set<string>>(() => new Set(statuses));
   const filteredLeads = useMemo(() => leads.filter((lead) => {
     if (source !== "all" && lead.source !== source) return false;
-    return visibleStatuses.has(lead.status);
-  }), [leads, source, visibleStatuses]);
-  const changed = source !== "all" || visibleStatuses.size !== statuses.length;
+    if (!visibleStatuses.has(lead.status)) return false;
+    const campaign=lead.campaign&&typeof lead.campaign==="object"?lead.campaign.name:"";
+    const quotation=lead.quotation&&typeof lead.quotation==="object"?lead.quotation.quotationNumber:"";
+    return !search.trim()||`${lead.leadNumber} ${lead.customerName} ${lead.email||""} ${lead.phone} ${lead.destination} ${lead.source} ${lead.assignedTo} ${campaign} ${quotation}`.toLowerCase().includes(search.trim().toLowerCase());
+  }), [leads, search, source, visibleStatuses]);
+  const changed = Boolean(search.trim()) || source !== "all" || visibleStatuses.size !== statuses.length;
 
   function toggleStatus(status: string) {
     setVisibleStatuses((current) => {
@@ -45,6 +50,7 @@ export function LeadsList({ leads, campaigns, defaultCampaignId }: { leads: Lead
 
   function resetFilters() {
     setSource("all");
+    setSearch("");
     setVisibleStatuses(new Set(statuses));
   }
 
@@ -53,6 +59,7 @@ export function LeadsList({ leads, campaigns, defaultCampaignId }: { leads: Lead
       <CardContent className="space-y-4 p-4 sm:p-5">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           <div className="flex items-center gap-2 text-sm font-semibold"><Filter className="size-4 text-primary" />Filters</div>
+          <div className="relative w-full lg:max-w-sm"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"/><Input value={search} onChange={(event)=>setSearch(event.target.value)} placeholder="Search lead, customer, contact or destination..." className="pl-9" aria-label="Search leads"/></div>
           <div className="w-full lg:w-72">
             <Select value={source} onChange={(event) => setSource(event.target.value)} aria-label="Filter leads by source">
               <option value="all">All sources</option>

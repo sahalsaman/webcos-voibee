@@ -1,6 +1,6 @@
 import { connectDB } from "@/lib/db";
 import { ok, fail, handleError, requireApiRole } from "@/lib/api";
-import { tripSchema } from "@/lib/validations";
+import { tripUpdateSchema } from "@/lib/validations";
 import "@/models";
 import Trip from "@/models/Trip";
 
@@ -11,7 +11,7 @@ export async function PATCH(request: Request, { params }: Ctx) {
   try {
     await requireApiRole(["admin"]);
     const { id } = await params;
-    const data = tripSchema.partial().parse(await request.json());
+    const data = tripUpdateSchema.parse(await request.json());
     await connectDB();
 
     const update: Record<string, unknown> = { ...data };

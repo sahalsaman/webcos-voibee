@@ -82,6 +82,14 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
     exclusions: (trip?.exclusions ?? []).join("\n"),
     tags: (trip?.tags ?? []).join(", "),
     holidayPackage: trip?.holidayPackage ?? true,
+    visaRequired: trip?.visaRequired ?? false,
+    visaNote: trip?.visaNote ?? "",
+    visaDocuments: (trip?.visaDocuments ?? []).join("\n"),
+    visaFee: trip?.visaFee ?? 0,
+    permitRequired: trip?.permitRequired ?? false,
+    permitNote: trip?.permitNote ?? "",
+    permitDocuments: (trip?.permitDocuments ?? []).join("\n"),
+    permitFee: trip?.permitFee ?? 0,
   });
   const [itinerary, setItinerary] = useState<ItineraryItem[]>(
     trip?.itinerary?.length
@@ -167,6 +175,14 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       includedServices: form.includedServices,
       exclusions: lines(form.exclusions),
       holidayPackage: form.holidayPackage,
+      visaRequired: form.visaRequired,
+      visaNote: form.visaNote,
+      visaDocuments: lines(form.visaDocuments),
+      visaFee: Number(form.visaFee),
+      permitRequired: form.permitRequired,
+      permitNote: form.permitNote,
+      permitDocuments: lines(form.permitDocuments),
+      permitFee: Number(form.permitFee),
       tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
       itinerary: itinerary
         .filter((i) => i.title)
@@ -288,6 +304,13 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       </Card>
 
       <Card>
+        <CardContent className="grid gap-6 p-6 lg:grid-cols-2">
+          <RequirementFields kind="Visa" country={form.country} enabled={form.visaRequired} note={form.visaNote} documents={form.visaDocuments} fee={form.visaFee} onEnabled={(value)=>set("visaRequired",value)} onNote={(value)=>set("visaNote",value)} onDocuments={(value)=>set("visaDocuments",value)} onFee={(value)=>set("visaFee",value)}/>
+          <RequirementFields kind="Permit" country={form.country} enabled={form.permitRequired} note={form.permitNote} documents={form.permitDocuments} fee={form.permitFee} onEnabled={(value)=>set("permitRequired",value)} onNote={(value)=>set("permitNote",value)} onDocuments={(value)=>set("permitDocuments",value)} onFee={(value)=>set("permitFee",value)}/>
+        </CardContent>
+      </Card>
+
+      <Card>
         <CardContent className="grid gap-4 p-6 sm:grid-cols-3">
  
           <div className="flex items-center sm:pt-5 sm:col-span-3">
@@ -387,3 +410,5 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
     </form>
   );
 }
+
+function RequirementFields({kind,country,enabled,note,documents,fee,onEnabled,onNote,onDocuments,onFee}:{kind:"Visa"|"Permit";country:string;enabled:boolean;note:string;documents:string;fee:number;onEnabled:(value:boolean)=>void;onNote:(value:string)=>void;onDocuments:(value:string)=>void;onFee:(value:number)=>void}){return <section className="space-y-4 rounded-xl border p-4"><label className="flex items-center gap-2 font-semibold"><input type="checkbox" checked={enabled} onChange={(event)=>onEnabled(event.target.checked)} className="size-4 accent-[var(--primary)]"/>{kind} mandatory for {country}</label>{enabled&&<><div><Label className="mb-1.5 block">{kind} fee per traveler (₹)</Label><Input type="number" min={0} step={1} value={fee} onChange={(event)=>onFee(Number(event.target.value))}/><p className="mt-1 text-xs text-muted-foreground">Applied when the traveler selects No.</p></div><div><Label className="mb-1.5 block">Note shown to travelers</Label><Textarea value={note} onChange={(event)=>onNote(event.target.value)} placeholder={`Explain the ${kind.toLowerCase()} requirement and next steps.`} required className="min-h-20"/></div><div><Label className="mb-1.5 block">Required documents (one per line)</Label><Textarea value={documents} onChange={(event)=>onDocuments(event.target.value)} placeholder={kind==="Visa"?"Passport copy\nPassport-size photo\nBank statement":"Passport copy\nExisting visa copy\nApplication form"} required className="min-h-28"/><p className="mt-1 text-xs text-muted-foreground">Travelers who answer No must upload every listed document.</p></div></>}</section>}

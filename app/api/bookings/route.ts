@@ -29,6 +29,7 @@ export async function POST(request: Request) {
     if (!trip || trip.status !== "active") {
       return fail("This package is not available for booking", 404);
     }
+    for(const kind of ["visa","permit"] as const){const required=kind==="visa"?trip.visaRequired:trip.permitRequired;if(!required)continue;const answer=body.travelCompliance?.[kind];if(!answer)return fail(`${kind === "visa" ? "Visa" : "Permit"} information is required`,422);if(!answer.hasDocument){const wanted=(kind==="visa"?trip.visaDocuments:trip.permitDocuments)??[];const uploaded=new Set(answer.documents.map((document)=>document.label));if(wanted.some((label:string)=>!uploaded.has(label)))return fail(`Upload all required ${kind} documents`,422)}}
     const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
     if (!customDate && trip.availableSeats < body.seats) {
       return fail(`Only ${trip.availableSeats} seat(s) left`, 409);
@@ -60,6 +61,11 @@ export async function POST(request: Request) {
         platformFeeFlat: settings.platformFeeFlat,
       },
     });
+    const visaFee = trip.visaRequired && body.travelCompliance?.visa?.hasDocument === false ? Number(trip.visaFee || 0) : 0;
+    const permitFee = trip.permitRequired && body.travelCompliance?.permit?.hasDocument === false ? Number(trip.permitFee || 0) : 0;
+    const complianceFee = (visaFee + permitFee) * body.seats;
+    breakdown.travelerPays += complianceFee;
+    breakdown.adminReceives += complianceFee;
 
     const bookingNumber = shortId("VOI-");
     const confirmationToken = randomBytes(24).toString("hex");
@@ -126,6 +132,10 @@ export async function POST(request: Request) {
         partner: partnerId,
         partnerTrip: partnerTripId,
         travelerDetails,
+        travelCompliance: body.travelCompliance,
+        visaFee,
+        permitFee,
+        complianceFee,
         seats: body.seats,
         travelStartDate,
         travelEndDate,
@@ -154,8 +164,8 @@ export async function POST(request: Request) {
       type: "booking",
       title: "New booking received",
       message: `${bookingNumber} · ${trip.title} · ${travelerDetails.name} · ${body.seats} traveler(s)`,
-      meta: { bookingId: String(booking._id), bookingNumber, href: "/admin/bookings" },
-    }, "bookings");
+      meta: { bookingId: String(booking._id), bookingNumber, href: "/admin/lms/bookings" },
+    }, "lms");
 
     // Offline bookings are stored immediately and remain unpaid until an admin
     // records an advance or full payment.

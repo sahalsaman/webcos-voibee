@@ -64,15 +64,14 @@ export const HR_TASK_STATUSES = ["todo", "in_progress", "blocked", "completed", 
 
 export const ADMIN_PORTAL_PAGES = [
   { key: "dashboard", label: "Dashboard", href: "/admin" },
-  { key: "bookings", label: "Bookings", href: "/admin/bookings" },
-  { key: "lms", label: "LMS", href: "/admin/lms" },
-  { key: "campaigns", label: "Marketing Campaigns", href: "/admin/campaigns" },
-  { key: "reputation", label: "Reputation Management", href: "/admin/reputation" },
+  { key: "lms", label: "Bookings & LMS", href: "/admin/lms" },
   { key: "hrm", label: "HRM", href: "/admin/hrm" },
   { key: "users", label: "Users", href: "/admin/users" },
   { key: "inventory", label: "Inventory", href: "/admin/inventory" },
   { key: "finance", label: "Finance", href: "/admin/finance" },
+  { key: "reputation", label: "ORM", href: "/admin/reputation" },
   { key: "reports", label: "Reports", href: "/admin/reports" },
+  { key: "campaigns", label: "Marketing Campaigns", href: "/admin/campaigns" },
   { key: "settings", label: "Settings", href: "/admin/settings" },
 ] as const;
 export type AdminPortalPageKey = (typeof ADMIN_PORTAL_PAGES)[number]["key"];
@@ -88,10 +87,10 @@ export function adminPortalPageKeyForPath(pathname: string) {
 
 export function suggestedEmployeePortalPages(designation: string) {
   const text = designation.toLowerCase();
-  if (text.includes("finance") || text.includes("account")) return ["dashboard", "bookings", "users", "finance", "reports"];
-  if (text.includes("sales") || text.includes("booking")) return ["dashboard", "bookings", "lms", "users"];
+  if (text.includes("finance") || text.includes("account")) return ["dashboard", "lms", "users", "finance", "reports"];
+  if (text.includes("sales") || text.includes("booking")) return ["dashboard", "lms", "users"];
   if (text.includes("content") || text.includes("marketing")) return ["dashboard", "inventory", "campaigns", "reputation", "lms", "reports"];
-  if (text.includes("operation") || text.includes("trip") || text.includes("package")) return ["dashboard", "inventory", "bookings", "lms", "users"];
+  if (text.includes("operation") || text.includes("trip") || text.includes("package")) return ["dashboard", "inventory", "lms", "users"];
   if (text.includes("hr") || text.includes("human")) return ["dashboard", "hrm", "settings", "reports"];
   return ["dashboard"];
 }

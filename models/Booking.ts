@@ -17,6 +17,9 @@ const TravelerDetailsSchema = new Schema(
   { _id: false },
 );
 
+const ComplianceDocumentSchema = new Schema({ label:{type:String,required:true}, fileId:{type:String,required:true}, fileName:{type:String,required:true} },{_id:false});
+const ComplianceAnswerSchema = new Schema({ hasDocument:{type:Boolean,required:true}, documents:{type:[ComplianceDocumentSchema],default:[]} },{_id:false});
+
 const BookingSchema = new Schema(
   {
     bookingNumber: {
@@ -32,6 +35,10 @@ const BookingSchema = new Schema(
     partnerTrip: { type: Schema.Types.ObjectId, ref: "PartnerTrip", default: null },
 
     travelerDetails: { type: TravelerDetailsSchema, required: true },
+    travelCompliance: { visa:{type:ComplianceAnswerSchema,default:null}, permit:{type:ComplianceAnswerSchema,default:null} },
+    visaFee: { type: Number, default: 0, min: 0 },
+    permitFee: { type: Number, default: 0, min: 0 },
+    complianceFee: { type: Number, default: 0, min: 0 },
     seats: { type: Number, required: true, min: 1 },
     // Optional at schema level so legacy bookings remain editable. All new
     // booking entry points populate these snapshot dates.

@@ -19,7 +19,7 @@ export default async function AdminBookingsPage({
   const country = typeof params.c === "string" ? params.c : undefined;
   const query = typeof params.q === "string" ? params.q.trim() : "";
   const viewHref = (nextView: BookingsView) => ({
-    pathname: "/admin/bookings",
+    pathname: "/admin/lms/bookings",
     query: { ...(country ? { c: country } : {}), view: nextView, ...(query ? { q: query } : {}) },
   });
   const [bookings, bookableTrips, trips] = await Promise.all([

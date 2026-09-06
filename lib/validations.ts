@@ -72,10 +72,18 @@ export const adminTravelerSchema = z.object({
   mobile,
 });
 
-export const tripSchema = z.object({
+const tripBaseSchema = z.object({
   title: z.string().trim().min(3),
   destination: z.string().trim().min(2),
   country: z.string().trim().default("India"),
+  visaRequired: z.boolean().default(false),
+  visaNote: z.string().trim().default(""),
+  visaDocuments: z.array(z.string().trim().min(2)).default([]),
+  visaFee: z.number().nonnegative().default(0),
+  permitRequired: z.boolean().default(false),
+  permitNote: z.string().trim().default(""),
+  permitDocuments: z.array(z.string().trim().min(2)).default([]),
+  permitFee: z.number().nonnegative().default(0),
   description: z.string().default(""),
   images: z.array(z.string()).default([]),
   itinerary: z
@@ -108,6 +116,11 @@ export const tripSchema = z.object({
   featured: z.boolean().default(false),
   tags: z.array(z.string()).default([]),
 });
+
+function validateTravelRequirements(data:{visaRequired?:boolean;visaNote?:string;visaDocuments?:string[];permitRequired?:boolean;permitNote?:string;permitDocuments?:string[]},ctx:z.RefinementCtx){if(data.visaRequired){if(!data.visaNote)ctx.addIssue({code:"custom",path:["visaNote"],message:"Add the traveler visa note"});if(!data.visaDocuments?.length)ctx.addIssue({code:"custom",path:["visaDocuments"],message:"Add at least one required visa document"})}if(data.permitRequired){if(!data.permitNote)ctx.addIssue({code:"custom",path:["permitNote"],message:"Add the traveler permit note"});if(!data.permitDocuments?.length)ctx.addIssue({code:"custom",path:["permitDocuments"],message:"Add at least one required permit document"})}}
+
+export const tripSchema=tripBaseSchema.superRefine(validateTravelRequirements);
+export const tripUpdateSchema=tripBaseSchema.partial().superRefine(validateTravelRequirements);
 
 export const destinationSchema = z.object({
   title: z.string().trim().min(2),
@@ -384,6 +397,10 @@ export const bookingSchema = z.object({
     infants: z.number().int().nonnegative().default(0),
     notes: z.string().optional(),
   }),
+  travelCompliance: z.object({
+    visa: z.object({ hasDocument:z.boolean(), documents:z.array(z.object({ label:z.string().trim().min(1), fileId:z.string().trim().min(1), fileName:z.string().trim().min(1) })).default([]) }).optional(),
+    permit: z.object({ hasDocument:z.boolean(), documents:z.array(z.object({ label:z.string().trim().min(1), fileId:z.string().trim().min(1), fileName:z.string().trim().min(1) })).default([]) }).optional(),
+  }).optional(),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

@@ -26,7 +26,7 @@ export function BookingReview({ trip }: { trip: TripSummary }) {
     if (!draft) return;
     setLoading(mode);
     try {
-      const response = await fetch("/api/bookings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tripId: draft.tripId, partnerSlug: draft.partnerSlug, bookingMode: mode, seats: draft.seats, travelStartDate: draft.travelStartDate, travelEndDate: draft.travelEndDate, travelerDetails: { name: draft.name, email: draft.email, mobile: draft.mobile, travellers: draft.seats, departureCity: draft.departureCity, adults: draft.adults, childrenWithBed: draft.childrenWithBed, childrenWithoutBed: draft.childrenWithoutBed, infants: draft.infants } }) });
+      const response = await fetch("/api/bookings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tripId: draft.tripId, partnerSlug: draft.partnerSlug, bookingMode: mode, seats: draft.seats, travelStartDate: draft.travelStartDate, travelEndDate: draft.travelEndDate, travelerDetails: { name: draft.name, email: draft.email, mobile: draft.mobile, travellers: draft.seats, departureCity: draft.departureCity, adults: draft.adults, childrenWithBed: draft.childrenWithBed, childrenWithoutBed: draft.childrenWithoutBed, infants: draft.infants }, travelCompliance:draft.travelCompliance }) });
       const result = await response.json();
       if (!response.ok || !result.success) throw new Error(result.message || "Could not create booking");
       const data = result.data as Record<string, string | number | boolean>;

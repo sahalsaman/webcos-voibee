@@ -67,6 +67,14 @@ export interface TripDTO {
   slug: string;
   destination: string;
   country: string;
+  visaRequired?: boolean;
+  visaNote?: string;
+  visaDocuments?: string[];
+  visaFee?: number;
+  permitRequired?: boolean;
+  permitNote?: string;
+  permitDocuments?: string[];
+  permitFee?: number;
   description: string;
   images: string[];
   itinerary: ItineraryItem[];
