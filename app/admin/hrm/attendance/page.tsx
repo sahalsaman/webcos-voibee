@@ -1,1 +1,28 @@
-import{CalendarCheck}from"lucide-react";import{HrRecordDrawer}from"@/components/admin/hr-record-drawer";import{StatusBadge}from"@/components/dashboard/status-badge";import{Card,CardContent}from"@/components/ui/card";import{EmptyState}from"@/components/ui/empty-state";import{listAdminAttendance,listAdminEmployees}from"@/lib/dashboard";import{formatDate}from"@/lib/utils";import type{AttendanceDTO,EmployeeDTO}from"@/types";export default async function Page(){const[records,employees]=await Promise.all([listAdminAttendance()as Promise<AttendanceDTO[]>,listAdminEmployees()as Promise<EmployeeDTO[]>]);return <Section title="Attendance" count={records.length} action={<HrRecordDrawer kind="attendance" employees={employees}/>} empty={<EmptyState icon={CalendarCheck} title="No attendance records"/>}>{records.map(x=>{const e=typeof x.employee==="string"?null:x.employee;return <Row key={x._id} cells={[e?.name||"Employee",formatDate(x.date),<StatusBadge key="s" status={x.status}/>,x.checkIn||"—",x.checkOut||"—",`${x.workHours}h`,<HrRecordDrawer key="a" kind="attendance" employees={employees} record={x}/>]}/>})} </Section>}function Section(p:{title:string;count:number;action:React.ReactNode;empty:React.ReactNode;children:React.ReactNode}){return <div className="space-y-5"><div className="flex justify-between"><div><h2 className="text-xl font-bold">{p.title}</h2><p className="text-muted-foreground">{p.count} records</p></div>{p.action}</div>{p.count?<Card><CardContent className="overflow-x-auto p-0"><table className="w-full text-sm"><thead><tr>{["Employee","Date","Status","Check in","Check out","Hours","Action"].map(x=><th className="p-4 text-left" key={x}>{x}</th>)}</tr></thead><tbody>{p.children}</tbody></table></CardContent></Card>:p.empty}</div>}function Row({cells}:{cells:React.ReactNode[]}){return <tr className="border-t">{cells.map((x,i)=><td className="p-4" key={i}>{x}</td>)}</tr>}
+import { AttendanceCalendar } from "@/components/admin/attendance-calendar";
+import { HrRecordDrawer } from "@/components/admin/hr-record-drawer";
+import { connectDB } from "@/lib/db";
+import { listAdminAttendance, listAdminEmployees, listAttendanceRegularizations } from "@/lib/dashboard";
+import { getCurrentUser } from "@/lib/session";
+import Employee from "@/models/Employee";
+import type { AttendanceDTO, AttendanceRegularizationDTO, EmployeeDTO } from "@/types";
+
+function indiaDateParts() {
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone:"Asia/Kolkata", year:"numeric", month:"2-digit", day:"2-digit" }).formatToParts(new Date());
+  const value=Object.fromEntries(parts.map((part)=>[part.type,part.value]));
+  return { today:`${value.year}-${value.month}-${value.day}`, month:`${value.year}-${value.month}` };
+}
+
+export default async function Page() {
+  const user=await getCurrentUser();
+  await connectDB();
+  const profile=user?.role==="employee" ? await Employee.findOne({user:user.id,status:"active",portalAccess:true}).select("_id hrAccess").lean<{_id:unknown;hrAccess?:"self"|"manage"}>() : null;
+  const canManage=user?.role==="admin"||profile?.hrAccess==="manage";
+  const currentEmployeeId=profile?String(profile._id):undefined;
+  const [records,employees,requests]=await Promise.all([
+    listAdminAttendance() as Promise<AttendanceDTO[]>,
+    listAdminEmployees() as Promise<EmployeeDTO[]>,
+    listAttendanceRegularizations() as Promise<AttendanceRegularizationDTO[]>,
+  ]);
+  const {today,month}=indiaDateParts();
+  return <AttendanceCalendar records={records} requests={requests} employees={employees} currentEmployeeId={currentEmployeeId} canManage={canManage} initialMonth={month} today={today} action={canManage?<HrRecordDrawer kind="attendance" employees={employees}/>:undefined}/>;
+}

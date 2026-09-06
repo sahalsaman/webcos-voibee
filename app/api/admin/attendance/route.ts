@@ -1,2 +1,22 @@
-import {connectDB} from "@/lib/db";import {handleError,ok,requireApiRole} from "@/lib/api";import {attendanceSchema} from "@/lib/validations";import Attendance from "@/models/Attendance";
-export async function POST(r:Request){try{await requireApiRole(["admin"]);const d=attendanceSchema.parse(await r.json());await connectDB();const x=await Attendance.create({...d,employee:d.employeeId,date:new Date(d.date)});return ok({id:String(x._id)},201)}catch(e){return handleError(e)}}
+import { connectDB } from "@/lib/db";
+import { handleError, ok, requireApiRole } from "@/lib/api";
+import { calculateWorkHours } from "@/lib/attendance";
+import { attendanceSchema } from "@/lib/validations";
+import Attendance from "@/models/Attendance";
+
+export async function POST(request: Request) {
+  try {
+    await requireApiRole(["admin"]);
+    const data = attendanceSchema.parse(await request.json());
+    await connectDB();
+    const record = await Attendance.create({
+      ...data,
+      employee: data.employeeId,
+      date: new Date(data.date),
+      workHours: calculateWorkHours(data.checkIn, data.checkOut),
+    });
+    return ok({ id: String(record._id) }, 201);
+  } catch (error) {
+    return handleError(error);
+  }
+}

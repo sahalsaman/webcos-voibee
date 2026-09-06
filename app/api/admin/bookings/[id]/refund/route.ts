@@ -8,6 +8,7 @@ import Commission from "@/models/Commission";
 import Partner from "@/models/Partner";
 import Payment from "@/models/Payment";
 import Trip from "@/models/Trip";
+import { notifyAdminsAndEmployees } from "@/lib/notifications";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -65,6 +66,13 @@ export async function POST(_request: Request, { params }: Ctx) {
         }
       }
     }
+
+    await notifyAdminsAndEmployees({
+      type: "payment",
+      title: "Booking refunded",
+      message: `${booking.bookingNumber} was refunded and cancelled.`,
+      meta: { bookingId: String(booking._id), bookingNumber: booking.bookingNumber, href: "/admin/bookings" },
+    }, "finance");
 
     return ok({ refundId, alreadyRefunded: false });
   } catch (error) {

@@ -4,6 +4,7 @@ import { payrollSchema } from "@/lib/validations";
 import "@/models";
 import Employee from "@/models/Employee";
 import Payroll from "@/models/Payroll";
+import { notifyEmployee } from "@/lib/notifications";
 
 export async function GET() {
   try {
@@ -40,6 +41,12 @@ export async function POST(request: Request) {
       paymentDate: data.paymentDate || null,
       paymentReference: data.paymentReference,
       notes: data.notes,
+    });
+    await notifyEmployee(data.employeeId, {
+      type: "payout",
+      title: "Payroll generated",
+      message: `Payroll for ${data.month} has been generated with net pay ₹${netPay.toLocaleString("en-IN")}.`,
+      meta: { payrollId: String(payroll._id), href: "/admin/hrm/payroll" },
     });
     return ok({ id: String(payroll._id) }, 201);
   } catch (err) {

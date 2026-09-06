@@ -1,5 +1,5 @@
 import { connectDB } from "@/lib/db";
-import { serialize, slugify } from "@/lib/utils";
+import { serialize } from "@/lib/utils";
 import "@/models"; // ensure all schemas are registered
 import Trip from "@/models/Trip";
 import Destination from "@/models/Destination";

@@ -17,6 +17,7 @@ import Payment from "@/models/Payment";
 import User from "@/models/User";
 import { getSettings } from "@/models/Settings";
 import { isCustomDateTripCategory } from "@/lib/constants";
+import { notifyAdminsAndEmployees } from "@/lib/notifications";
 
 export async function POST(request: Request) {
   try {
@@ -148,6 +149,13 @@ export async function POST(request: Request) {
       }
       throw error;
     }
+
+    await notifyAdminsAndEmployees({
+      type: "booking",
+      title: "New booking received",
+      message: `${bookingNumber} · ${trip.title} · ${travelerDetails.name} · ${body.seats} traveler(s)`,
+      meta: { bookingId: String(booking._id), bookingNumber, href: "/admin/bookings" },
+    }, "bookings");
 
     // Offline bookings are stored immediately and remain unpaid until an admin
     // records an advance or full payment.

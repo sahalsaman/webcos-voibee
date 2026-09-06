@@ -2,11 +2,17 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Filter, RotateCcw } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import {
+  BookingFilters,
+  bookingTripStates,
+  bookingTripStateStyles,
+  getBookingTripState,
+  type BookingTripState,
+} from "@/components/admin/booking-trip-state-filter";
 
 type CalendarTrip = {
   _id: string;
@@ -23,22 +29,6 @@ type CalendarTrip = {
   travelerName?: string;
 };
 
-type TripCalendarState = "upcoming-open" | "upcoming-full" | "started" | "completed";
-
-const stateStyles: Record<TripCalendarState, string> = {
-  "upcoming-open": "border-red-200 bg-red-50 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200",
-  "upcoming-full": "border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-500/30 dark:bg-yellow-500/10 dark:text-yellow-100",
-  started: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-100",
-  completed: "border-green-200 bg-green-50 text-green-700 dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-100",
-};
-
-const legend = [
-  { state: "upcoming-open" as const, label: "Coming, seats pending" },
-  { state: "upcoming-full" as const, label: "Coming, seats full" },
-  { state: "started" as const, label: "Package started" },
-  { state: "completed" as const, label: "Package completed" },
-];
-
 function startOfDay(value: Date) {
   return new Date(value.getFullYear(), value.getMonth(), value.getDate());
 }
@@ -50,18 +40,6 @@ function dateKey(value: Date | string) {
 
 function monthLabel(value: Date) {
   return value.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
-}
-
-function tripState(trip: CalendarTrip, today: Date): TripCalendarState {
-  const start = startOfDay(new Date(trip.startDate));
-  const end = startOfDay(new Date(trip.endDate || trip.startDate));
-  const totalSeats = Number(trip.totalSeats || 0);
-  const availableSeats = Number(trip.availableSeats || 0);
-  const bookedSeats = Math.max(0, totalSeats - availableSeats);
-
-  if (end < today) return "completed";
-  if (start <= today && end >= today) return "started";
-  return bookedSeats >= totalSeats && totalSeats > 0 ? "upcoming-full" : "upcoming-open";
 }
 
 function tripDuration(trip: CalendarTrip) {
@@ -131,9 +109,10 @@ function weekSegments(week: Date[], trips: CalendarTrip[]) {
 }
 
 export function AdminTripCalendar({ trips }: { trips: CalendarTrip[] }) {
+  const [search, setSearch] = useState("");
   const [selectedPackage, setSelectedPackage] = useState("all");
-  const [visibleStates, setVisibleStates] = useState<Set<TripCalendarState>>(
-    () => new Set(legend.map((item) => item.state)),
+  const [visibleStates, setVisibleStates] = useState<Set<BookingTripState>>(
+    () => new Set(bookingTripStates.map((item) => item.state)),
   );
   const [month, setMonth] = useState(() => {
     const today = new Date();
@@ -147,15 +126,17 @@ export function AdminTripCalendar({ trips }: { trips: CalendarTrip[] }) {
   ), [trips]);
   const filteredTrips = useMemo(() => trips.filter((trip) => {
     if (selectedPackage !== "all" && trip.packageId !== selectedPackage) return false;
-    return visibleStates.has(tripState(trip, today));
-  }), [selectedPackage, trips, today, visibleStates]);
+    const normalizedSearch = search.trim().toLocaleLowerCase();
+    if (normalizedSearch && ![trip.title, trip.destination, trip.bookingNumber, trip.travelerName].some((value) => value?.toLocaleLowerCase().includes(normalizedSearch))) return false;
+    return visibleStates.has(getBookingTripState(trip, today));
+  }), [search, selectedPackage, trips, today, visibleStates]);
   const weeks = useMemo(() => Array.from({ length: 6 }, (_, index) => days.slice(index * 7, index * 7 + 7)), [days]);
 
   function moveMonth(delta: number) {
     setMonth((current) => new Date(current.getFullYear(), current.getMonth() + delta, 1));
   }
 
-  function toggleState(state: TripCalendarState) {
+  function toggleState(state: BookingTripState) {
     setVisibleStates((current) => {
       const next = new Set(current);
       if (next.has(state)) next.delete(state);
@@ -165,12 +146,26 @@ export function AdminTripCalendar({ trips }: { trips: CalendarTrip[] }) {
   }
 
   function resetFilters() {
+    setSearch("");
     setSelectedPackage("all");
-    setVisibleStates(new Set(legend.map((item) => item.state)));
+    setVisibleStates(new Set(bookingTripStates.map((item) => item.state)));
   }
 
   return (
-    <Card>
+    <div className="space-y-4">
+      <BookingFilters
+        search={search}
+        onSearchChange={setSearch}
+        packages={packageOptions}
+        selectedPackage={selectedPackage}
+        onPackageChange={setSelectedPackage}
+        selectedStates={visibleStates}
+        onStateToggle={toggleState}
+        onReset={resetFilters}
+        resultCount={filteredTrips.length}
+        totalCount={trips.length}
+      />
+      <Card>
       <CardHeader className="gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <CardTitle>Package Calendar</CardTitle>
@@ -187,37 +182,6 @@ export function AdminTripCalendar({ trips }: { trips: CalendarTrip[] }) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="mb-4 flex flex-col gap-3 rounded-xl border border-border bg-secondary/25 p-3 lg:flex-row lg:items-center">
-          <div className="flex items-center gap-2 text-sm font-semibold text-foreground lg:mr-1">
-            <Filter className="size-4 text-primary" />Filters
-          </div>
-          <div className="flex-1">
-            <Select value={selectedPackage} onChange={(event) => setSelectedPackage(event.target.value)} aria-label="Filter calendar by package">
-              <option value="all">All packages ({packageOptions.length})</option>
-              {packageOptions.map((trip) => <option key={trip.id} value={trip.id}>{trip.title} — {trip.destination}</option>)}
-            </Select>
-          </div>
-          {selectedPackage !== "all" || visibleStates.size !== legend.length ? (
-            <Button type="button" variant="ghost" onClick={resetFilters}>
-              <RotateCcw />Reset
-            </Button>
-          ) : null}
-        </div>
-
-        <div className="mb-4 flex flex-wrap gap-2">
-          {legend.map((item) => (
-            <label key={item.state} className={cn("inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-opacity", stateStyles[item.state], !visibleStates.has(item.state) && "opacity-45 grayscale")}>
-              <input
-                type="checkbox"
-                checked={visibleStates.has(item.state)}
-                onChange={() => toggleState(item.state)}
-                className="size-3.5 cursor-pointer accent-current"
-              />
-              {item.label}
-            </label>
-          ))}
-        </div>
-
         <div className="overflow-x-auto">
           <div className="min-w-[980px] overflow-hidden rounded-lg border border-border">
             <div className="grid grid-cols-7 border-b border-border bg-secondary/60 text-xs font-semibold uppercase text-muted-foreground">
@@ -255,7 +219,7 @@ export function AdminTripCalendar({ trips }: { trips: CalendarTrip[] }) {
                         const trip = segment.trip;
                         const totalSeats = Number(trip.totalSeats || 0);
                         const bookedSeats = Math.max(0, totalSeats - Number(trip.availableSeats || 0));
-                        const state = tripState(trip, today);
+                        const state = getBookingTripState(trip, today);
                         const duration = tripDuration(trip);
                         return (
                           <Link
@@ -265,7 +229,7 @@ export function AdminTripCalendar({ trips }: { trips: CalendarTrip[] }) {
                               "pointer-events-auto z-10 mx-1 min-w-0 border px-3 py-2 text-xs shadow-sm transition hover:z-20 hover:brightness-95",
                               segment.startsHere ? "rounded-l-xl" : "-ml-px border-l-0 rounded-l-none",
                               segment.endsHere ? "rounded-r-xl" : "-mr-px border-r-0 rounded-r-none",
-                              stateStyles[state],
+                              bookingTripStateStyles[state],
                             )}
                             style={{
                               gridColumn: `${segment.startColumn + 1} / ${segment.endColumn + 2}`,
@@ -304,6 +268,7 @@ export function AdminTripCalendar({ trips }: { trips: CalendarTrip[] }) {
           </div>
         ) : null}
       </CardContent>
-    </Card>
+      </Card>
+    </div>
   );
 }

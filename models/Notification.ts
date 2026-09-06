@@ -18,6 +18,8 @@ const NotificationSchema = new Schema(
   { timestamps: true },
 );
 
+NotificationSchema.index({ user: 1, channel: 1, read: 1, createdAt: -1 });
+
 export type NotificationDoc = InferSchemaType<typeof NotificationSchema> & {
   _id: string;
 };

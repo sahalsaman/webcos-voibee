@@ -25,7 +25,9 @@ import Expense from "@/models/Expense";
 import Invoice from "@/models/Invoice";
 import Reputation from "@/models/Reputation";
 import Attendance from "@/models/Attendance"; import PerformanceReview from "@/models/PerformanceReview"; import LeaveRequest from "@/models/LeaveRequest"; import HrTask from "@/models/HrTask";
+import AttendanceRegularization from "@/models/AttendanceRegularization";
 import type { UserDTO } from "@/types";
+import { getCurrentUser } from "@/lib/session";
 
 async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
@@ -35,6 +37,23 @@ async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
     console.error("[dashboard] query failed:", (err as Error).message);
     return fallback;
   }
+}
+
+async function hrEmployeeScope() {
+  const user = await getCurrentUser();
+  if (!user || user.role === "admin") return null;
+  if (user.role !== "employee") return { _id: null };
+  const employee = await Employee.findOne({ user: user.id, status: "active", portalAccess: true })
+    .select("_id hrAccess")
+    .lean<{ _id: unknown; hrAccess?: "self" | "manage" }>();
+  if (!employee) return { _id: null };
+  return employee.hrAccess === "manage" ? null : { _id: employee._id };
+}
+
+async function hrRecordScope() {
+  const employee = await hrEmployeeScope();
+  if (!employee) return {};
+  return { employee: employee._id };
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -329,7 +348,7 @@ export async function listAdminEarnings() {
 }
 
 export async function listAdminEmployees() {
-  return safe(async () => serialize(await Employee.find({}).sort({ createdAt: -1 }).lean()), []);
+  return safe(async () => serialize(await Employee.find((await hrEmployeeScope()) ?? {}).sort({ createdAt: -1 }).lean()), []);
 }
 
 export async function getAdminEmployeeById(id: string) {
@@ -343,7 +362,7 @@ export async function listAdminBookings() {
   return safe(async () => {
     const bookings = await Booking.find({})
       .sort({ createdAt: -1 })
-      .populate({ path: "trip", model: Trip, select: "title destination holidayPackage" })
+      .populate({ path: "trip", model: Trip, select: "title destination holidayPackage startDate endDate totalSeats availableSeats" })
       .populate({ path: "traveler", model: User, select: "name email" })
       .populate({ path: "partner", model: Partner, select: "businessName" })
       .lean();
@@ -386,7 +405,7 @@ export async function listAdminCampaigns() {
 
 export async function listAdminPayroll() {
   return safe(async () => {
-    const payroll = await Payroll.find({})
+    const payroll = await Payroll.find(await hrRecordScope())
       .sort({ month: -1, createdAt: -1 })
       .populate({ path: "employee", model: Employee, select: "name email designation department" })
       .lean();
@@ -424,10 +443,11 @@ export async function listAdminInvoices() { return safe(async () => serialize(aw
 export async function listAdminReputation() { return safe(async () => serialize(await Reputation.find({}).sort({ reviewedAt: -1, createdAt: -1 }).lean()), []); }
 export async function getAdminReputationSummary() { return safe(async () => { const [total, unresolved, negative, ratings] = await Promise.all([Reputation.countDocuments({}), Reputation.countDocuments({ status: { $nin: ["responded", "resolved"] } }), Reputation.countDocuments({ sentiment: "negative", status: { $ne: "resolved" } }), Reputation.aggregate([{ $group: { _id: null, average: { $avg: "$rating" } } }])]); return { total, unresolved, negative, averageRating: Number((ratings[0]?.average ?? 0).toFixed(1)) }; }, { total: 0, unresolved: 0, negative: 0, averageRating: 0 }); }
 const employeePopulate={path:"employee",model:Employee,select:"name email designation department"};
-export async function listAdminAttendance(){return safe(async()=>serialize(await Attendance.find({}).sort({date:-1}).populate(employeePopulate).lean()),[])}
-export async function listAdminPerformanceReviews(){return safe(async()=>serialize(await PerformanceReview.find({}).sort({createdAt:-1}).populate(employeePopulate).lean()),[])}
-export async function listAdminLeaveRequests(){return safe(async()=>serialize(await LeaveRequest.find({}).sort({startDate:-1}).populate(employeePopulate).lean()),[])}
-export async function listAdminHrTasks(){return safe(async()=>serialize(await HrTask.find({}).sort({dueDate:1}).populate(employeePopulate).lean()),[])}
+export async function listAdminAttendance(){return safe(async()=>serialize(await Attendance.find(await hrRecordScope()).sort({date:-1}).populate(employeePopulate).lean()),[])}
+export async function listAttendanceRegularizations(){return safe(async()=>serialize(await AttendanceRegularization.find(await hrRecordScope()).sort({createdAt:-1}).populate(employeePopulate).lean()),[])}
+export async function listAdminPerformanceReviews(){return safe(async()=>serialize(await PerformanceReview.find(await hrRecordScope()).sort({createdAt:-1}).populate(employeePopulate).lean()),[])}
+export async function listAdminLeaveRequests(){return safe(async()=>serialize(await LeaveRequest.find(await hrRecordScope()).sort({startDate:-1}).populate(employeePopulate).lean()),[])}
+export async function listAdminHrTasks(){return safe(async()=>serialize(await HrTask.find(await hrRecordScope()).sort({dueDate:1}).populate(employeePopulate).lean()),[])}
 
 /* ----------------------------- PARTNER ----------------------------- */
 

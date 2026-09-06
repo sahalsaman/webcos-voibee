@@ -14,6 +14,7 @@ const EmployeeSchema = new Schema(
     joinedAt: { type: Date },
     portalAccess: { type: Boolean, default: false, index: true },
     portalPages: { type: [String], enum: ADMIN_PORTAL_PAGE_KEYS, default: [] },
+    hrAccess: { type: String, enum: ["self", "manage"], default: "self", index: true },
     notes: { type: String, default: "" },
   },
   { timestamps: true },

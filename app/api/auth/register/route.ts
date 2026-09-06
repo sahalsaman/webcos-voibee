@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import { ok, fail, handleError } from "@/lib/api";
 import { travelerRegisterSchema } from "@/lib/validations";
 import User from "@/models/User";
+import { notifyAdminsAndEmployees } from "@/lib/notifications";
 
 export async function POST(request: Request) {
   try {
@@ -21,6 +22,12 @@ export async function POST(request: Request) {
     const user = existing
       ? await User.findByIdAndUpdate(existing._id, { $set: { name: data.name, mobile: data.mobile, password: passwordHash } }, { returnDocument: "after" })
       : await User.create({ name: data.name, email: data.email, mobile: data.mobile, password: passwordHash, role: "traveler" });
+    await notifyAdminsAndEmployees({
+      type: "registration",
+      title: "New traveler registered",
+      message: `${data.name} created a traveler account.`,
+      meta: { userId: String(user?._id), href: "/admin/users/customers" },
+    }, "users");
     return ok({ id: String(user._id), role: "traveler" }, 201);
   } catch (err) {
     return handleError(err);

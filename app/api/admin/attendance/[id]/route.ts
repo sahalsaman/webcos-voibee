@@ -1,1 +1,29 @@
-import {connectDB} from "@/lib/db";import {fail,handleError,ok,requireApiRole} from "@/lib/api";import {attendanceSchema} from "@/lib/validations";import Attendance from "@/models/Attendance";type C={params:Promise<{id:string}>};export async function PATCH(r:Request,{params}:C){try{await requireApiRole(["admin"]);const{id}=await params,d=attendanceSchema.parse(await r.json());await connectDB();const x=await Attendance.findByIdAndUpdate(id,{...d,employee:d.employeeId,date:new Date(d.date)},{new:true,runValidators:true});return x?ok(x):fail("Not found",404)}catch(e){return handleError(e)}}
+import { connectDB } from "@/lib/db";
+import { fail, handleError, ok, requireApiRole } from "@/lib/api";
+import { calculateWorkHours } from "@/lib/attendance";
+import { attendanceSchema } from "@/lib/validations";
+import Attendance from "@/models/Attendance";
+
+type Context = { params: Promise<{ id: string }> };
+
+export async function PATCH(request: Request, { params }: Context) {
+  try {
+    await requireApiRole(["admin"]);
+    const { id } = await params;
+    const data = attendanceSchema.parse(await request.json());
+    await connectDB();
+    const record = await Attendance.findByIdAndUpdate(
+      id,
+      {
+        ...data,
+        employee: data.employeeId,
+        date: new Date(data.date),
+        workHours: calculateWorkHours(data.checkIn, data.checkOut),
+      },
+      { new: true, runValidators: true },
+    );
+    return record ? ok(record) : fail("Not found", 404);
+  } catch (error) {
+    return handleError(error);
+  }
+}

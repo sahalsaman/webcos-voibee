@@ -9,6 +9,7 @@ import Partner from "@/models/Partner";
 import PartnerTrip from "@/models/PartnerTrip";
 import Commission from "@/models/Commission";
 import Notification from "@/models/Notification";
+import { notifyAdminsAndEmployees } from "@/lib/notifications";
 
 export async function POST(request: Request) {
   try {
@@ -128,6 +129,13 @@ export async function POST(request: Request) {
         message: `Your booking ${booking.bookingNumber} for "${trip?.title ?? "your package"}" is confirmed.`,
       });
     }
+
+    await notifyAdminsAndEmployees({
+      type: "payment",
+      title: "Payment received",
+      message: `${booking.bookingNumber} was paid successfully for ${trip?.title ?? "a package"}.`,
+      meta: { bookingId: String(booking._id), bookingNumber: booking.bookingNumber, href: "/admin/finance/earnings" },
+    }, "finance");
 
     return ok({ bookingNumber: booking.bookingNumber });
   } catch (err) {

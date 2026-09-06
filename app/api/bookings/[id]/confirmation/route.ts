@@ -17,7 +17,7 @@ export async function GET(request: Request, { params }: Context) {
   return new Response(new Uint8Array(pdf), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="Voibee-${booking.bookingNumber}.pdf"`,
+      "Content-Disposition": `attachment; filename="Voibee-${booking.bookingNumber}-premium.pdf"`,
       "Cache-Control": "private, no-store",
     },
   });

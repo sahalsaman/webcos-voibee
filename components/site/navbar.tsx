@@ -16,6 +16,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { NotificationMenu } from "@/components/site/notification-menu";
 
 const NAV_LINKS = [
   { href: "/packages", label: "Holidays" },
@@ -62,7 +63,7 @@ export function Navbar() {
               <Link
                 key={`${l.href}-${l.label}`}
                 href={withCountry(l.href)}
-                className="rounded-md px-3 py-2 text-base text-muted-foreground transition-colors hover:text-foreground hover:font-bold"
+                className="rounded-md px-3 py-2 text-base text-muted-foreground transition-colors hover:text-foreground hover:font-semibold"
               >
                 {l.label}
               </Link>
@@ -71,6 +72,7 @@ export function Navbar() {
 
           <div className="flex items-center gap-2">
             {user && ( <ThemeToggle />)}
+            {user ? <NotificationMenu /> : null}
               {/* <Button asChild variant="ghost" size="default">
                 <Link href="/saved">
                   <HeartIcon className="size-4 text-pink-500" /> Saved

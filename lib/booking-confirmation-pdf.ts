@@ -1,6 +1,15 @@
 import type { BookingConfirmation } from "@/lib/booking-confirmation";
 import { buildMultiPagePdf, pdfLine as line } from "@/lib/simple-pdf";
 
+const GREEN = "0.04 0.27 0.23";
+const TEAL = "0.03 0.50 0.40";
+const GOLD = "0.77 0.49 0.10";
+const INK = "0.10 0.13 0.16";
+const MUTED = "0.40 0.44 0.47";
+const BORDER = "0.82 0.86 0.85";
+const CREAM = "0.97 0.96 0.92";
+const MINT = "0.84 0.92 0.89";
+
 function money(value: number) {
   return `INR ${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(value)}`;
 }
@@ -9,7 +18,7 @@ function date(value: string) {
   return new Intl.DateTimeFormat("en-IN", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
 }
 
-function wrapText(value: string, limit = 86) {
+function wrapText(value: string, limit = 72) {
   const words = value.replace(/\s+/g, " ").trim().split(" ").filter(Boolean);
   const lines: string[] = [];
   let current = "";
@@ -23,110 +32,164 @@ function wrapText(value: string, limit = 86) {
   return lines;
 }
 
-function itineraryPages(booking: BookingConfirmation) {
-  if (!booking.trip.itinerary?.length) return [];
-  const pages: string[][] = [];
-  let commands: string[] = [];
-  let y = 0;
+function fillRect(x: number, y: number, width: number, height: number, color: string) {
+  return `${color} rg ${x} ${y} ${width} ${height} re f`;
+}
 
-  const startPage = () => {
-    if (commands.length) pages.push(commands);
-    commands = [
-      "0.02 0.55 0.42 rg 0 774 595 68 re f",
-      line("VOIBEE HOLIDAYS", 42, 810, 11, true, "1 1 1"),
-      line(`ITINERARY - ${booking.trip.title}`, 42, 788, 16, true, "1 1 1"),
-    ];
-    y = 742;
-  };
-  const ensureSpace = (height = 24) => { if (y - height < 62) startPage(); };
-  const add = (text: string, options: { size?: number; bold?: boolean; color?: string; indent?: number; gap?: number; limit?: number } = {}) => {
-    const { size = 9, bold = false, color = "0.15 0.18 0.24", indent = 0, gap = 14, limit = 86 - Math.round(indent / 5) } = options;
-    const wrapped = wrapText(text, limit);
-    wrapped.forEach((textLine) => {
-      ensureSpace(gap);
-      commands.push(line(textLine, 42 + indent, y, size, bold, color));
-      y -= gap;
+function strokeRect(x: number, y: number, width: number, height: number, color = BORDER) {
+  return `${color} RG 0.7 w ${x} ${y} ${width} ${height} re S`;
+}
+
+function rule(x1: number, y1: number, x2: number, y2: number, color = BORDER, width = 0.7) {
+  return `${color} RG ${width} w ${x1} ${y1} m ${x2} ${y2} l S`;
+}
+
+function titleCase(value: string) {
+  return value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
+}
+
+function itineraryHeight(day: BookingConfirmation["trip"]["itinerary"][number]) {
+  let height = 52;
+  if (day.description) height += wrapText(day.description, 78).length * 10 + 4;
+  (day.transports ?? []).forEach((item) => { height += 11 + wrapText(item.description || "", 56).length * 9 + 5; });
+  (day.hotels ?? []).forEach((hotel) => { height += 11 + wrapText(hotel.description || "", 56).length * 9 + 5; });
+  if (day.meals?.length) height += 22;
+  (day.sightseeing ?? []).forEach((place) => { height += 11 + wrapText(place.description || "", 55).length * 9 + 4; });
+  return Math.max(104, height + 14);
+}
+
+function renderItineraryDay(
+  commands: string[],
+  day: BookingConfirmation["trip"]["itinerary"][number],
+  index: number,
+  top: number,
+  height: number,
+) {
+  const bottom = top - height;
+  commands.push(strokeRect(42, bottom, 511, height));
+  commands.push(rule(42, top, 553, top, TEAL, 3));
+  commands.push(line(`DAY ${day.day || index + 1}`, 62, top - 21, 8, false, GOLD));
+  commands.push(line(day.title || `Day ${index + 1}`, 62, top - 39, 15, false, GREEN));
+  let y = top - 52;
+  if (day.description) {
+    wrapText(day.description, 78).forEach((text) => {
+      commands.push(line(text, 62, y, 8, false, MUTED));
+      y -= 10;
     });
+    y -= 4;
+  }
+
+  const addRows = (label: string, rows: Array<{ title: string; description?: string }>) => {
+    if (!rows.length) return;
+    commands.push(line(label, 62, y, 7, false, MUTED));
+    rows.forEach((row, rowIndex) => {
+      commands.push(line(`${rowIndex ? "+ " : ""}${row.title}`, 146, y, 8, false, INK));
+      y -= 11;
+      wrapText(row.description || "", 56).forEach((text) => {
+        commands.push(line(text, 146, y, 7, false, MUTED));
+        y -= 9;
+      });
+      if (rowIndex < rows.length - 1) y -= 2;
+    });
+    y -= 5;
   };
 
-  startPage();
-  booking.trip.itinerary.forEach((day, index) => {
-    ensureSpace(90);
-    if (index > 0) y -= 8;
-    commands.push("0.93 0.97 0.96 rg 42 " + (y - 10) + " 511 30 re f");
-    commands.push(line(`DAY ${day.day || index + 1}: ${day.title}`, 54, y, 12, true, "0.02 0.45 0.36"));
-    y -= 34;
-    if (day.description) add(day.description, { gap: 14 });
-
-    const transports = day.transports ?? [];
-    if (transports.length) {
-      add("TRANSPORT", { size: 9, bold: true, color: "0.02 0.45 0.36", gap: 16 });
-      transports.forEach((item) => {
-        add(`- ${item.title}`, { bold: true, indent: 8 });
-        if (item.description) add(item.description, { indent: 18, color: "0.35 0.39 0.45" });
+  addRows("TRANSPORT", (day.transports ?? []).map((item) => ({ title: item.title, description: item.description })));
+  addRows("STAY", (day.hotels ?? []).map((hotel) => ({ title: hotel.name, description: hotel.description })));
+  if (day.meals?.length) {
+    commands.push(line("MEALS", 62, y, 7, false, MUTED));
+    commands.push(line(day.meals.map(titleCase).join(", "), 146, y, 8, false, INK));
+    y -= 22;
+  }
+  if (day.sightseeing?.length) {
+    commands.push(line("SIGHTSEEING", 62, y, 7, false, TEAL));
+    commands.push(rule(132, y + 5, 132, Math.max(bottom + 16, y - (day.sightseeing.length * 32)), GOLD, 1.4));
+    day.sightseeing.forEach((place) => {
+      commands.push(line(place.name, 148, y, 9, false, INK));
+      y -= 11;
+      wrapText(place.description || "", 55).forEach((text) => {
+        commands.push(line(text, 148, y, 7, false, MUTED));
+        y -= 9;
       });
-    }
+      y -= 4;
+    });
+  }
+  return bottom;
+}
 
-    const hotels = day.hotels ?? [];
-    if (hotels.length) {
-      add("HOTEL", { size: 9, bold: true, color: "0.02 0.45 0.36", gap: 16 });
-      hotels.forEach((hotel) => {
-        add(`- ${hotel.name}`, { bold: true, indent: 8 });
-        if (hotel.description) add(hotel.description, { indent: 18, color: "0.35 0.39 0.45" });
-      });
-    }
+function firstPage(booking: BookingConfirmation, contactNumber: string) {
+  const guests = booking.travelerDetails.travellers || booking.seats;
+  const durationDays = Math.max(1, Math.round((new Date(booking.travelEndDate).getTime() - new Date(booking.travelStartDate).getTime()) / 86_400_000) + 1);
+  const commands: string[] = [
+    line(`${contactNumber}    -    support@voibee.com`, 204, 810, 9, false, MUTED),
+    fillRect(42, 685, 511, 115, GREEN),
+    line("VOIBEE HOLIDAYS", 62, 772, 9, false, GOLD),
+    line(booking.bookingNumber, 430, 772, 9, false, "1 1 1"),
+    line(booking.trip.title, 62, 726, 27, false, "1 1 1"),
+    line("Curated travel document", 62, 706, 9, false, "0.88 0.93 0.92"),
+    fillRect(42, 605, 511, 80, CREAM),
+    strokeRect(42, 605, 511, 80),
+    rule(186, 605, 186, 685), rule(340, 605, 340, 685), rule(468, 605, 468, 685),
+    line("DESTINATION", 55, 665, 7, false, MUTED),
+    line(`${booking.trip.destination}, ${booking.trip.country}`, 55, 642, 11, false, INK),
+    line("TRAVEL DATES", 199, 665, 7, false, MUTED),
+    line(`${date(booking.travelStartDate)} -`, 199, 642, 10, false, INK),
+    line(date(booking.travelEndDate), 199, 627, 10, false, INK),
+    line(`${durationDays} DAYS / ${Math.max(0, durationDays - 1)} NIGHT${durationDays === 2 ? "" : "S"}`, 199, 611, 7, false, GREEN),
+    line("DEPARTURE", 353, 665, 7, false, MUTED),
+    line(booking.travelerDetails.departureCity || booking.trip.pickupLocation || "Joining Direct", 353, 642, 10, false, INK),
+    line("GUESTS", 481, 665, 7, false, MUTED),
+    line(String(guests), 481, 642, 11, false, INK),
+    line(`traveler${guests === 1 ? "" : "s"}`, 481, 625, 10, false, INK),
+    strokeRect(42, 478, 511, 127),
+    rule(291, 478, 291, 605),
+    fillRect(291, 478, 262, 127, MINT),
+    line("LEAD TRAVELER", 64, 575, 9, false, TEAL),
+    line(booking.travelerDetails.name, 64, 546, 16, false, INK),
+    line(booking.travelerDetails.email, 64, 524, 8, false, INK),
+    line(booking.travelerDetails.mobile, 64, 508, 8, false, INK),
+    line("PAYMENT SUMMARY", 314, 575, 9, false, TEAL),
+    line(money(booking.totalAmount), 314, 540, 23, false, GREEN),
+    line(`${money(booking.sellingPrice)} per traveler x ${booking.seats}`, 314, 523, 8, false, MUTED),
+    line(`STATUS - ${booking.paymentStatus.toUpperCase()}`, 314, 500, 8, false, TEAL),
+  ];
+  return { commands, y: 458 };
+}
 
-    if (day.meals?.length) add(`MEALS: ${day.meals.map((meal) => meal.charAt(0).toUpperCase() + meal.slice(1)).join(", ")}`, { bold: true, color: "0.02 0.45 0.36" });
-
-    const sightseeing = day.sightseeing ?? [];
-    if (sightseeing.length) {
-      add("SIGHTSEEING", { size: 9, bold: true, color: "0.02 0.45 0.36", gap: 16 });
-      sightseeing.forEach((place) => {
-        add(`- ${place.name}`, { bold: true, indent: 8 });
-        if (place.description) add(place.description, { indent: 18, color: "0.35 0.39 0.45" });
-      });
-    }
-  });
-  if (commands.length) pages.push(commands);
-  return pages;
+function continuationPage(booking: BookingConfirmation) {
+  return {
+    commands: [
+      fillRect(0, 774, 595, 68, GREEN),
+      line("VOIBEE HOLIDAYS", 42, 810, 9, false, GOLD),
+      line(booking.bookingNumber, 444, 810, 8, false, "1 1 1"),
+      line(`ITINERARY - ${booking.trip.title}`, 42, 788, 15, false, "1 1 1"),
+    ],
+    y: 754,
+  };
 }
 
 export function createBookingConfirmationPdf(booking: BookingConfirmation, contactNumber: string) {
-  const itinerary = itineraryPages(booking);
-  const pageCount = 1 + itinerary.length;
-  const confirmationPage: string[] = [
-    "0.02 0.55 0.42 rg 0 700 595 142 re f",
-    line("VOIBEE HOLIDAYS", 42, 797, 13, true, "1 1 1"),
-    line("BOOKING DETAILS", 42, 757, 26, true, "1 1 1"),
-    line(`Booking ID: ${booking.bookingNumber}`, 42, 730, 12, true, "0.9 1 0.97"),
-    line("TRIP DETAILS", 42, 666, 12, true, "0.02 0.45 0.36"),
-    line(booking.trip.title, 42, 642, 18, true),
-    line(`Destination: ${booking.trip.destination}, ${booking.trip.country}`, 42, 616),
-    line(`Travel dates: ${date(booking.travelStartDate)} - ${date(booking.travelEndDate)}`, 42, 596),
-    line(`Departure: ${booking.travelerDetails.departureCity || booking.trip.pickupLocation || "Joining Direct"}`, 42, 576),
-    "0.88 0.9 0.93 RG 42 552 m 553 552 l S",
-    line("TRAVELER DETAILS", 42, 526, 12, true, "0.02 0.45 0.36"),
-    line(`Name: ${booking.travelerDetails.name}`, 42, 501),
-    line(`Email: ${booking.travelerDetails.email}`, 42, 481),
-    line(`Mobile: ${booking.travelerDetails.mobile}`, 42, 461),
-    line(`Travelers: ${booking.travelerDetails.travellers || booking.seats}`, 42, 441),
-    "0.88 0.9 0.93 RG 42 417 m 553 417 l S",
-    line("PAYMENT SUMMARY", 42, 391, 12, true, "0.02 0.45 0.36"),
-    line(`Price per traveler: ${money(booking.sellingPrice)}`, 42, 366),
-    line(`Number of travelers: ${booking.seats}`, 42, 346),
-    line(`${booking.paymentStatus === "paid" ? "Amount paid" : "Booking total"}: ${money(booking.totalAmount)}`, 42, 317, 15, true),
-    line(`Payment status: ${booking.paymentStatus.toUpperCase()}`, 42, 292, 10, true, "0.02 0.55 0.42"),
-    "0.96 0.98 0.98 rg 42 184 511 76 re f",
-    line("NEED HELP?", 58, 235, 11, true, "0.02 0.45 0.36"),
-    line(`Voibee contact: ${contactNumber}`, 58, 213),
-    line("Email: support@voibee.com", 58, 194),
-    line(booking.trip.itinerary?.length ? "Your detailed itinerary continues on the following page." : "Thank you for booking with Voibee. We look forward to your journey!", 42, 132, 10, false, "0.35 0.39 0.45"),
-    line("This is a computer-generated booking document.", 42, 82, 8, false, "0.5 0.53 0.58"),
-    line(`Page 1 of ${pageCount}`, 500, 82, 8, false, "0.5 0.53 0.58"),
-  ];
+  const first = firstPage(booking, contactNumber);
+  const pages: string[][] = [first.commands];
+  let commands = first.commands;
+  let y = first.y;
 
-  itinerary.forEach((commands, index) => commands.push(
-    line(`Page ${index + 2} of ${pageCount}`, 500, 36, 8, false, "0.5 0.53 0.58"),
-  ));
-  return buildMultiPagePdf([confirmationPage, ...itinerary]);
+  booking.trip.itinerary?.forEach((day, index) => {
+    const height = Math.min(650, itineraryHeight(day));
+    if (y - height < 62) {
+      const next = continuationPage(booking);
+      commands = next.commands;
+      pages.push(commands);
+      y = next.y;
+    }
+    y = renderItineraryDay(commands, day, index, y, height) - 12;
+  });
+
+  const pageCount = pages.length;
+  pages.forEach((page, index) => {
+    page.push(rule(42, 42, 553, 42, BORDER));
+    page.push(line("VOIBEE HOLIDAYS  -  Computer-generated booking document", 42, 24, 7, false, MUTED));
+    page.push(line(`${index + 1} / ${pageCount}`, 520, 24, 7, false, MUTED));
+  });
+  return buildMultiPagePdf(pages);
 }

@@ -15,7 +15,7 @@ function monthLabel(month: string) {
   return new Date(year, value - 1, 1).toLocaleDateString("en-IN", { month: "long", year: "numeric" });
 }
 
-export function PayrollSection({ payroll, employees }: { payroll: PayrollDTO[]; employees: EmployeeDTO[] }) {
+export function PayrollSection({ payroll, employees, canManage = true, filters }: { payroll: PayrollDTO[]; employees: EmployeeDTO[]; canManage?: boolean; filters?: React.ReactNode }) {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -23,8 +23,9 @@ export function PayrollSection({ payroll, employees }: { payroll: PayrollDTO[]; 
           <h2 className="text-xl font-bold">Employee Payroll</h2>
           <p className="text-muted-foreground">{payroll.length} payroll records</p>
         </div>
-        <PayrollDrawer employees={employees} />
+        {canManage && <PayrollDrawer employees={employees} />}
       </div>
+      {filters}
       {payroll.length ? (
         <Card>
           <CardContent className="overflow-x-auto p-0">
@@ -39,7 +40,7 @@ export function PayrollSection({ payroll, employees }: { payroll: PayrollDTO[]; 
                   <th className="p-4 font-medium">Net pay</th>
                   <th className="p-4 font-medium">Payment</th>
                   <th className="p-4 font-medium">Status</th>
-                  <th className="p-4 text-right font-medium">Action</th>
+                  {canManage && <th className="p-4 text-right font-medium">Action</th>}
                 </tr>
               </thead>
               <tbody>
@@ -55,7 +56,7 @@ export function PayrollSection({ payroll, employees }: { payroll: PayrollDTO[]; 
                       <td className="p-4 font-bold">{formatINR(item.netPay)}</td>
                       <td className="p-4 text-muted-foreground"><p>{item.paymentDate ? formatDate(item.paymentDate) : "Not paid"}</p><p className="text-xs">{item.paymentReference || "—"}</p></td>
                       <td className="p-4"><StatusBadge status={item.status} /></td>
-                      <td className="p-4 text-right"><PayrollDrawer payroll={item} employees={employees} /></td>
+                      {canManage && <td className="p-4 text-right"><PayrollDrawer payroll={item} employees={employees} /></td>}
                     </tr>
                   );
                 })}
@@ -64,7 +65,7 @@ export function PayrollSection({ payroll, employees }: { payroll: PayrollDTO[]; 
           </CardContent>
         </Card>
       ) : (
-        <EmptyState icon={WalletCards} title="No payroll records" description="Create monthly payroll records for employees." action={<PayrollDrawer employees={employees} />} />
+        <EmptyState icon={WalletCards} title="No payroll records" description={canManage ? "Create monthly payroll records for employees." : "Your payroll records will appear here."} action={canManage ? <PayrollDrawer employees={employees} /> : undefined} />
       )}
     </div>
   );

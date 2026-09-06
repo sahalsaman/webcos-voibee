@@ -122,7 +122,7 @@ export const destinationSchema = z.object({
   countryCode: z.string().trim().length(2).default("IN"),
 });
 
-export const employeeSchema = z.object({
+const employeeFieldsSchema = z.object({
   name: z.string().trim().min(2),
   email: z.string().email(),
   mobile: z.string().trim().optional().or(z.literal("")),
@@ -134,9 +134,21 @@ export const employeeSchema = z.object({
   portalAccess: z.boolean().default(false),
   portalPassword: z.string().optional().or(z.literal("")),
   portalPages: z.array(z.enum(ADMIN_PORTAL_PAGE_KEYS)).default([]),
+  hrAccess: z.enum(["self", "manage"]).default("self"),
   notes: z.string().default(""),
-}).superRefine((data, ctx) => {
+});
+
+export const employeeSchema = employeeFieldsSchema.superRefine((data, ctx) => {
   if (data.portalAccess && data.portalPages.length === 0) {
+    ctx.addIssue({ code: "custom", path: ["portalPages"], message: "Select at least one portal page" });
+  }
+  if (data.portalPassword && data.portalPassword.length < 6) {
+    ctx.addIssue({ code: "custom", path: ["portalPassword"], message: "Password must be at least 6 characters" });
+  }
+});
+
+export const employeeUpdateSchema = employeeFieldsSchema.partial().superRefine((data, ctx) => {
+  if (data.portalAccess === true && data.portalPages?.length === 0) {
     ctx.addIssue({ code: "custom", path: ["portalPages"], message: "Select at least one portal page" });
   }
   if (data.portalPassword && data.portalPassword.length < 6) {
@@ -347,6 +359,8 @@ export const reputationSchema = z.object({
   responseText: z.string().trim().default(""), reviewedAt: z.string().trim().min(1), respondedAt: z.string().trim().optional().or(z.literal("")), notes: z.string().trim().default(""),
 });
 export const attendanceSchema=z.object({employeeId:z.string().min(1),date:z.string().min(1),status:z.enum(ATTENDANCE_STATUSES),checkIn:z.string().default(""),checkOut:z.string().default(""),workHours:z.number().min(0).max(24).default(0),notes:z.string().trim().default("")});
+const attendanceTime=z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/,"Use a valid time");
+export const attendanceRegularizationSchema=z.object({date:z.string().regex(/^\d{4}-\d{2}-\d{2}$/,"Use a valid date"),requestedCheckIn:attendanceTime,requestedCheckOut:attendanceTime,reason:z.string().trim().min(5,"Please provide a reason").max(500)});
 export const performanceReviewSchema=z.object({employeeId:z.string().min(1),period:z.string().trim().min(2),score:z.number().min(1).max(5),goals:z.string().trim().default(""),achievements:z.string().trim().default(""),feedback:z.string().trim().min(2),reviewer:z.string().trim().default(""),status:z.enum(PERFORMANCE_STATUSES)});
 export const leaveRequestSchema=z.object({employeeId:z.string().min(1),type:z.enum(LEAVE_TYPES),startDate:z.string().min(1),endDate:z.string().min(1),days:z.number().min(.5),status:z.enum(LEAVE_REQUEST_STATUSES),reason:z.string().trim().min(2),adminNotes:z.string().trim().default("")}).refine(x=>x.endDate>=x.startDate,{path:["endDate"],message:"End date cannot be before start date"});
 export const hrTaskSchema=z.object({employeeId:z.string().min(1),title:z.string().trim().min(2),description:z.string().trim().default(""),dueDate:z.string().min(1),priority:z.enum(HR_TASK_PRIORITIES),status:z.enum(HR_TASK_STATUSES),assignedBy:z.string().trim().default(""),completedAt:z.string().optional().or(z.literal(""))});

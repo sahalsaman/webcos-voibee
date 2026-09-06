@@ -6,6 +6,7 @@ import {
   isCustomDateTripCategory,
 } from "../lib/constants";
 import { calculateQuotation } from "../lib/quotation";
+import { calculateWorkHours } from "../lib/attendance";
 import { normalizePackageHref } from "../lib/utils";
 import {
   bookingSchema,
@@ -16,6 +17,7 @@ import {
   leadSchema,
   visaSchema,
   expenseSchema,
+  employeeUpdateSchema,
   invoiceSchema,
   tripSchema,
 } from "../lib/validations";
@@ -48,11 +50,23 @@ test("quotation totals apply capped discount and tax after discount", () => {
   assert.equal(calculateQuotation([{ description: "A", quantity: 1, unitPrice: 100 }], 500, 18).totalAmount, 0);
 });
 
+test("attendance hours are calculated from check-in and check-out", () => {
+  assert.equal(calculateWorkHours("09:30", "18:00"), 8.5);
+  assert.equal(calculateWorkHours("22:00", "06:00"), 8);
+  assert.equal(calculateWorkHours("09:30", ""), 0);
+});
+
 test("quotation and operational forms reject missing mandatory fields", () => {
   assert.equal(quotationSchema.safeParse({}).success, false);
   assert.equal(supplierSchema.safeParse({}).success, false);
   assert.equal(campaignSchema.safeParse({}).success, false);
   assert.equal(payrollSchema.safeParse({}).success, false);
+});
+
+test("employee updates use a partial schema without dropping portal validation", () => {
+  assert.equal(employeeUpdateSchema.safeParse({ name: "Updated Employee" }).success, true);
+  assert.equal(employeeUpdateSchema.safeParse({ portalPassword: "123" }).success, false);
+  assert.equal(employeeUpdateSchema.safeParse({ portalAccess: true, portalPages: [] }).success, false);
 });
 
 test("booking validation accepts fixed and custom date payloads but rejects invalid travelers", () => {

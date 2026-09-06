@@ -1,2 +1,2 @@
-import { AdminPageSkeleton } from "@/components/admin/admin-page-skeleton";
-export default function Loading() { return <AdminPageSkeleton stats />; }
+import { HrmDashboardSkeleton } from "@/components/admin/hrm-page-skeletons";
+export default function Loading() { return <HrmDashboardSkeleton />; }

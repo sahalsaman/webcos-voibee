@@ -29,6 +29,7 @@ export { default as Expense } from "./Expense";
 export { default as Invoice } from "./Invoice";
 export { default as Reputation } from "./Reputation";
 export { default as Attendance } from "./Attendance";
+export { default as AttendanceRegularization } from "./AttendanceRegularization";
 export { default as PerformanceReview } from "./PerformanceReview";
 export { default as LeaveRequest } from "./LeaveRequest";
 export { default as HrTask } from "./HrTask";

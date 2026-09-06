@@ -11,6 +11,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { NotificationMenu } from "@/components/site/notification-menu";
 
 export interface NavItem {
   href: string;
@@ -113,6 +114,7 @@ export function DashboardShell({
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </Button>
           <div className="ml-auto flex items-center gap-3">
+            <NotificationMenu />
             <ThemeToggle />
             <div className="flex items-center gap-2">
               <Avatar src={user.image} name={user.name ?? "User"} size={34} />

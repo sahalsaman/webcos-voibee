@@ -1,34 +1,11 @@
 import Link from "next/link";
-import { CalendarCheck, CalendarDays, List, Search, X } from "lucide-react";
+import { CalendarCheck, CalendarDays, List } from "lucide-react";
 import { AdminTripCalendar } from "@/components/admin/trip-calendar";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/ui/empty-state";
-import { StatusBadge } from "@/components/dashboard/status-badge";
-import { BookingStatusSelect } from "@/components/admin/booking-status-select";
-import { EditBookingDrawer } from "@/components/admin/edit-booking-drawer";
 import { ManualBookingDrawer } from "@/components/admin/manual-booking-drawer";
-import { BookingRowActions } from "@/components/admin/booking-row-actions";
+import { AdminBookingsList, type AdminBookingRow } from "@/components/admin/bookings-list";
 import { listAdminBookings, listAdminBookableTrips, listAdminTrips } from "@/lib/dashboard";
-import { cn, formatINR, formatDate } from "@/lib/utils";
-
-interface Row {
-  _id: string;
-  bookingNumber: string;
-  trip?: { _id: string; title: string; destination: string; holidayPackage?: boolean };
-  traveler?: { name: string; email: string };
-  partner?: { businessName: string } | null;
-  travelerDetails: { name?: string; email?: string; mobile: string; travellers?: number; notes?: string };
-  seats: number;
-  totalAmount: number;
-  partnerEarnings: number;
-  status: string;
-  paymentStatus: string;
-  travelStartDate?: string;
-  travelEndDate?: string;
-  createdAt: string;
-}
+import { cn } from "@/lib/utils";
 
 type BookingsView = "list" | "calendar";
 
@@ -45,29 +22,11 @@ export default async function AdminBookingsPage({
     pathname: "/admin/bookings",
     query: { ...(country ? { c: country } : {}), view: nextView, ...(query ? { q: query } : {}) },
   });
-  const clearSearchHref = {
-    pathname: "/admin/bookings",
-    query: { ...(country ? { c: country } : {}), view: "list" },
-  };
-
   const [bookings, bookableTrips, trips] = await Promise.all([
-    listAdminBookings() as Promise<Row[]>,
+    listAdminBookings() as Promise<AdminBookingRow[]>,
     listAdminBookableTrips(),
     listAdminTrips(),
   ]);
-  const normalizedQuery = query.toLocaleLowerCase();
-  const filteredBookings = normalizedQuery
-    ? bookings.filter((booking) => [
-        booking.bookingNumber,
-        booking.trip?.title,
-        booking.trip?.destination,
-        booking.traveler?.name,
-        booking.traveler?.email,
-        booking.travelerDetails?.name,
-        booking.travelerDetails?.email,
-        booking.travelerDetails?.mobile,
-      ].some((value) => value?.toLocaleLowerCase().includes(normalizedQuery)))
-    : bookings;
   const fixedDepartureTrips = (trips as Array<{
     _id: string;
     title: string;
@@ -141,82 +100,7 @@ export default async function AdminBookingsPage({
       {view === "calendar" ? (
         <AdminTripCalendar trips={calendarTrips} />
       ) : bookings.length ? (
-        <div className="space-y-4">
-          <form action="/admin/bookings" method="get" className="flex flex-col gap-2 rounded-xl border border-border bg-card p-3 sm:flex-row sm:items-center">
-            {country ? <input type="hidden" name="c" value={country} /> : null}
-            <input type="hidden" name="view" value="list" />
-            <div className="relative min-w-0 flex-1">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                type="search"
-                name="q"
-                defaultValue={query}
-                placeholder="Search booking ID, package, traveler, phone or email"
-                className="pl-9"
-                aria-label="Search bookings"
-              />
-            </div>
-            <Button type="submit" variant="gradient"><Search />Search</Button>
-            {query ? (
-              <Button asChild type="button" variant="ghost">
-                <Link href={clearSearchHref}><X />Clear</Link>
-              </Button>
-            ) : null}
-          </form>
-
-          {filteredBookings.length ? <Card>
-          <CardContent className="overflow-x-auto p-0">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-muted-foreground">
-                  <th className="p-4 font-medium">Booking</th>
-                  <th className="p-4 font-medium">Package</th>
-                  <th className="p-4 font-medium">Traveler</th>
-                  <th className="p-4 font-medium">Source</th>
-                  <th className="p-4 font-medium">Seats</th>
-                  <th className="p-4 font-medium">Amount</th>
-                  <th className="p-4 font-medium">Payment</th>
-                  <th className="p-4 font-medium">Status</th>
-                  <th className="p-4 text-right font-medium">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredBookings.map((b) => (
-                  <tr key={b._id} className="border-b border-border/50 align-top hover:bg-secondary/40">
-                    <td className="p-4">
-                      <p className="font-mono text-xs">{b.bookingNumber}</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(b.createdAt)}</p>
-                    </td>
-                    <td className="p-4">{b.trip?.title ?? "—"}</td>
-                    <td className="p-4">
-                      <p className="font-medium">{b.traveler?.name}</p>
-                      <p className="text-xs text-muted-foreground">{b.travelerDetails?.mobile}</p>
-                    </td>
-                    <td className="p-4 text-muted-foreground">
-                      {b.partner?.businessName ?? "Direct"}
-                      {b.partner && b.partnerEarnings ? (
-                        <p className="text-xs">Comm: {formatINR(b.partnerEarnings)}</p>
-                      ) : null}
-                    </td>
-                    <td className="p-4">{b.seats}</td>
-                    <td className="p-4 font-medium">{formatINR(b.totalAmount)}</td>
-                    <td className="p-4"><StatusBadge status={b.paymentStatus} /></td>
-                    <td className="p-4"><BookingStatusSelect id={b._id} status={b.status} /></td>
-                    <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <BookingRowActions id={b._id} bookingNumber={b.bookingNumber} />
-                        <EditBookingDrawer booking={b} />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-          </Card> : (
-            <EmptyState icon={Search} title="No matching bookings" description={`No bookings found for “${query}”.`} />
-          )}
-        </div>
+        <AdminBookingsList bookings={bookings} query={query} />
       ) : (
         <EmptyState icon={CalendarCheck} title="No bookings yet" />
       )}

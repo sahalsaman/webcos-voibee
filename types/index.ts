@@ -166,6 +166,7 @@ export interface EmployeeDTO {
   joinedAt?: string;
   portalAccess?: boolean;
   portalPages?: AdminPortalPageKey[];
+  hrAccess?: "self" | "manage";
   notes?: string;
   createdAt: string;
 }
@@ -253,6 +254,7 @@ export interface InvoiceDTO { _id: string; invoiceNumber: string; customerName: 
 export interface ReputationDTO { _id: string; platform: ReputationPlatform; reviewerName: string; rating: number; reviewText: string; reviewUrl: string; sentiment: ReputationSentiment; status: ReputationStatus; assignedTo: string; responseText: string; reviewedAt: string; respondedAt?: string | null; notes: string; createdAt: string; }
 type EmployeeRef = string | Pick<EmployeeDTO, "_id" | "name" | "email" | "designation" | "department">;
 export interface AttendanceDTO { _id:string; employee:EmployeeRef; date:string; status:AttendanceStatus; checkIn:string; checkOut:string; workHours:number; notes:string; }
+export interface AttendanceRegularizationDTO { _id:string; employee:EmployeeRef; date:string; requestedCheckIn:string; requestedCheckOut:string; reason:string; status:"pending"|"approved"|"rejected"; reviewNotes:string; createdAt:string; }
 export interface PerformanceReviewDTO { _id:string; employee:EmployeeRef; period:string; score:number; goals:string; achievements:string; feedback:string; reviewer:string; status:PerformanceStatus; createdAt:string; }
 export interface LeaveRequestDTO { _id:string; employee:EmployeeRef; type:LeaveType; startDate:string; endDate:string; days:number; status:LeaveRequestStatus; reason:string; adminNotes:string; }
 export interface HrTaskDTO { _id:string; employee:EmployeeRef; title:string; description:string; dueDate:string; priority:HrTaskPriority; status:HrTaskStatus; assignedBy:string; completedAt?:string|null; }

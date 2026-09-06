@@ -35,8 +35,7 @@ export async function POST(request: Request) {
       const user = await User.findOneAndUpdate(
         { email },
         {
-          $setOnInsert: { email, role: "employee" },
-          $set: { name: data.name, mobile: data.mobile, password, role: "employee" },
+          $set: { email, name: data.name, mobile: data.mobile, password, role: "employee" },
         },
         { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
       );

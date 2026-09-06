@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import { ok, fail, handleError, requireApiRole } from "@/lib/api";
-import { employeeSchema } from "@/lib/validations";
+import { employeeUpdateSchema } from "@/lib/validations";
 import "@/models";
 import Employee from "@/models/Employee";
 import User from "@/models/User";
@@ -12,7 +12,7 @@ export async function PATCH(request: Request, { params }: Ctx) {
   try {
     await requireApiRole(["admin"]);
     const { id } = await params;
-    const data = employeeSchema.partial().parse(await request.json());
+    const data = employeeUpdateSchema.parse(await request.json());
     await connectDB();
 
     const current = await Employee.findById(id);
@@ -40,7 +40,7 @@ export async function PATCH(request: Request, { params }: Ctx) {
         ? await User.findByIdAndUpdate(userId, { $set: update }, { returnDocument: "after" })
         : await User.findOneAndUpdate(
             { email: nextEmail },
-            { $setOnInsert: { email: nextEmail, role: "employee" }, $set: update },
+            { $set: update },
             { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
           );
       userId = user?._id ?? null;

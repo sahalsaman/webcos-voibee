@@ -36,6 +36,7 @@ export function EmployeeForm({ employee, onSaved, onCancel }: { employee?: Emplo
     portalAccess: Boolean(employee?.portalAccess),
     portalPassword: "",
     portalPages: employee?.portalPages ?? ["dashboard" as AdminPortalPageKey],
+    hrAccess: employee?.hrAccess ?? "self" as "self" | "manage",
     notes: employee?.notes ?? "",
   });
 
@@ -158,6 +159,14 @@ export function EmployeeForm({ employee, onSaved, onCancel }: { employee?: Emplo
 
           {form.portalAccess ? (
             <>
+              <div className="sm:col-span-2">
+                <Label className="mb-1.5 block">HR data access</Label>
+                <Select value={form.hrAccess} onChange={(e) => set("hrAccess", e.target.value as "self" | "manage")}>
+                  <option value="self">Own employee data only</option>
+                  <option value="manage">HR — all employees</option>
+                </Select>
+                <p className="mt-1 text-xs text-muted-foreground">Use “HR — all employees” only for HR managers. Sales executives and other staff should use own data only.</p>
+              </div>
               <div className="sm:col-span-2">
                 <Label className="mb-1.5 block">Portal password {!editing ? <RequiredMark /> : null}</Label>
                 <Input
