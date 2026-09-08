@@ -144,13 +144,14 @@ export const TRIP_CATEGORIES = [
   "Honeymoon",
   "Family",
   "Group Trip",
-  "Luxury",
   "Strangers",
   "Wellness",
   "Spiritual",
   "Festival",
 ] as const;
 export type TripCategory = (typeof TRIP_CATEGORIES)[number];
+export const PACKAGE_TYPES = ["Luxury", "Standard", "Budget-Friendly"] as const;
+export type PackageType = (typeof PACKAGE_TYPES)[number];
 
 export const PACKAGE_SERVICES = [
   "flights",

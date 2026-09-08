@@ -46,6 +46,7 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
         />
         <div className="absolute left-3 top-3 flex gap-2">
           <Badge variant="glass">{trip.category}</Badge>
+          <Badge variant="glass">{trip.packageType ?? "Standard"}</Badge>
           {trip.featured ? <Badge variant="accent">Featured</Badge> : null}
         </div>
         {soldOut ? (

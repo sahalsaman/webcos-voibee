@@ -2,6 +2,7 @@ import type {
   Role,
   TripStatus,
   TripCategory,
+  PackageType,
   PackageService,
   PartnerStatus,
   PartnerType,
@@ -91,6 +92,7 @@ export interface TripDTO {
   pickupLocation: string;
   departureCities?: string[];
   category: TripCategory;
+  packageType: PackageType;
   status: TripStatus;
   featured: boolean;
   tags: string[];

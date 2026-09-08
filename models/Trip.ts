@@ -1,5 +1,5 @@
 import { Schema, model, models, type InferSchemaType } from "mongoose";
-import { PACKAGE_SERVICES, TRIP_STATUSES, TRIP_CATEGORIES } from "@/lib/constants";
+import { PACKAGE_SERVICES, PACKAGE_TYPES, TRIP_STATUSES, TRIP_CATEGORIES } from "@/lib/constants";
 
 const ItinerarySchema = new Schema(
   {
@@ -50,6 +50,7 @@ const TripSchema = new Schema(
     pickupLocation: { type: String, default: "" },
     departureCities: { type: [String], default: [] },
     category: { type: String, enum: TRIP_CATEGORIES, default: "Holiday Package", index: true },
+    packageType: { type: String, enum: PACKAGE_TYPES, default: "Standard", index: true },
     status: { type: String, enum: TRIP_STATUSES, default: "draft", index: true },
     featured: { type: Boolean, default: false, index: true },
     tags: { type: [String], default: [] },

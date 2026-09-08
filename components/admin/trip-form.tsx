@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { COUNTRY_OPTIONS, PACKAGE_SERVICES, PACKAGE_SERVICE_LABELS, TRIP_CATEGORIES, TRIP_STATUSES, type PackageService, type TripCategory } from "@/lib/constants";
+import { COUNTRY_OPTIONS, PACKAGE_SERVICES, PACKAGE_SERVICE_LABELS, PACKAGE_TYPES, TRIP_CATEGORIES, TRIP_STATUSES, type PackageService, type PackageType, type TripCategory } from "@/lib/constants";
 import { resolveIncludedServices } from "@/components/trip/package-service-icons";
 import { emptyItineraryDay, ItineraryEditor, normalizeItineraryDay } from "@/components/admin/itinerary-editor";
 import type { DestinationDTO, ItineraryItem, TripDTO } from "@/types";
@@ -74,6 +74,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
     pickupLocation: trip?.pickupLocation ?? "",
     departureCities: (trip?.departureCities ?? []).join("\n"),
     category: normalizeTripCategory(trip?.category),
+    packageType: trip?.packageType ?? "Standard" as PackageType,
     status: trip?.status ?? "draft",
     featured: trip?.featured ?? false,
     images: (trip?.images ?? []).join("\n"),
@@ -168,6 +169,7 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
       pickupLocation: form.pickupLocation,
       departureCities: lines(form.departureCities),
       category: form.category,
+      packageType: form.packageType,
       status: form.status,
       featured: form.featured,
       images: lines(form.images),
@@ -260,10 +262,16 @@ export function TripForm({ trip, destinations = [] }: { trip?: TripDTO; destinat
             <Label className="mb-1.5 block">Pickup location</Label>
             <Input value={form.pickupLocation} onChange={(e) => set("pickupLocation", e.target.value)} />
           </div>
-                   <div>
+          <div>
             <Label className="mb-1.5 block">Category</Label>
             <Select value={form.category} onChange={(e) => set("category", e.target.value as typeof form.category)}>
               {TRIP_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            </Select>
+          </div>
+          <div>
+            <Label className="mb-1.5 block">Package Type</Label>
+            <Select value={form.packageType} onChange={(e) => set("packageType", e.target.value as PackageType)}>
+              {PACKAGE_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}
             </Select>
           </div>
           <div>

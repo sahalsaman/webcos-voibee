@@ -114,6 +114,7 @@ export default async function TripDetailPage({ params }: Props) {
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="outline">{scheduleLabel}</Badge>
           <Badge>{trip.category}</Badge>
+          <Badge variant="outline">{trip.packageType ?? "Standard"}</Badge>
           {trip.featured ? <Badge variant="accent">Featured</Badge> : null}
         </div>
         <div className="mt-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
