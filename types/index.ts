@@ -10,7 +10,6 @@ import type {
   PaymentStatus,
   CommissionStatus,
   OFFER_CARD_STATUSES,
-  EVENT_STATUSES,
   EmployeeStatus,
   AdminPortalPageKey,
   SupplierStatus,
@@ -133,26 +132,6 @@ export interface OfferCardDTO {
   createdAt: string;
 }
 
-export interface EventDTO {
-  _id: string;
-  title: string;
-  description: string;
-  images: string[];
-  venue: string;
-  city: string;
-  country: string;
-  countryCode: string;
-  startDate: string;
-  endDate?: string | null;
-  priceLabel: string;
-  href: string;
-  ctaLabel: string;
-  status: (typeof EVENT_STATUSES)[number];
-  featured: boolean;
-  sortOrder: number;
-  tags: string[];
-  createdAt: string;
-}
 
 export interface UserDTO {
   _id: string;

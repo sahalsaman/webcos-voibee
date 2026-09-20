@@ -93,7 +93,7 @@ export function TripFilters({
       </div>
 
       <div className="space-y-1.5">
-        <Label>Budget (₹)</Label>
+        <Label>Budget (INR)</Label>
         <div className="flex items-center gap-2">
           <Input
             type="number"

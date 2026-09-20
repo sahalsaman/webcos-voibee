@@ -4,7 +4,8 @@ import { ArrowRight, MapPin, Star, Calendar, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PackageServiceIcons } from "@/components/trip/package-service-icons";
 import { isCustomDateTripCategory } from "@/lib/constants";
-import { formatINR, tripDuration, formatDate } from "@/lib/utils";
+import { tripDuration, formatDate } from "@/lib/utils";
+import { CurrencyPrice } from "@/components/currency/currency-price";
 import type { TripDTO } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -96,7 +97,7 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
               {priceLabel ?? "Starting from"}
             </p>
             <p className="text-lg font-bold">
-              {formatINR(price)}
+              <CurrencyPrice amount={price} />
               <span className="text-xs font-normal text-muted-foreground"> /person</span>
             </p>
           </div>

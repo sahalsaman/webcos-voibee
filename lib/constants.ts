@@ -18,7 +18,6 @@ export type PartnerStatus = (typeof PARTNER_STATUSES)[number];
 export const TRIP_STATUSES = ["draft", "active", "inactive", "soldout"] as const;
 export const DESTINATION_STATUSES = ["active", "inactive"] as const;
 export const OFFER_CARD_STATUSES = ["active", "inactive"] as const;
-export const EVENT_STATUSES = ["draft", "active", "inactive"] as const;
 export const EMPLOYEE_STATUSES = ["active", "inactive"] as const;
 export const SUPPLIER_STATUSES = ["active", "inactive"] as const;
 export const SUPPLIER_TYPES = [
@@ -95,7 +94,6 @@ export function suggestedEmployeePortalPages(designation: string) {
   return ["dashboard"];
 }
 export type TripStatus = (typeof TRIP_STATUSES)[number];
-export type EventStatus = (typeof EVENT_STATUSES)[number];
 export type EmployeeStatus = (typeof EMPLOYEE_STATUSES)[number];
 export type SupplierStatus = (typeof SUPPLIER_STATUSES)[number];
 export type SupplierType = (typeof SUPPLIER_TYPES)[number];
@@ -150,7 +148,7 @@ export const TRIP_CATEGORIES = [
   "Festival",
 ] as const;
 export type TripCategory = (typeof TRIP_CATEGORIES)[number];
-export const PACKAGE_TYPES = ["Luxury", "Standard", "Budget-Friendly"] as const;
+export const PACKAGE_TYPES = ["Luxury","Premium", "Standard", "Budget-Friendly"] as const;
 export type PackageType = (typeof PACKAGE_TYPES)[number];
 
 export const PACKAGE_SERVICES = [
@@ -199,8 +197,9 @@ export function isCustomDateTripCategory(category?: string) {
 
 export const BOOKING_STATUSES = [
   "pending",
-  "advanced",
   "confirmed",
+  "Advanced",
+  "Paid",
   "cancelled",
   "completed",
 ] as const;

@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { getDestinationLanding, getDestinations } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
 import { formatINR, slugify } from "@/lib/utils";
+import { CurrencyPrice } from "@/components/currency/currency-price";
 
 type Props = { params: Promise<{ slug: string }> };
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.voibee.com";
@@ -58,7 +59,7 @@ export default async function DestinationLandingPage({ params }: Props) {
     <header className="relative overflow-hidden rounded-[28px] bg-slate-950 px-6 py-20 text-white shadow-xl sm:px-10 lg:px-14">
       <Image src={destination.images[0] || destinationImage(destination.title)} alt={`${destination.title} tour packages`} fill priority sizes="100vw" className="object-cover" />
       <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/58 to-slate-950/20" />
-      <div className="relative max-w-3xl"><p className="flex items-center gap-2 text-sm font-semibold text-blue-200"><MapPin className="size-4" />{destination.country}</p><h1 className="mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">{destination.title} Tour Packages</h1><p className="mt-4 max-w-2xl text-base leading-7 text-white/85">{destination.description || `Discover curated ${destination.title} trips with transparent prices, detailed itineraries and flexible travel options.`}</p>{startingPrice > 0 ? <p className="mt-5 text-lg font-semibold">Packages from {formatINR(startingPrice)} per person</p> : null}</div>
+      <div className="relative max-w-3xl"><p className="flex items-center gap-2 text-sm font-semibold text-blue-200"><MapPin className="size-4" />{destination.country}</p><h1 className="mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">{destination.title} Tour Packages</h1><p className="mt-4 max-w-2xl text-base leading-7 text-white/85">{destination.description || `Discover curated ${destination.title} trips with transparent prices, detailed itineraries and flexible travel options.`}</p>{startingPrice > 0 ? <p className="mt-5 text-lg font-semibold">Packages from <CurrencyPrice amount={startingPrice} /> per person</p> : null}</div>
     </header>
 
     <section aria-labelledby="packages-heading"><div className="mb-6 flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm font-semibold text-primary">Available journeys</p><h2 id="packages-heading" className="mt-1 text-3xl font-bold">Best {destination.title} packages</h2><p className="mt-2 text-muted-foreground">Compare {trips.length} active {trips.length === 1 ? "package" : "packages"}, itineraries and prices.</p></div><Button asChild variant="outline"><Link href={`/packages?destination=${encodeURIComponent(destination.title)}`}>Filter packages <ArrowRight className="size-4" /></Link></Button></div>

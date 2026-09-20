@@ -113,7 +113,6 @@ test("package itinerary accepts multiple structured items per day", () => {
 test("custom-date classification and workflow statuses cover implemented paths", () => {
   assert.equal(isCustomDateTripCategory("Family"), true);
   assert.equal(isCustomDateTripCategory("Holiday Package"), false);
-  assert.ok(BOOKING_STATUSES.includes("advanced"));
   assert.ok(PAYMENT_STATUSES.includes("processing"));
   assert.ok(PAYMENT_STATUSES.includes("refunded"));
 });

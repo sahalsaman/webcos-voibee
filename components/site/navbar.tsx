@@ -17,12 +17,13 @@ import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { NotificationMenu } from "@/components/site/notification-menu";
+import { CurrencySelector } from "@/components/currency/currency-selector";
 
 const NAV_LINKS = [
   { href: "/packages", label: "Holidays" },
   { href: "/flights", label: "Flights" },
-  { href: "/strangers-camps", label: "Strangers Camps" },
-  { href: "/events", label: "Events" },
+  { href: "/flights", label: "Hotels" },
+  { href: "/strangers-camps", label: "Voibee Vibe Circles" },
   { href: "/customize-trip", label: "Customize trip" },
 ];
 
@@ -33,6 +34,7 @@ function dashboardPath(role?: string) {
 }
 
 const appLogo = "/voibee-logo-with-name.png";
+const supportNumber = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919000000001").replace(/\D/g, "");
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -51,8 +53,25 @@ export function Navbar() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50">
-      <div className="glass border-b border-border/70 bg-card/90">
+    <header className="sticky top-0 z-50 shadow-[0_1px_12px_rgba(15,23,42,0.05)]">
+      <div className="bg-white text-black/80">
+        <div className=" mx-auto flex h-10 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+          <a
+            href={`tel:+${supportNumber}`}
+            className="group inline-flex min-w-0 items-center gap-2 text-xs font-semibold text-slate-600 transition-colors "
+          >
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-black">
+              <Headset className="size-3.5" />
+            </span>
+            <span className="hidden  sm:inline text-black">Need help?</span>
+            <span className="truncate text-blue-600 underline">Contact us</span>
+          </a>
+          <div className="flex items-center gap-2">
+            <CurrencySelector className="gap-1.5 [&>select]:h-8 [&>select]:rounded-full  [&>select]:bg-white/80 [&>select]:px-3 [&>select]:text-xs " />
+          </div>
+        </div>
+      </div>
+      <div className="glass border-b border-border/70 bg-card/95">
         <nav className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 font-extrabold text-2xl text-[#1261e0]">
             <Image src={appLogo} alt="Voibee" width={112} height={40} loading="eager" />
@@ -71,9 +90,8 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
-            {user && ( <ThemeToggle />)}
             {user ? <NotificationMenu /> : null}
-              {/* <Button asChild variant="ghost" size="default">
+            {/* <Button asChild variant="ghost" size="default">
                 <Link href="/saved">
                   <HeartIcon className="size-4 text-pink-500" /> Saved
                 </Link>
@@ -100,7 +118,7 @@ export function Navbar() {
                 {/* <Button asChild variant="gradient" size="default">
                   <Link href="/register">Join Our Community</Link>
                 </Button> */}
-                 <Button asChild variant="ghost" size="default" className="font-bold">
+                <Button asChild variant="ghost" size="default" className="font-bold">
                   <Link href="/login"><Headset className="size-8" /> Contact us</Link>
                 </Button>
                 <Button asChild variant="gradient" size="default" className="rounded-full px-6">

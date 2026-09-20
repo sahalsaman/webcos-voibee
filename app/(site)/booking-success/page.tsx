@@ -5,7 +5,8 @@ import { notFound } from "next/navigation";
 import { CalendarDays, CheckCircle2, Download, Mail, MapPin, Phone, ReceiptText, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getAuthorizedBookingConfirmation } from "@/lib/booking-confirmation";
-import { formatDate, formatINR } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
+import { CurrencyPrice } from "@/components/currency/currency-price";
 
 export const metadata: Metadata = {
   title: "Booking Confirmed",
@@ -78,9 +79,9 @@ export default async function BookingSuccessPage({ searchParams }: { searchParam
               <article className="rounded-2xl border border-border bg-secondary/30 p-5">
                 <div className="flex items-center gap-2"><ReceiptText className="size-5 text-primary" /><h2 className="font-bold">Payment summary</h2></div>
                 <dl className="mt-5 space-y-3 text-sm">
-                  <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Price per traveler</dt><dd className="font-semibold">{formatINR(booking.sellingPrice)}</dd></div>
+                  <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Price per traveler</dt><dd className="font-semibold"><CurrencyPrice amount={booking.sellingPrice} /></dd></div>
                   <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Travelers</dt><dd className="font-semibold">{booking.seats}</dd></div>
-                  <div className="flex justify-between gap-3 border-t border-border pt-3 text-base"><dt className="font-bold">{paid ? "Amount paid" : "Amount payable"}</dt><dd className="font-extrabold text-primary">{formatINR(booking.totalAmount)}</dd></div>
+                  <div className="flex justify-between gap-3 border-t border-border pt-3 text-base"><dt className="font-bold">{paid ? "Amount paid" : "Amount payable"}</dt><dd className="font-extrabold text-primary"><CurrencyPrice amount={booking.totalAmount} /></dd></div>
                   <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Payment status</dt><dd className={`font-bold ${paid ? "text-emerald-600" : "text-amber-600"}`}>{paid ? "Paid" : "Not paid"}</dd></div>
                 </dl>
               </article>
