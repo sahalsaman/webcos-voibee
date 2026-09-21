@@ -28,6 +28,7 @@ import type {
   ReputationSentiment,
   ReputationStatus,
   AttendanceStatus, PerformanceStatus, LeaveType, LeaveRequestStatus, HrTaskPriority, HrTaskStatus,
+  ActivityStatus, ActivityTypeStatus, ActivityBookingStatus,
 } from "@/lib/constants";
 
 /** Plain (serialized) shapes returned to client components. */
@@ -113,6 +114,65 @@ export interface DestinationDTO {
   popular: boolean;
   country: string;
   countryCode: string;
+  createdAt: string;
+}
+
+export interface ActivityTypeDTO {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  image: string;
+  status: ActivityTypeStatus;
+  featured: boolean;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export interface ActivityDTO {
+  _id: string;
+  title: string;
+  slug: string;
+  type: string | Pick<ActivityTypeDTO, "_id" | "name" | "slug">;
+  destination: string;
+  country: string;
+  shortDescription: string;
+  description: string;
+  images: string[];
+  basePrice: number;
+  originalPrice: number;
+  duration: string;
+  highlights: string[];
+  inclusions: string[];
+  exclusions: string[];
+  importantInfo: string[];
+  meetingPoint: string;
+  seasonal: boolean;
+  bestSelling: boolean;
+  featured: boolean;
+  status: ActivityStatus;
+  rating: number;
+  reviewCount: number;
+  createdAt: string;
+}
+
+export interface ActivityBookingDTO {
+  _id: string;
+  bookingNumber: string;
+  activity: string | Pick<ActivityDTO, "_id" | "title" | "slug" | "destination">;
+  name: string;
+  email: string;
+  mobile: string;
+  activityDate: string;
+  timeSlot: string;
+  adults: number;
+  children: number;
+  totalParticipants: number;
+  unitPrice: number;
+  totalAmount: number;
+  status: ActivityBookingStatus;
+  paymentStatus: PaymentStatus;
+  notes: string;
   createdAt: string;
 }
 

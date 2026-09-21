@@ -32,3 +32,6 @@ export { default as AttendanceRegularization } from "./AttendanceRegularization"
 export { default as PerformanceReview } from "./PerformanceReview";
 export { default as LeaveRequest } from "./LeaveRequest";
 export { default as HrTask } from "./HrTask";
+export { default as ActivityType } from "./ActivityType";
+export { default as Activity } from "./Activity";
+export { default as ActivityBooking } from "./ActivityBooking";

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BedDouble, CalendarCheck, FileText, Stamp, Tickets, UserRoundSearch } from "lucide-react";
+import { BedDouble, CalendarCheck, FileText, Sparkles, Stamp, Tickets, UserRoundSearch } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
   { href: "/admin/lms/bookings", label: "Bookings", icon: CalendarCheck },
+  { href: "/admin/lms/activity-bookings", label: "Activity Bookings", icon: Sparkles },
   { href: "/admin/lms/leads", label: "Leads", icon: UserRoundSearch },
   { href: "/admin/lms/quotations", label: "Quotations", icon: FileText },
   { href: "/admin/lms/tickets", label: "Tickets", icon: Tickets },

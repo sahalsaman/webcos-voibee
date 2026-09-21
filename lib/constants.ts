@@ -17,6 +17,9 @@ export type PartnerStatus = (typeof PARTNER_STATUSES)[number];
 
 export const TRIP_STATUSES = ["draft", "active", "inactive", "soldout"] as const;
 export const DESTINATION_STATUSES = ["active", "inactive"] as const;
+export const ACTIVITY_STATUSES = ["draft", "active", "inactive"] as const;
+export const ACTIVITY_TYPE_STATUSES = ["active", "inactive"] as const;
+export const ACTIVITY_BOOKING_STATUSES = ["pending", "confirmed", "cancelled", "completed"] as const;
 export const OFFER_CARD_STATUSES = ["active", "inactive"] as const;
 export const EMPLOYEE_STATUSES = ["active", "inactive"] as const;
 export const SUPPLIER_STATUSES = ["active", "inactive"] as const;
@@ -94,6 +97,9 @@ export function suggestedEmployeePortalPages(designation: string) {
   return ["dashboard"];
 }
 export type TripStatus = (typeof TRIP_STATUSES)[number];
+export type ActivityStatus = (typeof ACTIVITY_STATUSES)[number];
+export type ActivityTypeStatus = (typeof ACTIVITY_TYPE_STATUSES)[number];
+export type ActivityBookingStatus = (typeof ACTIVITY_BOOKING_STATUSES)[number];
 export type EmployeeStatus = (typeof EMPLOYEE_STATUSES)[number];
 export type SupplierStatus = (typeof SUPPLIER_STATUSES)[number];
 export type SupplierType = (typeof SUPPLIER_TYPES)[number];

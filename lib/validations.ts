@@ -14,6 +14,8 @@ import {
   PAYMENT_STATUSES,
   PARTNER_TYPES,
   DESTINATION_STATUSES,
+  ACTIVITY_STATUSES,
+  ACTIVITY_TYPE_STATUSES,
   EMPLOYEE_STATUSES,
   ADMIN_PORTAL_PAGE_KEYS,
   LEAD_SOURCES,
@@ -134,6 +136,51 @@ export const destinationSchema = z.object({
   country: z.string().trim().default("India"),
   countryCode: z.string().trim().length(2).default("IN"),
 });
+
+export const activityTypeSchema = z.object({
+  name: z.string().trim().min(2),
+  slug: z.string().trim().min(2),
+  description: z.string().default(""),
+  image: z.string().default(""),
+  status: z.enum(ACTIVITY_TYPE_STATUSES).default("active"),
+  featured: z.boolean().default(false),
+  sortOrder: z.number().int().nonnegative().default(0),
+});
+
+export const activitySchema = z.object({
+  title: z.string().trim().min(2),
+  slug: z.string().trim().min(2),
+  type: z.string().trim().min(1),
+  destination: z.string().trim().min(2),
+  country: z.string().trim().default("India"),
+  shortDescription: z.string().default(""),
+  description: z.string().default(""),
+  images: z.array(z.string()).default([]),
+  basePrice: z.number().nonnegative(),
+  originalPrice: z.number().nonnegative().default(0),
+  duration: z.string().default(""),
+  highlights: z.array(z.string()).default([]),
+  inclusions: z.array(z.string()).default([]),
+  exclusions: z.array(z.string()).default([]),
+  importantInfo: z.array(z.string()).default([]),
+  meetingPoint: z.string().default(""),
+  seasonal: z.boolean().default(false),
+  bestSelling: z.boolean().default(false),
+  featured: z.boolean().default(false),
+  status: z.enum(ACTIVITY_STATUSES).default("draft"),
+});
+
+export const activityBookingSchema = z.object({
+  activityId: z.string().trim().min(1),
+  name: z.string().trim().min(2),
+  email: z.string().email(),
+  mobile: z.string().trim().min(6),
+  activityDate: z.string().trim().min(1),
+  timeSlot: z.string().default(""),
+  adults: z.number().int().nonnegative().default(1),
+  children: z.number().int().nonnegative().default(0),
+  notes: z.string().default(""),
+}).refine((data) => data.adults + data.children > 0, { path: ["adults"], message: "Add at least one guest" });
 
 const employeeFieldsSchema = z.object({
   name: z.string().trim().min(2),

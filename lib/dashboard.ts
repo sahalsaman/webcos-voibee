@@ -25,6 +25,9 @@ import Invoice from "@/models/Invoice";
 import Reputation from "@/models/Reputation";
 import Attendance from "@/models/Attendance"; import PerformanceReview from "@/models/PerformanceReview"; import LeaveRequest from "@/models/LeaveRequest"; import HrTask from "@/models/HrTask";
 import AttendanceRegularization from "@/models/AttendanceRegularization";
+import Activity from "@/models/Activity";
+import ActivityType from "@/models/ActivityType";
+import ActivityBooking from "@/models/ActivityBooking";
 import type { UserDTO } from "@/types";
 import { getCurrentUser } from "@/lib/session";
 
@@ -229,6 +232,18 @@ export async function getAdminOfferCardById(id: string) {
 
 export async function listAdminDestinations() {
   return safe(async () => serialize(await Destination.find({}).sort({ featured: -1, createdAt: -1 }).lean()), []);
+}
+
+export async function listAdminActivityTypes() {
+  return safe(async () => serialize(await ActivityType.find({}).sort({ sortOrder: 1, name: 1 }).lean()), []);
+}
+
+export async function listAdminActivities() {
+  return safe(async () => serialize(await Activity.find({}).sort({ createdAt: -1 }).populate({ path: "type", model: ActivityType, select: "name slug" }).lean()), []);
+}
+
+export async function listAdminActivityBookings() {
+  return safe(async () => serialize(await ActivityBooking.find({}).sort({ createdAt: -1 }).populate({ path: "activity", model: Activity, select: "title slug destination" }).lean()), []);
 }
 
 export async function getAdminDestinationById(id: string) {

@@ -9,8 +9,10 @@ import PartnerTrip from "@/models/PartnerTrip";
 import Review from "@/models/Review";
 import User from "@/models/User";
 import Booking from "@/models/Booking";
+import Activity from "@/models/Activity";
+import ActivityType from "@/models/ActivityType";
 import { unstable_cache } from "next/cache";
-import type { TripDTO, PartnerDTO, ReviewDTO, DestinationDTO, OfferCardDTO } from "@/types";
+import type { TripDTO, PartnerDTO, ReviewDTO, DestinationDTO, OfferCardDTO, ActivityDTO, ActivityTypeDTO } from "@/types";
 
 /** Run a DB query, returning `fallback` if the DB is unreachable/unconfigured. */
 async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
@@ -25,6 +27,32 @@ async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
 
 export function isIndiaCountry(code?: string) {
   return (code ?? "IN").toUpperCase() === "IN";
+}
+
+export async function getActivityTypes() {
+  return safe(async () => serialize(await ActivityType.find({ status: "active" }).sort({ sortOrder: 1, featured: -1, name: 1 }).lean()) as ActivityTypeDTO[], []);
+}
+
+export async function getActivities(filters: { q?: string; type?: string; seasonal?: boolean; bestSelling?: boolean; limit?: number } = {}) {
+  return safe(async () => {
+    const query: Record<string, unknown> = { status: "active" };
+    if (filters.q) query.$text = { $search: filters.q };
+    if (filters.type) {
+      const type = await ActivityType.findOne({ slug: filters.type }).select("_id").lean();
+      if (type) query.type = type._id;
+    }
+    if (filters.seasonal) query.seasonal = true;
+    if (filters.bestSelling) query.bestSelling = true;
+    const items = await Activity.find(query).sort({ featured: -1, bestSelling: -1, createdAt: -1 }).limit(filters.limit ?? 60).populate({ path: "type", model: ActivityType, select: "name slug" }).lean();
+    return serialize(items) as ActivityDTO[];
+  }, [] as ActivityDTO[]);
+}
+
+export async function getActivityBySlug(slug: string) {
+  return safe(async () => {
+    const activity = await Activity.findOne({ slug, status: "active" }).populate({ path: "type", model: ActivityType, select: "name slug" }).lean();
+    return activity ? serialize(activity) as ActivityDTO : null;
+  }, null as ActivityDTO | null);
 }
 
 const getCachedDestinations = unstable_cache(async (countryCode: string) => {
