@@ -3,7 +3,7 @@ import Image from "next/image";
 import { ArrowRight, MapPin, Star, Calendar, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PackageServiceIcons } from "@/components/trip/package-service-icons";
-import { isCustomDateTripCategory } from "@/lib/constants";
+import { isCustomDateTripCategory, tripThemeLabel } from "@/lib/constants";
 import { tripDuration, formatDate } from "@/lib/utils";
 import { CurrencyPrice } from "@/components/currency/currency-price";
 import type { TripDTO } from "@/types";
@@ -46,7 +46,7 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute left-3 top-3 flex gap-2">
-          <Badge variant="glass">{trip.category}</Badge>
+          <Badge variant="glass">{tripThemeLabel(trip.category)}</Badge>
           <Badge variant="glass">{trip.packageType ?? "Standard"}</Badge>
           {trip.featured ? <Badge variant="accent">Featured</Badge> : null}
         </div>

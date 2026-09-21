@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getHomeDestinations, isIndiaCountry } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
-import { formatCurrencyForCountry, slugify, withCountryParam as hrefWithCountry } from "@/lib/utils";
+import { slugify, withCountryParam as hrefWithCountry } from "@/lib/utils";
 import type { DestinationDTO } from "@/types";
 import { DestinationSwitcher } from "@/components/site/destination-switcher";
+import { CurrencyPrice } from "@/components/currency/currency-price";
 
 export const metadata: Metadata = {
   title: "Destinations",
@@ -142,7 +143,7 @@ function DestinationCard({ destination, country }: { destination: DestinationDTO
         <div className="flex items-center justify-between gap-3 border-t border-border/60 pt-3">
           <div>
             <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Packages from</p>
-            <p className="mt-0.5 text-lg font-extrabold text-foreground">{formatCurrencyForCountry(destination.basePrice, country)}</p>
+            <p className="mt-0.5 text-lg font-extrabold text-foreground"><CurrencyPrice amount={destination.basePrice} /></p>
           </div>
           <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />

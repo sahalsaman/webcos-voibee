@@ -47,7 +47,7 @@ function buildMonthOptions() {
   });
 }
 
-export function SearchBar() {
+export function SearchBar({ basePath = "/packages" }: { basePath?: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const visitorCountry = searchParams.get("c") ?? "IN";
@@ -96,7 +96,7 @@ export function SearchBar() {
         countryCode: item.countryCode,
         flag: "",
         image: item.images?.[0] ?? "",
-        href: `/packages?destination=${encodeURIComponent(item.title)}&c=${encodeURIComponent(visitorCountry)}`,
+        href: `${basePath}?destination=${encodeURIComponent(item.title)}&c=${encodeURIComponent(visitorCountry)}`,
       })));
       setActiveIndex(-1);
     } catch {
@@ -121,7 +121,8 @@ export function SearchBar() {
     setDestination(item.destination);
     setOpen(false);
     setActiveIndex(-1);
-    router.push(withMonth(item.href));
+    const params = new URLSearchParams({ destination: item.destination, c: visitorCountry });
+    router.push(withMonth(`${basePath}?${params.toString()}`));
   }
 
   function fetchResults(value: string) {
@@ -180,7 +181,7 @@ export function SearchBar() {
       params.set("endDate", selectedMonthOption.endDate);
     }
 
-    router.push(`/packages?${params.toString()}`);
+    router.push(`${basePath}?${params.toString()}`);
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -216,11 +217,11 @@ export function SearchBar() {
       </button>
 
       {open ? (
-        <div className="fixed inset-0 z-[100] flex items-start justify-center bg-slate-950/70 px-4 pb-8 pt-[10vh] backdrop-blur-sm" onMouseDown={() => setOpen(false)}>
+        <div className="fixed inset-x-0 bottom-0 top-28 z-40 flex items-start justify-center overflow-y-auto bg-slate-950/70 px-4 pb-8 pt-5 backdrop-blur-sm sm:pt-7" onMouseDown={() => setOpen(false)}>
           <form
             onSubmit={submit}
             onMouseDown={(event) => event.stopPropagation()}
-            className="w-full max-w-4xl overflow-hidden rounded-[28px] bg-white text-slate-900 shadow-2xl"
+            className="max-h-[calc(100svh-140px)] w-full max-w-4xl overflow-hidden rounded-[28px] bg-white text-slate-900 shadow-2xl"
           >
             <div className="flex items-center gap-3 border-b border-slate-200 px-5 py-4 sm:px-7">
               <Search className="size-6 shrink-0 text-primary" />

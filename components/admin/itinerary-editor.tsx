@@ -84,11 +84,12 @@ export function ItineraryEditor({ value, onChange }: { value: ItineraryItem[]; o
               ))}
             </DayGroup>
 
-            <DayGroup icon={Hotel} title="Hotels" action="Add hotel" onAdd={() => updateDay(dayIndex, { hotels: [...(day.hotels ?? []), { name: "", description: "", image: "" }] })}>
+            <DayGroup icon={Hotel} title="Hotels" action="Add hotel" onAdd={() => updateDay(dayIndex, { hotels: [...(day.hotels ?? []), { name: "", description: "", image: "", verified: true }] })}>
               {(day.hotels ?? []).map((item, itemIndex) => (
                 <ItemBox key={itemIndex} onRemove={() => updateDay(dayIndex, { hotels: day.hotels?.filter((_, index) => index !== itemIndex) })}>
                   <div className="grid gap-3 sm:grid-cols-2"><Input required value={item.name} onChange={(event) => updateDay(dayIndex, { hotels: day.hotels?.map((entry, index) => index === itemIndex ? { ...entry, name: event.target.value } : entry) })} placeholder="Hotel name" /><Input type="url" value={item.image} onChange={(event) => updateDay(dayIndex, { hotels: day.hotels?.map((entry, index) => index === itemIndex ? { ...entry, image: event.target.value } : entry) })} placeholder="Hotel photo URL" /></div>
                   <Textarea value={item.description} onChange={(event) => updateDay(dayIndex, { hotels: day.hotels?.map((entry, index) => index === itemIndex ? { ...entry, description: event.target.value } : entry) })} placeholder="Room, category or check-in details" className="min-h-16" />
+                  <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" checked={item.verified !== false} onChange={(event) => updateDay(dayIndex, { hotels: day.hotels?.map((entry, index) => index === itemIndex ? { ...entry, verified: event.target.checked } : entry) })} className="size-4 accent-primary" />Voibee verified property</label>
                 </ItemBox>
               ))}
             </DayGroup>

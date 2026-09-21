@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Binoculars, BusFront, Check, ChevronDown, Hotel, MapPin, Utensils } from "lucide-react";
+import { BadgeCheck, Binoculars, BusFront, Check, ChevronDown, Hotel, MapPin, Utensils } from "lucide-react";
 import type { ItineraryItem } from "@/types";
 
 const FALLBACK_PLACE = "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=75";
@@ -29,7 +29,7 @@ function ItineraryDay({ day, index }: { day: ItineraryItem; index: number }) {
 
         {day.transports?.length ? <ContentBlock icon={BusFront} title="Transport"><div className="space-y-3">{day.transports.map((item, itemIndex) => <div key={itemIndex}><p className="font-semibold">{item.title}</p>{item.description ? <p className="mt-1 text-sm leading-6 text-muted-foreground">{item.description}</p> : null}</div>)}</div></ContentBlock> : null}
 
-        {day.hotels?.length ? <ContentBlock icon={Hotel} title="Hotels"><div className="grid gap-4 sm:grid-cols-2">{day.hotels.map((hotel, hotelIndex) => <div key={hotelIndex} className="overflow-hidden rounded-xl border border-border bg-background">{hotel.image ? <div className="relative aspect-[16/9]"><Image src={hotel.image} alt={hotel.name} fill sizes="(max-width: 640px) 100vw, 360px" className="object-cover" /></div> : null}<div className="p-3"><p className="font-semibold">{hotel.name}</p>{hotel.description ? <p className="mt-1 text-sm leading-5 text-muted-foreground">{hotel.description}</p> : null}</div></div>)}</div></ContentBlock> : null}
+        {day.hotels?.length ? <ContentBlock icon={Hotel} title="Hotels"><div className="grid gap-4 sm:grid-cols-2">{day.hotels.map((hotel, hotelIndex) => <div key={hotelIndex} className="overflow-hidden rounded-xl border border-border bg-background">{hotel.image ? <div className="relative aspect-[16/9]"><Image src={hotel.image} alt={hotel.name} fill sizes="(max-width: 640px) 100vw, 360px" className="object-cover" /></div> : null}<div className="p-3"><div className="flex flex-wrap items-center gap-2"><p className="font-semibold">{hotel.name}</p>{hotel.verified !== false ? <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-[11px] font-bold text-primary"><BadgeCheck className="size-3.5" />Verified property</span> : null}</div>{hotel.description ? <p className="mt-1 text-sm leading-5 text-muted-foreground">{hotel.description}</p> : null}</div></div>)}</div></ContentBlock> : null}
 
         {day.meals?.length ? <ContentBlock icon={Utensils} title="Meals"><div className="flex flex-wrap gap-2">{day.meals.map((meal) => <span key={meal} className="inline-flex items-center gap-1.5 rounded-full bg-success/10 px-3 py-1.5 text-sm font-semibold capitalize text-success"><Check className="size-3.5" />{meal}</span>)}</div></ContentBlock> : null}
 

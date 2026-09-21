@@ -11,7 +11,7 @@ const ItinerarySchema = new Schema(
       default: [],
     },
     hotels: {
-      type: [{ name: { type: String, required: true, trim: true }, description: { type: String, default: "" }, image: { type: String, default: "" }, _id: false }],
+      type: [{ name: { type: String, required: true, trim: true }, description: { type: String, default: "" }, image: { type: String, default: "" }, verified: { type: Boolean, default: true }, _id: false }],
       default: [],
     },
     meals: { type: [String], enum: ["breakfast", "lunch", "dinner"], default: [] },

@@ -10,11 +10,12 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { getDestinations, getTripCategoryCounts, getTrips } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
+import { HOLIDAY_TRIP_CATEGORIES, VIBE_CIRCLE_TRIP_CATEGORIES } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Holiday Packages",
   description:
-    "Browse curated travel packages across India and beyond. Filter by destination, budget and package type.",
+    "Browse curated travel packages across India and beyond. Filter by destination, budget, theme and category.",
   alternates: { canonical: "/packages" },
   openGraph: {
     title: "Holiday Packages | Voibee Holidays",
@@ -38,11 +39,16 @@ export default async function TripsPage({
   const page = Math.max(1, Number(str(sp.page)) || 1);
   const country = str(sp.c);
   const selectedDestinationName = str(sp.destination);
+  const requestedCategory = str(sp.category);
+  const selectedCategory = HOLIDAY_TRIP_CATEGORIES.includes(requestedCategory as (typeof HOLIDAY_TRIP_CATEGORIES)[number])
+    ? requestedCategory
+    : undefined;
   const tripFilters = {
     q: str(sp.q),
     destination: str(sp.destination),
     country: str(sp.country),
-    category: str(sp.category),
+    category: selectedCategory,
+    excludeCategories: VIBE_CIRCLE_TRIP_CATEGORIES,
     startDate: str(sp.startDate),
     endDate: str(sp.endDate),
     minPrice: str(sp.minPrice) ? Number(str(sp.minPrice)) : undefined,
@@ -100,7 +106,7 @@ export default async function TripsPage({
         initialFilters={{
           q: str(sp.q) ?? "",
           destination: str(sp.destination) ?? "",
-          category: str(sp.category) ?? "",
+          category: selectedCategory ?? "",
           startDate: str(sp.startDate) ?? "",
           endDate: str(sp.endDate) ?? "",
           minPrice: str(sp.minPrice) ?? "",
@@ -111,6 +117,7 @@ export default async function TripsPage({
         }}
         categoryCounts={categoryCounts}
         totalCount={Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)}
+        categories={HOLIDAY_TRIP_CATEGORIES}
       />
 
       <div>

@@ -22,7 +22,7 @@ const OFFER_FALLBACK = "https://images.unsplash.com/photo-1476514525535-07fb3b4a
 const SETTINGS_SECTIONS = [
   { key: "platform", label: "Platform Configuration", icon: Settings },
   { key: "quotation", label: "Quotation Setup", icon: FileText },
-  { key: "offers", label: "Offer Cards", icon: Megaphone },
+  { key: "offers", label: "Banner Slides", icon: Megaphone },
   { key: "profile", label: "Profile", icon: UserRound },
 ] as const;
 
@@ -63,7 +63,7 @@ export default async function AdminSettingsPage({
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">Manage platform, quotation defaults, homepage offers and profile access</p>
+        <p className="text-muted-foreground">Manage platform, quotation defaults, homepage banners and profile access</p>
       </div>
 
       <SettingsNav activeSection={activeSection} />
@@ -130,8 +130,8 @@ function OfferCardsSection({ offers }: { offers: OfferCardDTO[] }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold">Offer Cards</h2>
-          <p className="text-muted-foreground">Manage homepage carousel banners</p>
+          <h2 className="text-xl font-bold">Banner Slides</h2>
+          <p className="text-muted-foreground">Manage the images and content shown in the homepage carousel</p>
         </div>
         <OfferCardDrawer />
       </div>
@@ -142,7 +142,7 @@ function OfferCardsSection({ offers }: { offers: OfferCardDTO[] }) {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-muted-foreground">
-                  <th className="p-4 font-medium">Offer</th>
+                  <th className="p-4 font-medium">Banner</th>
                   <th className="p-4 font-medium">Target</th>
                   <th className="p-4 font-medium">Order</th>
                   <th className="p-4 font-medium">Status</th>
@@ -180,8 +180,8 @@ function OfferCardsSection({ offers }: { offers: OfferCardDTO[] }) {
       ) : (
         <EmptyState
           icon={Megaphone}
-          title="No offer cards yet"
-          description="Create up to four active banners for the homepage carousel."
+          title="No banner slides yet"
+          description="Create active slides for the homepage banner carousel."
           action={<OfferCardDrawer />}
         />
       )}

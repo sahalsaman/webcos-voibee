@@ -146,8 +146,27 @@ export const TRIP_CATEGORIES = [
   "Wellness",
   "Spiritual",
   "Festival",
+  "Golden Horizons (Senior Care)",
+  "Limitless Access (Mobility Support)",
+  "Bespoke Private Journeys",
 ] as const;
 export type TripCategory = (typeof TRIP_CATEGORIES)[number];
+
+export const VIBE_CIRCLE_TRIP_CATEGORIES = [
+  "Strangers",
+  "Golden Horizons (Senior Care)",
+  "Limitless Access (Mobility Support)",
+  "Bespoke Private Journeys",
+] as const;
+
+export const HOLIDAY_TRIP_CATEGORIES = TRIP_CATEGORIES.filter(
+  (category) => !(VIBE_CIRCLE_TRIP_CATEGORIES as readonly string[]).includes(category),
+);
+
+/** Customer-facing label while preserving the legacy stored category value. */
+export function tripThemeLabel(category?: string) {
+  return category === "Strangers" || category === "Solo" ? "Voibee Circles" : category ?? "";
+}
 export const PACKAGE_TYPES = ["Luxury","Premium", "Standard", "Budget-Friendly"] as const;
 export type PackageType = (typeof PACKAGE_TYPES)[number];
 
@@ -185,6 +204,9 @@ export const CUSTOM_DATE_TRIP_CATEGORIES = [
   "Group Trip",
   "Wellness",
   "Spiritual",
+  "Golden Horizons (Senior Care)",
+  "Limitless Access (Mobility Support)",
+  "Bespoke Private Journeys",
 ] as const;
 
 export function isFixedDepartureTripCategory(category?: string) {

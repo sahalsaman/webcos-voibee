@@ -13,13 +13,13 @@ export function OfferCardRowActions({ offer }: { offer: OfferCardDTO }) {
   const [deleting, setDeleting] = useState(false);
 
   async function onDelete() {
-    if (!confirm("Delete this offer card?")) return;
+    if (!confirm("Delete this banner slide?")) return;
     setDeleting(true);
     try {
       const res = await fetch(`/api/admin/offers/${offer._id}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || "Delete failed");
-      toast.success("Offer card deleted");
+      toast.success("Banner slide deleted");
       router.refresh();
     } catch (err) {
       toast.error((err as Error).message);

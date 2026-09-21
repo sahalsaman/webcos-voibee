@@ -27,7 +27,7 @@ export function OfferCardForm({ offer, onSaved, onCancel }: { offer?: OfferCardD
     sortOrder: offer?.sortOrder ?? 0,
     country: offer?.country ?? "India",
     countryCode: offer?.countryCode ?? "IN",
-    images: (offer?.images ?? []).join("\n"),
+    image: offer?.images?.[0] ?? "",
     tags: (offer?.tags ?? []).join(", "),
   });
 
@@ -38,10 +38,6 @@ export function OfferCardForm({ offer, onSaved, onCancel }: { offer?: OfferCardD
   function onCountryChange(value: string) {
     const [code, name] = value.split("|");
     setForm((current) => ({ ...current, countryCode: code, country: name }));
-  }
-
-  function lines(value: string) {
-    return value.split("\n").map((x) => x.trim()).filter(Boolean);
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -59,7 +55,7 @@ export function OfferCardForm({ offer, onSaved, onCancel }: { offer?: OfferCardD
       sortOrder: Number(form.sortOrder) || 0,
       country: form.country || "India",
       countryCode: (form.countryCode || "IN").toUpperCase(),
-      images: lines(form.images),
+      images: form.image.trim() ? [form.image.trim()] : [],
       tags: form.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
     };
 
@@ -71,7 +67,7 @@ export function OfferCardForm({ offer, onSaved, onCancel }: { offer?: OfferCardD
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || "Save failed");
-      toast.success(editing ? "Offer card updated" : "Offer card created");
+      toast.success(editing ? "Banner slide updated" : "Banner slide created");
       if (onSaved) onSaved();
       else router.push("/admin/settings?section=offers");
       router.refresh();
@@ -85,7 +81,7 @@ export function OfferCardForm({ offer, onSaved, onCancel }: { offer?: OfferCardD
     <form onSubmit={onSubmit} className="space-y-6">
       <div className="grid items-start gap-x-4 gap-y-5 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <Label className="mb-1.5 block">Offer title <span className="text-destructive">*</span></Label>
+            <Label className="mb-1.5 block">Banner title <span className="text-destructive">*</span></Label>
             <Input value={form.title} onChange={(e) => set("title", e.target.value)} required />
           </div>
           <div className="sm:col-span-2">
@@ -111,6 +107,7 @@ export function OfferCardForm({ offer, onSaved, onCancel }: { offer?: OfferCardD
           <div>
             <Label className="mb-1.5 block">Country</Label>
             <Select value={`${form.countryCode}|${form.country}`} onChange={(e) => onCountryChange(e.target.value)}>
+              <option value="GL|Global">Global (all visitors)</option>
               {COUNTRY_OPTIONS.map((country) => (
                 <option key={country.code} value={`${country.code}|${country.name}`}>{country.name} ({country.code})</option>
               ))}
@@ -136,12 +133,13 @@ export function OfferCardForm({ offer, onSaved, onCancel }: { offer?: OfferCardD
                 onChange={(e) => set("featured", e.target.checked)}
                 className="size-4 accent-[var(--primary)]"
               />
-              Featured offer
+              Featured banner
             </label>
           </div>
           <div className="sm:col-span-2">
-            <Label className="mb-1.5 block">Image URLs (one per line) <span className="text-destructive">*</span></Label>
-            <Textarea value={form.images} onChange={(e) => set("images", e.target.value)} className="min-h-24 font-mono text-xs" required />
+            <Label className="mb-1.5 block">Banner image URL <span className="text-destructive">*</span></Label>
+            <Input value={form.image} onChange={(e) => set("image", e.target.value)} placeholder="https://example.com/banner.jpg" required />
+            <p className="mt-1.5 text-xs text-muted-foreground">This image fills the complete slide background.</p>
           </div>
           <div className="sm:col-span-2">
             <Label className="mb-1.5 block">Tags (comma separated)</Label>
@@ -155,7 +153,7 @@ export function OfferCardForm({ offer, onSaved, onCancel }: { offer?: OfferCardD
         </Button>
         <Button type="submit" variant="gradient" className="w-full sm:w-auto" disabled={loading}>
           {loading ? <Loader2 className="size-4 animate-spin" /> : null}
-          {editing ? "Save offer" : "Create offer"}
+          {editing ? "Save slide" : "Create slide"}
         </Button>
       </div>
     </form>

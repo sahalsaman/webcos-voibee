@@ -6,7 +6,7 @@ import { ArrowUpDown, ChevronLeft, ChevronRight, Grid2X2, List } from "lucide-re
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { TRIP_CATEGORIES } from "@/lib/constants";
+import { TRIP_CATEGORIES, tripThemeLabel } from "@/lib/constants";
 
 interface TripFilterValues {
   q: string;
@@ -25,10 +25,14 @@ export function TripFilters({
   initialFilters,
   categoryCounts,
   totalCount,
+  categories = TRIP_CATEGORIES,
+  basePath = "/packages",
 }: {
   initialFilters: TripFilterValues;
   categoryCounts: Record<string, number>;
   totalCount: number;
+  categories?: readonly string[];
+  basePath?: string;
 }) {
   const router = useRouter();
   const params = useSearchParams();
@@ -65,7 +69,7 @@ export function TripFilters({
     if (values.sort && values.sort !== "newest") next.set("sort", values.sort);
     if (values.view === "list") next.set("view", "list");
     if (values.compare === "1") next.set("compare", "1");
-    router.push(`/packages?${next.toString()}`);
+    router.push(`${basePath}?${next.toString()}`);
   }
 
   return (
@@ -170,7 +174,7 @@ export function TripFilters({
         <button
           type="button"
           onClick={() => scrollCategories(-1)}
-          aria-label="Previous package types"
+          aria-label="Previous package themes"
           className="absolute left-1 top-1/2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background shadow-md transition hover:bg-secondary"
         >
           <ChevronLeft className="size-4" />
@@ -185,14 +189,14 @@ export function TripFilters({
             All Packages ({totalCount})
             {category === "" ? <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-primary" /> : null}
           </button>
-          {TRIP_CATEGORIES.map((item) => (
+          {categories.map((item) => (
             <button
               key={item}
               type="button"
               onClick={() => { setCategory(item); apply({ category: item }); }}
               className={`relative px-4 py-4 text-sm font-bold transition-colors ${category === item ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
             >
-              {item} ({categoryCounts[item] ?? 0})
+              {tripThemeLabel(item)} ({categoryCounts[item] ?? 0})
               {category === item ? <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-primary" /> : null}
             </button>
           ))}
@@ -201,7 +205,7 @@ export function TripFilters({
         <button
           type="button"
           onClick={() => scrollCategories(1)}
-          aria-label="Next package types"
+          aria-label="Next package themes"
           className="absolute right-1 top-1/2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background shadow-md transition hover:bg-secondary"
         >
           <ChevronRight className="size-4" />

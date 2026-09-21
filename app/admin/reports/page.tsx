@@ -35,7 +35,7 @@ export default async function ReportsPage() {
   const tripRows = (trips as any[]).map((t) => ({
     Title: t.title,
     Destination: t.destination,
-    Category: t.category,
+    Theme: t.category,
     BasePrice: t.basePrice,
     Seats: `${t.availableSeats}/${t.totalSeats}`,
     Status: t.status,

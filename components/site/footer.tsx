@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { TRIP_CATEGORIES } from "@/lib/constants";
+import { TRIP_CATEGORIES, tripThemeLabel } from "@/lib/constants";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -55,7 +55,7 @@ export function Footer() {
             {TRIP_CATEGORIES.slice(0, 4).map((theme) => (
               <li key={theme}>
                 <Link className="hover:text-foreground" href={withCountry(`/packages?category=${encodeURIComponent(theme)}`)}>
-                  {theme}
+                  {tripThemeLabel(theme)}
                 </Link>
               </li>
             ))}

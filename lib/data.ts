@@ -124,6 +124,8 @@ export interface TripFilters {
   destination?: string;
   country?: string;
   category?: string;
+  categories?: readonly string[];
+  excludeCategories?: readonly string[];
   startDate?: string;
   endDate?: string;
   minPrice?: number;
@@ -137,8 +139,19 @@ function buildTripQuery(filters: TripFilters, includeCategory = true) {
   const query: Record<string, unknown> = { status: "active" };
   if (filters.destination) query.destination = new RegExp(filters.destination, "i");
   if (filters.country) query.country = new RegExp(`^${filters.country}$`, "i");
+  if (filters.categories?.length) {
+    const categories = filters.categories.flatMap((category) => category === "Strangers" ? ["Strangers", "Solo"] : [category]);
+    query.category = { $in: categories };
+  } else if (filters.excludeCategories?.length) {
+    const categories = filters.excludeCategories.flatMap((category) => category === "Strangers" ? ["Strangers", "Solo"] : [category]);
+    query.category = { $nin: categories };
+  }
   if (includeCategory && filters.category) {
-    query.category = filters.category === "Group Trip" ? { $in: ["Group Trip", "Group"] } : filters.category;
+    query.category = filters.category === "Group Trip"
+      ? { $in: ["Group Trip", "Group"] }
+      : filters.category === "Strangers"
+        ? { $in: ["Strangers", "Solo"] }
+        : filters.category;
   }
   if (filters.q) query.$text = { $search: filters.q };
   if (filters.startDate || filters.endDate) {
@@ -179,6 +192,8 @@ export async function getTrips(filters: TripFilters = {}) {
     destination,
     country,
     category,
+    categories,
+    excludeCategories,
     startDate,
     endDate,
     minPrice,
@@ -190,7 +205,7 @@ export async function getTrips(filters: TripFilters = {}) {
 
   return safe(
     async () => {
-      const query = buildTripQuery({ q, destination, country, category, startDate, endDate, minPrice, maxPrice });
+      const query = buildTripQuery({ q, destination, country, category, categories, excludeCategories, startDate, endDate, minPrice, maxPrice });
 
       const sortMap: Record<string, Record<string, 1 | -1>> = {
         newest: { createdAt: -1 },

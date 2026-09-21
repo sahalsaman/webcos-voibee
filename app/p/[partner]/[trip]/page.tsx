@@ -16,7 +16,7 @@ import { Gallery } from "@/components/trip/gallery";
 import { BookingBox } from "@/components/booking/booking-box";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getWhiteLabelTrip, trackPartnerTripClick } from "@/lib/data";
-import { isCustomDateTripCategory } from "@/lib/constants";
+import { isCustomDateTripCategory, tripThemeLabel } from "@/lib/constants";
 import { tripDuration } from "@/lib/utils";
 import { appConfig } from "@/app/app,config";
 
@@ -92,7 +92,8 @@ export default async function WhiteLabelTripPage({ params }: Props) {
       <main className="mx-auto -mt-10 w-full max-w-7xl flex-1 px-4 sm:px-6 lg:px-8">
         <div className="mb-4">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge>{t.category}</Badge>
+            <Badge>Theme: {tripThemeLabel(t.category)}</Badge>
+            <Badge variant="outline">Category: {t.packageType ?? "Standard"}</Badge>
             <Badge variant="secondary">
               <Globe className="size-3" /> Curated by {biz.businessName}
             </Badge>

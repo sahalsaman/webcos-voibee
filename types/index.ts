@@ -51,6 +51,7 @@ export interface ItineraryHotel {
   name: string;
   description: string;
   image: string;
+  verified?: boolean;
 }
 
 export type ItineraryMeal = "breakfast" | "lunch" | "dinner";

@@ -6,7 +6,8 @@ import Link from "next/link";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { destinationImage } from "@/lib/images";
-import { formatCurrencyForCountry, withCountryParam } from "@/lib/utils";
+import { withCountryParam } from "@/lib/utils";
+import { CurrencyPrice } from "@/components/currency/currency-price";
 import type { DestinationDTO } from "@/types";
 
 export function DestinationCarousel({ title, destinations, country, hideTitle = false }: { title: string; destinations: DestinationDTO[]; country?: string; hideTitle?: boolean }) {
@@ -59,7 +60,7 @@ export function DestinationCarousel({ title, destinations, country, hideTitle = 
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-4 text-white">
               <span className="block text-xl font-bold leading-tight">{destination.title}</span>
-              <span className="mt-1.5 block text-xs font-medium text-white/80">From {formatCurrencyForCountry(destination.basePrice, country)}</span>
+              <span className="mt-1.5 block text-xs font-medium text-white/80">From <CurrencyPrice amount={destination.basePrice} /></span>
             </div>
           </Link>
         ))}

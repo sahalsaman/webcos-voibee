@@ -16,12 +16,13 @@ import { BookingBox } from "@/components/booking/booking-box";
 import { PackageServiceIcons, resolveIncludedServices } from "@/components/trip/package-service-icons";
 import { DetailedItinerary } from "@/components/trip/detailed-itinerary";
 import { PackageActions } from "@/components/trip/package-actions";
+import { SafeStay } from "@/components/trip/safe-stay";
 import {
   getTripBySlug,
   getReviewsForTrip,
   getRelatedTrips,
 } from "@/lib/data";
-import { isCustomDateTripCategory } from "@/lib/constants";
+import { isCustomDateTripCategory, tripThemeLabel } from "@/lib/constants";
 import { formatDate, tripDuration } from "@/lib/utils";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -113,7 +114,7 @@ export default async function TripDetailPage({ params }: Props) {
       <section id="summary" className="py-7 sm:py-9">
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="outline">{scheduleLabel}</Badge>
-          <Badge>{trip.category}</Badge>
+          <Badge>{tripThemeLabel(trip.category)}</Badge>
           <Badge variant="outline">{trip.packageType ?? "Standard"}</Badge>
           {trip.featured ? <Badge variant="accent">Featured</Badge> : null}
         </div>
@@ -169,6 +170,8 @@ export default async function TripDetailPage({ params }: Props) {
               </div>
             ) : null}
           </section>
+
+          <SafeStay />
 
           <section id="itinerary" className="scroll-mt-32">
             {trip.itinerary?.length ? <DetailedItinerary days={trip.itinerary} /> : null}

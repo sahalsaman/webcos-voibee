@@ -12,7 +12,6 @@ import {
   Headset,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -22,9 +21,10 @@ import { CurrencySelector } from "@/components/currency/currency-selector";
 const NAV_LINKS = [
   { href: "/packages", label: "Holidays" },
   { href: "/flights", label: "Flights" },
-  { href: "/flights", label: "Hotels" },
-  { href: "/strangers-camps", label: "Voibee Vibe Circles" },
-  { href: "/customize-trip", label: "Customize trip" },
+  { href: "/hotels", label: "Hotels" },
+  { href: "/vibe-circles", label: "Voibee Circles" },
+  // { href: "/customize-trip", label: "Customize trip" },
+  { href: "/activities", label: "Activities" },
 ];
 
 function dashboardPath(role?: string) {
