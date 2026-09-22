@@ -26,4 +26,9 @@ const activities = [
 ];
 for (const item of activities) { const { type, ...activity } = item; await db.collection("activities").updateOne({ slug: activity.slug }, { $set: { ...activity, type: typeIds[type], status: "active", updatedAt: new Date() }, $setOnInsert: { createdAt: new Date() } }, { upsert: true }); }
 console.log(`Seeded ${types.length} activity types and ${activities.length} activities into ${envFile}.`);
+if (process.argv.includes("--verify")) {
+  const typeRows = await db.collection("activitytypes").find({ slug: { $in: types.map((item) => item[1]) } }).project({ name: 1, slug: 1, status: 1 }).sort({ sortOrder: 1 }).toArray();
+  const activityRows = await db.collection("activities").find({ slug: { $in: activities.map((item) => item.slug) } }).project({ title: 1, slug: 1, destination: 1, status: 1 }).sort({ title: 1 }).toArray();
+  console.log(JSON.stringify({ activityTypes: typeRows, activities: activityRows }, null, 2));
+}
 await mongoose.disconnect();
