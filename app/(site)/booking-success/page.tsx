@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { getAuthorizedBookingConfirmation } from "@/lib/booking-confirmation";
 import { formatDate } from "@/lib/utils";
 import { CurrencyPrice } from "@/components/currency/currency-price";
+import { appConfig } from "@/app/app,config";
 
 export const metadata: Metadata = {
   title: "Booking Confirmed",
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 type SearchParams = Promise<{ booking?: string; token?: string }>;
-const supportNumber = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919000000001").replace(/\D/g, "");
+const supportNumber = appConfig.mobile.replace(/\D/g, "");
 const supportDisplay = supportNumber.startsWith("91") ? `+91 ${supportNumber.slice(2, 7)} ${supportNumber.slice(7)}` : `+${supportNumber}`;
 
 function Detail({ label, value }: { label: string; value: React.ReactNode }) {
@@ -91,7 +92,7 @@ export default async function BookingSuccessPage({ searchParams }: { searchParam
                 <p className="mt-1 text-sm text-muted-foreground">The Voibee team is ready to assist with your booking.</p>
                 <div className="mt-4 space-y-2 text-sm font-semibold">
                   <a href={`tel:+${supportNumber}`} className="flex items-center gap-2 hover:text-primary"><Phone className="size-4 text-primary" />{supportDisplay}</a>
-                  <a href="mailto:support@voibee.com" className="flex items-center gap-2 hover:text-primary"><Mail className="size-4 text-primary" />support@voibee.com</a>
+                  <a href={`mailto:${appConfig.email}`} className="flex items-center gap-2 hover:text-primary"><Mail className="size-4 text-primary" />{appConfig.email}</a>
                 </div>
               </article>
 

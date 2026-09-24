@@ -39,13 +39,21 @@ export function Footer() {
     <footer className="border-t border-border bg-card">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
         <div className="md:col-span-1">
-          <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-            <Image src={app_logo} alt="Voibee" width={112} height={40} />
-          </Link>
-          <p className="mt-3 max-w-xs text-sm text-muted-foreground">
-            Curated packages for explorers who want clear plans, verified stays and
-            smooth support.
-          </p>
+
+          <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+            <span className="font-bold">Contact us:</span> <br />
+       <div>     <a href={`tel:${appConfig.mobile.replace(/\s/g, "")}`} className="block hover:text-primary">{appConfig.mobile}</a>
+            <a href={`mailto:${appConfig.email}`} className="block hover:text-primary">{appConfig.email}</a></div>
+
+            <span className="font-bold">Office:</span> <br />
+            <span className="block">{appConfig.address}</span>
+            {/* <span className="font-bold">Follow us:</span> <br />
+            <div className="flex gap-3 pt-1">
+              <a href={appConfig.facebook} target="_blank" rel="noreferrer" className="hover:text-primary">
+                FB</a>
+              <a href={appConfig.instagram} target="_blank" rel="noreferrer" className="hover:text-primary">Instagram</a>
+            </div> */}
+          </div>
         </div>
 
         <div>
@@ -53,9 +61,9 @@ export function Footer() {
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li><Link className="hover:text-foreground" href={withCountry("/packages")}>All packages</Link></li>
             {TRIP_CATEGORIES.slice(0, 4).map((theme) => (
-              <li key={theme}>
-                <Link className="hover:text-foreground" href={withCountry(`/packages?category=${encodeURIComponent(theme)}`)}>
-                  {tripThemeLabel(theme)}
+              <li key={theme.label}>
+                <Link className="hover:text-foreground" href={withCountry(`/packages?category=${encodeURIComponent(theme.label)}`)}>
+                  {tripThemeLabel(theme.label)}
                 </Link>
               </li>
             ))}

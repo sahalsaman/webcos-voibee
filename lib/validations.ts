@@ -1,6 +1,6 @@
 import { z } from "zod";
 import {
-  TRIP_CATEGORIES, PACKAGE_TYPES,
+  TRIP_CATEGORY_LABELS, PACKAGE_TYPES,
   PACKAGE_SERVICES,
   TRIP_STATUSES,
   OFFER_CARD_STATUSES,
@@ -112,7 +112,7 @@ const tripBaseSchema = z.object({
   endDate: z.string(),
   pickupLocation: z.string().default(""),
   departureCities: z.array(z.string().trim().min(2)).default([]),
-  category: z.enum(TRIP_CATEGORIES).default("Holiday Package"),
+  category: z.enum(TRIP_CATEGORY_LABELS).default("Holiday Package"),
   packageType: z.enum(PACKAGE_TYPES).default("Standard"),
   status: z.enum(TRIP_STATUSES).default("draft"),
   featured: z.boolean().default(false),

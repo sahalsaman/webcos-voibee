@@ -108,12 +108,12 @@ export function OfferCarousel({ offers }: { offers: OfferSlide[] }) {
 
         {slides.length > 1 ? (
           <>
-            <button type="button" className="absolute left-3 top-1/2 z-30 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/20 text-white backdrop-blur-md transition hover:bg-white hover:text-slate-950 sm:left-5" onClick={() => move(-1)} aria-label="Previous banner">
+            {/* <button type="button" className="absolute left-3 top-1/2 z-30 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/20 text-white backdrop-blur-md transition hover:bg-white hover:text-slate-950 sm:left-5" onClick={() => move(-1)} aria-label="Previous banner">
               <ChevronLeft className="size-5" />
             </button>
             <button type="button" className="absolute right-3 top-1/2 z-30 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/20 text-white backdrop-blur-md transition hover:bg-white hover:text-slate-950 sm:right-5" onClick={() => move(1)} aria-label="Next banner">
               <ChevronRight className="size-5" />
-            </button>
+            </button> */}
             <div className="absolute bottom-3 left-1/2 z-30 flex -translate-x-1/2 gap-2 sm:bottom-4">
               {slides.map((offer, index) => (
                 <button

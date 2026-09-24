@@ -4,19 +4,20 @@ import Link from "next/link";
 import { Compass } from "lucide-react";
 import { TripCard } from "@/components/trip/trip-card";
 import { TripFilters } from "@/components/trip/trip-filters";
+import { ThemeFilter } from "@/components/trip/theme-filter";
 import { SearchBar } from "@/components/home/search-bar";
 import { Pagination } from "@/components/ui/pagination";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { getTripCategoryCounts, getTrips } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
-import { VIBE_CIRCLE_TRIP_CATEGORIES } from "@/lib/constants";
+import { VIBE_CIRCLE_TRIP_CATEGORIES, VIBE_CIRCLE_TRIP_CATEGORY_LABELS } from "@/lib/constants";
 
 type SP = Record<string, string | string[] | undefined>;
 
 export const metadata: Metadata = {
   title: "Voibee Vibe Circles",
-  description: "Discover Voibee Circles, senior-care journeys, accessible holidays and bespoke private travel packages.",
+  description: "Discover work escape, senior-care journeys, accessible holidays and bespoke private travel packages.",
 };
 
 function str(value: string | string[] | undefined) {
@@ -27,7 +28,7 @@ export default async function VibeCirclesPage({ searchParams }: { searchParams: 
   const sp = await searchParams;
   const page = Math.max(1, Number(str(sp.page)) || 1);
   const requestedCategory = str(sp.category);
-  const selectedCategory = VIBE_CIRCLE_TRIP_CATEGORIES.includes(requestedCategory as (typeof VIBE_CIRCLE_TRIP_CATEGORIES)[number])
+  const selectedCategory = VIBE_CIRCLE_TRIP_CATEGORY_LABELS.includes(requestedCategory as (typeof VIBE_CIRCLE_TRIP_CATEGORY_LABELS)[number])
     ? requestedCategory
     : undefined;
   const tripFilters = {
@@ -35,7 +36,7 @@ export default async function VibeCirclesPage({ searchParams }: { searchParams: 
     destination: str(sp.destination),
     country: str(sp.country),
     category: selectedCategory,
-    categories: VIBE_CIRCLE_TRIP_CATEGORIES,
+    categories: VIBE_CIRCLE_TRIP_CATEGORY_LABELS,
     startDate: str(sp.startDate),
     endDate: str(sp.endDate),
     minPrice: str(sp.minPrice) ? Number(str(sp.minPrice)) : undefined,
@@ -69,13 +70,21 @@ export default async function VibeCirclesPage({ searchParams }: { searchParams: 
               Community, senior-care, accessible and bespoke private journeys designed around the way you want to travel.
             </p>
             <div className="mt-7 text-left"><SearchBar basePath="/vibe-circles" /></div>
+            <div className="mt-5 text-left">
+              <ThemeFilter
+                basePath="/vibe-circles"
+                selectedCategory={selectedCategory ?? ""}
+                categoryCounts={categoryCounts}
+                totalCount={Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)}
+                categories={VIBE_CIRCLE_TRIP_CATEGORIES}
+              />
+            </div>
           </div>
         </header>
 
         <TripFilters
           key={JSON.stringify(linkParams)}
           basePath="/vibe-circles"
-          categories={VIBE_CIRCLE_TRIP_CATEGORIES}
           initialFilters={{
             q: str(sp.q) ?? "",
             destination: str(sp.destination) ?? "",
@@ -88,8 +97,6 @@ export default async function VibeCirclesPage({ searchParams }: { searchParams: 
             view: str(sp.view) ?? "grid",
             compare: str(sp.compare) ?? "",
           }}
-          categoryCounts={categoryCounts}
-          totalCount={Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)}
         />
 
         {result.items.length ? (

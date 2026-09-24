@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { NotificationMenu } from "@/components/site/notification-menu";
 import { CurrencySelector } from "@/components/currency/currency-selector";
+import { appConfig } from "@/app/app,config";
 
 const NAV_LINKS = [
   { href: "/packages", label: "Holidays" },
@@ -34,7 +35,7 @@ function dashboardPath(role?: string) {
 }
 
 const appLogo = "/voibee-logo-with-name.png";
-const supportNumber = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919000000001").replace(/\D/g, "");
+const supportNumber = appConfig.mobile.replace(/\D/g, "");
 
 export function Navbar() {
   const { data: session } = useSession();

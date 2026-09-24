@@ -144,30 +144,42 @@ export const COUNTRY_OPTIONS = [
 export type CountryOption = (typeof COUNTRY_OPTIONS)[number];
 
 export const TRIP_CATEGORIES = [
-  "Holiday Package",
-  "Honeymoon",
-  "Family",
-  "Group Trip",
-  "Strangers",
-  "Wellness",
-  "Spiritual",
-  "Festival",
+  {label : "Holiday Package",icon : "🌴"},
+  {label : "Honeymoon",icon : "💖"},
+  {label : "Family",icon : "👨‍👩‍👧‍👦"},
+  {label : "Group Trip",icon : "🧑‍🤝‍🧑"},
+  {label : "Strangers",icon : "🤝"},
+  {label : "Wellness",icon : "🧘‍♀️"},
+  {label : "Spiritual",icon : "🕉️"},
+  {label : "Festival",icon : "🎉"},
+  {label : "Work Escape",icon : "💻"},
+  {label : "Golden Horizons (Senior Care)",icon : "👴👵"},
+  {label : "Limitless Access (Mobility Support)",icon : "♿"},
+  {label : "Bespoke Private Journeys",icon : "✈️"},
+] as const;
+
+export type TripCategoryOption = (typeof TRIP_CATEGORIES)[number];
+export type TripCategory = TripCategoryOption["label"];
+
+/** String labels used by validation and the portal API; UI options retain their icons. */
+export const TRIP_CATEGORY_LABELS = TRIP_CATEGORIES.map(({ label }) => label) as [TripCategory, ...TripCategory[]];
+
+const VIBE_CIRCLE_LABELS = [
+  "Work Escape",
   "Golden Horizons (Senior Care)",
   "Limitless Access (Mobility Support)",
   "Bespoke Private Journeys",
 ] as const;
-export type TripCategory = (typeof TRIP_CATEGORIES)[number];
 
-export const VIBE_CIRCLE_TRIP_CATEGORIES = [
-  "Strangers",
-  "Golden Horizons (Senior Care)",
-  "Limitless Access (Mobility Support)",
-  "Bespoke Private Journeys",
-] as const;
-
-export const HOLIDAY_TRIP_CATEGORIES = TRIP_CATEGORIES.filter(
-  (category) => !(VIBE_CIRCLE_TRIP_CATEGORIES as readonly string[]).includes(category),
+export const VIBE_CIRCLE_TRIP_CATEGORIES = TRIP_CATEGORIES.filter(({ label }) =>
+  VIBE_CIRCLE_LABELS.includes(label as (typeof VIBE_CIRCLE_LABELS)[number]),
 );
+export const VIBE_CIRCLE_TRIP_CATEGORY_LABELS = VIBE_CIRCLE_TRIP_CATEGORIES.map(({ label }) => label) as [TripCategory, ...TripCategory[]];
+
+export const HOLIDAY_TRIP_CATEGORIES = TRIP_CATEGORIES.filter(({ label }) =>
+  !VIBE_CIRCLE_LABELS.includes(label as (typeof VIBE_CIRCLE_LABELS)[number]),
+);
+export const HOLIDAY_TRIP_CATEGORY_LABELS = HOLIDAY_TRIP_CATEGORIES.map(({ label }) => label) as [TripCategory, ...TripCategory[]];
 
 /** Customer-facing label while preserving the legacy stored category value. */
 export function tripThemeLabel(category?: string) {
@@ -198,12 +210,6 @@ export const PACKAGE_SERVICE_LABELS: Record<PackageService, string> = {
   "travel-insurance": "Travel Insurance",
 };
 
-export const FIXED_DEPARTURE_TRIP_CATEGORIES = [
-  "Holiday Package",
-  "Strangers",
-  "Festival",
-] as const;
-
 export const CUSTOM_DATE_TRIP_CATEGORIES = [
   "Honeymoon",
   "Family",
@@ -215,9 +221,7 @@ export const CUSTOM_DATE_TRIP_CATEGORIES = [
   "Bespoke Private Journeys",
 ] as const;
 
-export function isFixedDepartureTripCategory(category?: string) {
-  return (FIXED_DEPARTURE_TRIP_CATEGORIES as readonly string[]).includes(category ?? "");
-}
+
 
 export function isCustomDateTripCategory(category?: string) {
   return (CUSTOM_DATE_TRIP_CATEGORIES as readonly string[]).includes(category ?? "");

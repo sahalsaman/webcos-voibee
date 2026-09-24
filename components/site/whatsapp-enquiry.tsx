@@ -1,7 +1,7 @@
 import { appConfig } from "@/app/app,config";
 import { MessageCircle } from "lucide-react";
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919000000001";
+const WHATSAPP_NUMBER = appConfig.whtsapp.replace(/\D/g, "");
 const WHATSAPP_TEXT = `Hi ${appConfig.appName}, I want to enquire about a package.`;
 
 export function WhatsAppEnquiry() {

@@ -4,13 +4,14 @@ import Link from "next/link";
 import { Compass } from "lucide-react";
 import { TripCard } from "@/components/trip/trip-card";
 import { TripFilters } from "@/components/trip/trip-filters";
+import { ThemeFilter } from "@/components/trip/theme-filter";
 import { SearchBar } from "@/components/home/search-bar";
 import { Pagination } from "@/components/ui/pagination";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { getDestinations, getTripCategoryCounts, getTrips } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
-import { HOLIDAY_TRIP_CATEGORIES, VIBE_CIRCLE_TRIP_CATEGORIES } from "@/lib/constants";
+import { HOLIDAY_TRIP_CATEGORIES, HOLIDAY_TRIP_CATEGORY_LABELS, VIBE_CIRCLE_TRIP_CATEGORY_LABELS } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Holiday Packages",
@@ -40,7 +41,7 @@ export default async function TripsPage({
   const country = str(sp.c);
   const selectedDestinationName = str(sp.destination);
   const requestedCategory = str(sp.category);
-  const selectedCategory = HOLIDAY_TRIP_CATEGORIES.includes(requestedCategory as (typeof HOLIDAY_TRIP_CATEGORIES)[number])
+  const selectedCategory = HOLIDAY_TRIP_CATEGORY_LABELS.includes(requestedCategory as (typeof HOLIDAY_TRIP_CATEGORY_LABELS)[number])
     ? requestedCategory
     : undefined;
   const tripFilters = {
@@ -48,7 +49,7 @@ export default async function TripsPage({
     destination: str(sp.destination),
     country: str(sp.country),
     category: selectedCategory,
-    excludeCategories: VIBE_CIRCLE_TRIP_CATEGORIES,
+    excludeCategories: VIBE_CIRCLE_TRIP_CATEGORY_LABELS,
     startDate: str(sp.startDate),
     endDate: str(sp.endDate),
     minPrice: str(sp.minPrice) ? Number(str(sp.minPrice)) : undefined,
@@ -97,6 +98,14 @@ export default async function TripsPage({
           <div className="mt-7 text-left">
             <SearchBar />
           </div>
+          <div className="mt-5 text-left">
+            <ThemeFilter
+              selectedCategory={selectedCategory ?? ""}
+              categoryCounts={categoryCounts}
+              totalCount={Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)}
+              categories={HOLIDAY_TRIP_CATEGORIES}
+            />
+          </div>
           
         </div>
       </header>
@@ -115,9 +124,6 @@ export default async function TripsPage({
           view: str(sp.view) ?? "grid",
           compare: str(sp.compare) ?? "",
         }}
-        categoryCounts={categoryCounts}
-        totalCount={Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)}
-        categories={HOLIDAY_TRIP_CATEGORIES}
       />
 
       <div>
