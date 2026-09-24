@@ -32,6 +32,20 @@ function countryCode(req: NextRequest) {
 
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  if (pathname === "/api" || pathname.startsWith("/api/")) {
+    const base = process.env.PORTAL_API_URL;
+    const slug = process.env.PORTAL_BUSINESS_SLUG;
+    if (!base || !slug) return NextResponse.json({ message: "Portal connection is not configured" }, { status: 503 });
+    const target = new URL(pathname + req.nextUrl.search, base);
+    const forwarded = new Headers(req.headers);
+    forwarded.set("x-business-slug", slug);
+    return NextResponse.rewrite(target, { request: { headers: forwarded } });
+  }
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    const portal = process.env.NEXT_PUBLIC_PORTAL_URL;
+    if (!portal) return new NextResponse("Portal URL is not configured", { status: 503 });
+    return NextResponse.redirect(new URL(pathname + req.nextUrl.search, portal));
+  }
 
   const isProtected = PROTECTED.some((re) => re.test(pathname));
 
@@ -42,11 +56,9 @@ export function proxy(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  const requestHeaders = new Headers(req.headers);
-  requestHeaders.set("x-voibee-pathname", pathname);
-  return NextResponse.next({ request: { headers: requestHeaders } });
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)"],
 };

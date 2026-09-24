@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { requireRole } from "@/lib/session";
 import { RoleShell } from "@/components/dashboard/role-shell";
 

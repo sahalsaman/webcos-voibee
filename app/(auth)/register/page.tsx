@@ -31,7 +31,7 @@ function RegisterForm() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...values, role: "traveler" }),
+        body: JSON.stringify({ ...values, role: "vendor_traveler" }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || "Registration failed");

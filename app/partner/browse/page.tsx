@@ -6,8 +6,9 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { CreateLink } from "@/components/partner/create-link";
 import { requireRole } from "@/lib/session";
 import { getPartnerByUser, getResellableTrips } from "@/lib/dashboard";
-import { getSettings } from "@/models/Settings";
-import { connectDB } from "@/lib/db";
+import { portalCall } from "@/lib/portal-client";
+const getSettings = () => portalCall<{ defaultCommission: number }>("getSettings");
+
 import { formatINR } from "@/lib/utils";
 
 const FALLBACK = "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=600&q=60";
@@ -31,7 +32,6 @@ export default async function PartnerBrowsePage() {
 
   let defaultCommission = 1000;
   try {
-    await connectDB();
     defaultCommission = (await getSettings()).defaultCommission;
   } catch {
     /* ignore */

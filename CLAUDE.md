@@ -2,14 +2,15 @@
 
 # Voibee — project guide for Claude
 
-Travel marketplace & white-label trip reseller. Operators publish trips;
+Public travel marketplace & white-label trip reseller. Operators publish trips in
+the separate Travels Portal;
 partners resell them via branded links (`/p/<partner>/<trip>`) for commission;
 travelers book. Roles: **admin · partner · traveler**.
 
 ## Stack
 
-Next.js 16 (App Router) · React 19 · TypeScript · Tailwind v4 · MongoDB/Mongoose ·
-Auth.js v5 · Razorpay · Cloudinary · React Hook Form + Zod · TanStack Query ·
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind v4 · Travels Portal API ·
+Auth.js client · Razorpay checkout client · Cloudinary · React Hook Form + Zod ·
 Framer Motion · Recharts. Path alias `@/*` → repo root (no `src/`).
 
 ## Commands
@@ -19,7 +20,6 @@ npm run dev            # dev server (Turbopack)
 npm run build          # production build
 npm run typecheck      # tsc --noEmit  (run after changes)
 npm run lint
-npm run seed           # scripts/seed.mjs — wipes & loads demo data
 npm install --legacy-peer-deps   # peer deps need this flag
 ```
 
@@ -42,24 +42,19 @@ Demo accounts (password `Password123!`): `admin@voibee.com`,
 app/(site)/      Public site (navbar/footer layout): home, trips, trips/[slug]
 app/(auth)/      login, register (split-screen layout)
 app/p/[partner]/[trip]   White-label trip pages (partner-branded)
-app/{admin,partner,traveler}/   Role dashboards (server layout = requireRole guard)
-app/api/         Route handlers
-models/          Mongoose schemas + models/index.ts barrel (registers all)
-lib/             db, commission, data (public), dashboard (queries), razorpay,
-                 api (route helpers), session, validations, utils, constants
+app/{partner,traveler}/   User dashboards (server layout = requireRole guard)
+lib/portal-client.ts      Server RPC/session client for Travels Portal
+lib/data.ts, dashboard.ts Typed portal-client wrappers
+lib/             client utilities, validation, formatting and constants
 components/ui/   shadcn-style primitives;  components/{dashboard,admin,partner,trip,booking,home,site}/
-auth.ts          Auth.js (Node, has DB/bcrypt)   auth.config.ts (edge-safe base)
+auth.ts          Remote Travels Portal session adapter
 ```
 
 ## Conventions (follow these)
 
-- **DB access**: server components/data fns call `connectDB()` then query with
-  `.lean()`, wrap in `lib/data.ts`'s `safe()` (returns fallback if DB down) and
-  `serialize()` before passing to client. `import "@/models"` before any `populate`.
-- **API routes**: use helpers in `lib/api.ts` — `ok()`, `fail()`, `handleError(err)`
-  (in the `catch`; passes Zod→422, dup-key→409, thrown auth Response through),
-  `requireApiRole([...])` (throws a Response), `currentUser()`. Validate input with
-  Zod schemas from `lib/validations.ts` **before** DB work.
+- **Data/API access**: browser `/api/*` calls are rewritten by `proxy.ts` to Travels
+  Portal. Server components call typed wrappers backed by `lib/portal-client.ts`.
+  Never add database models, auth secrets, payment secrets, or local API handlers.
 - **Auth guards**: pages/layouts use `requireRole([...])` / `requireUser()` from
   `lib/session.ts`. `proxy.ts` is only an optimistic cookie check.
 - **Pricing**: never hand-roll money math — use `calculateCommission()` /
@@ -76,8 +71,8 @@ auth.ts          Auth.js (Node, has DB/bcrypt)   auth.config.ts (edge-safe base)
 
 ## Gotchas
 
-- No Razorpay keys → checkout runs in **demo mode** (`/api/bookings` returns
-  `mock:true`, `/api/payments/verify` confirms without a charge).
+- Payment credentials and verification live in Travels Portal. There is no mock
+  payment-success mode.
 - Booking confirmation (`/api/payments/verify`) is idempotent, decrements seats
   atomically, and writes the partner Commission ledger + earnings.
 - `.env.example` is force-tracked (`.gitignore` has `!.env.example`); `.env*` ignored.

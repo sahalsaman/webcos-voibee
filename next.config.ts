@@ -26,8 +26,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Mongoose ships native/optional deps that should not be bundled for RSC.
-  serverExternalPackages: ["mongoose"],
 };
 
 export default nextConfig;

@@ -6,7 +6,7 @@ import { ArrowRight, MapPin } from "lucide-react";
 import { TripCard } from "@/components/trip/trip-card";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getDestinationLanding, getDestinations } from "@/lib/data";
+import { getDestinationLanding } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
 import { formatINR, slugify } from "@/lib/utils";
 import { CurrencyPrice } from "@/components/currency/currency-price";
@@ -14,10 +14,7 @@ import { CurrencyPrice } from "@/components/currency/currency-price";
 type Props = { params: Promise<{ slug: string }> };
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.voibee.com";
 
-export async function generateStaticParams() {
-  const destinations = await getDestinations();
-  return destinations.map((destination) => ({ slug: slugify(destination.title) }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;

@@ -1,14 +1,13 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { connectDB } from "@/lib/db";
+import { portalCall } from "@/lib/portal-client";
 import { formatDate, formatINR, serialize } from "@/lib/utils";
-import Quotation from "@/models/Quotation";
+
 import type { QuotationDTO } from "@/types";
 
 export default async function CustomerQuotationPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  await connectDB();
-  const record = await Quotation.findOne({ shareToken: token }).lean();
+  const record = await portalCall<QuotationDTO | null>("getQuotation", [token]);
   if (!record) notFound();
   const quotation = serialize(record) as unknown as QuotationDTO;
 
