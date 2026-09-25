@@ -83,22 +83,24 @@ export default async function TripsPage({
   return (
     <main className="min-h-screen bg-white">
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <header className="relative mb-8 overflow-hidden rounded-[28px] bg-slate-950 px-6 py-16 text-white shadow-xl sm:px-10 lg:px-12">
+      <header className="relative mb-18 rounded-[28px] bg-slate-950 px-6 py-16 text-white shadow-xl sm:px-10 lg:px-12 z-10">
         <Image
           src={heroImage}
           alt={heroTitle}
           fill
           priority
-          className="object-cover"
+          className="object-cover rounded-[28px]"
         />
-        <div className="absolute inset-0 bg-slate-950/60" />
+        <div className="absolute inset-0 bg-slate-950/60 rounded-[28px]" />
         <div className="relative mx-auto max-w-3xl text-center">
           <h1 className="mt-3 text-4xl font-extrabold leading-tight sm:text-5xl">{heroTitle}</h1>
        
           <div className="mt-7 text-left">
             <SearchBar />
           </div>
-          <div className="mt-5 text-left">
+          
+        </div>
+          <div className="mt-5 text-left absolute left-6 right-6 sm:left-10 sm:right-10 lg:left-12 lg:right-12 z-40">
             <ThemeFilter
               selectedCategory={selectedCategory ?? ""}
               categoryCounts={categoryCounts}
@@ -106,8 +108,6 @@ export default async function TripsPage({
               categories={HOLIDAY_TRIP_CATEGORIES}
             />
           </div>
-          
-        </div>
       </header>
 
       <TripFilters

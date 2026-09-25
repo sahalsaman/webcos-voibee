@@ -39,26 +39,19 @@ export function ThemeFilter({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/20 bg-black/20 px-8 py-3 backdrop-blur-sm">
-      <button
-        type="button"
-        onClick={() => scrollCategories(-1)}
-        aria-label="Previous package themes"
-        className="absolute left-1 top-1/2 z-10 flex size-7 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-white/95 text-slate-700 shadow-md transition hover:bg-white"
-      >
-        <ChevronLeft className="size-4" />
-      </button>
+    <div className=" w-fit overflow-hidden rounded-2xl border border-white/20 bg-white px-8 py-3 shadow-md  ">
+   
       <div ref={categoryRef} className="overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="grid auto-cols-[92px] grid-flow-col items-stretch gap-2 sm:auto-cols-[108px] sm:gap-3">
+        <div className="grid auto-cols-[92px] grid-flow-col items-stretch gap-2 sm:auto-cols-[106px] sm:gap-3">
           <button
             type="button"
             onClick={() => applyCategory("")}
             aria-pressed={!selectedCategory}
-            className={`flex min-h-[70px] flex-col items-center justify-center gap-1 rounded-xl border px-2 py-1.5 text-center transition ${!selectedCategory ? "border-white bg-white text-primary shadow-md" : "border-white/15 bg-white/90 text-slate-700 hover:bg-white"}`}
+            className={`flex min-h-[70px] flex-col items-center justify-center gap-1 rounded-xl border px-2 py-1.5 text-center transition   ${!selectedCategory ? "bg-white" : "bg-sky-100 border-white text-slate-700 "}`}
           >
-            <span className="text-xl leading-none">🌐</span>
-            <span className="text-[11px] font-extrabold leading-tight">All packages</span>
-            <span className="text-[10px] font-semibold text-slate-400">{totalCount}</span>
+            <span className="text-2xl leading-none">🌐</span>
+            <span className="text-[11px] font-extrabold leading-tight text-black">All packages</span>
+            {/* <span className="text-[10px] font-semibold text-slate-400">{totalCount}</span> */}
           </button>
           {categories.map((item) => (
             <button
@@ -66,23 +59,15 @@ export function ThemeFilter({
               type="button"
               onClick={() => applyCategory(item.label)}
               aria-pressed={selectedCategory === item.label}
-              className={`flex min-h-[70px] flex-col items-center justify-center gap-1 rounded-xl border px-2 py-1.5 text-center transition ${selectedCategory === item.label ? "border-white bg-white text-primary shadow-md" : "border-white/15 bg-white/90 text-slate-700 hover:bg-white"}`}
+              className={`flex min-h-[70px] flex-col items-center justify-center gap-1 rounded-xl border px-2 py-1.5 text-center transition  ${selectedCategory === item.label ? " bg-sky-100 border-white text-slate-700" : "bg-white"}`}
             >
-              <span className="text-xl leading-none">{item.icon}</span>
-              <span className="line-clamp-2 text-[11px] font-extrabold leading-tight">{tripThemeLabel(item.label)}</span>
-              <span className="text-[10px] font-semibold text-slate-400">{categoryCounts[item.label] ?? 0}</span>
+              <span className="text-2xl leading-none">{item.icon}</span>
+              <span className="line-clamp-2 text-[11px] font-extrabold leading-tight text-black">{tripThemeLabel(item.label)}</span>
+              {/* <span className="text-[10px] font-semibold text-slate-400">{categoryCounts[item.label] ?? 0}</span> */}
             </button>
           ))}
         </div>
       </div>
-      <button
-        type="button"
-        onClick={() => scrollCategories(1)}
-        aria-label="Next package themes"
-        className="absolute right-1 top-1/2 z-10 flex size-7 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-white/95 text-slate-700 shadow-md transition hover:bg-white"
-      >
-        <ChevronRight className="size-4" />
-      </button>
     </div>
   );
 }
