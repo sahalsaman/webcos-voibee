@@ -9,7 +9,7 @@ const SERVICE_DETAILS: Record<PackageService, { label: string; image: string; pa
   visa: { label: PACKAGE_SERVICE_LABELS.visa, image: "/package-visa.png", pattern: /\bvisa\b/i },
   meals: { label: PACKAGE_SERVICE_LABELS.meals, image: "/package-meals.png", pattern: /\b(meals?|breakfast|lunch|dinner)\b/i },
   "tour-manager": { label: PACKAGE_SERVICE_LABELS["tour-manager"], image: "/package-tour-manager.png", pattern: /\b(tour manager|trip captain|tour guide|guide|coordinator)\b/i },
-  transfers: { label: PACKAGE_SERVICE_LABELS.transfers, image: "/package-transfers.png", pattern: /\b(transfers?|airport shuttle|pickup|drop)\b/i },
+  // transfers: { label: PACKAGE_SERVICE_LABELS.transfers, image: "/package-transfers.png", pattern: /\b(transfers?|airport shuttle|pickup|drop)\b/i },
   "travel-insurance": { label: PACKAGE_SERVICE_LABELS["travel-insurance"], image: "/package-travel-insurance.png", pattern: /\b(travel insurance|insurance)\b/i },
   "ac-premium-transportation": { label: PACKAGE_SERVICE_LABELS["ac-premium-transportation"], image: "/package-ac-premium-transportation.png", pattern: /\b(ac premium transportation)\b/i },
   transportation: { label: PACKAGE_SERVICE_LABELS.transportation, image: "/package-transportation.png", pattern: /\btransportation\b/i },
