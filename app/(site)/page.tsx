@@ -188,12 +188,12 @@ export default async function HomePage({
             />
             
             <div className="mt-7 flex flex-wrap gap-3">
-              <Button type="button" size="lg" variant="gradient" className="rounded-full px-6">
+            <a href="https://www.instagram.com/voibee_" target="_blank">  <Button type="button" size="lg" variant="gradient" className="rounded-full px-6">
                 <Camera className="size-5" /> Instagram
-              </Button>
-              <Button type="button" size="lg" variant="outline" className="rounded-full px-6">
+              </Button></a>
+             <a href="https://www.facebook.com/voibee" target="_blank"> <Button type="button" size="lg" variant="outline" className="rounded-full px-6">
                 <Share2 className="size-5" /> Facebook
-              </Button>
+              </Button></a>
             </div>
           </div>
           <div className="relative min-h-[420px] overflow-hidden sm:min-h-[520px] lg:min-h-[600px]">
@@ -211,7 +211,7 @@ export default async function HomePage({
       {/* ---------------- Why Voibee ---------------- */}
       <section id="why" className="scroll-mt-32 px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl px-1 py-6 sm:px-4 lg:px-6">
-          <div className="text-center">
+          {/* <div className="text-center">
             <p className="text-xs font-black uppercase tracking-[0.24em] text-primary">The Voibee advantage</p>
             <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
               Why travellers choose Voibee
@@ -219,13 +219,13 @@ export default async function HomePage({
             <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400 sm:text-base">
               Thoughtful planning, dependable support and travel experiences designed around you.
             </p>
-          </div>
+          </div> */}
 
-          <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-9 lg:grid-cols-[1fr_1fr_1.7fr_1fr_1fr] lg:items-center lg:gap-6">
+          <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-9 lg:grid-cols-[1fr_1fr_1fr_1fr] lg:items-center lg:gap-6">
             <WhyStat icon={SlidersHorizontal} value="100%" label="Customisation" />
             <WhyStat icon={Headphones} value="24×7" label="Travel concierge" />
 
-            <div className="order-first col-span-2 mb-2 flex min-h-40 flex-col items-center justify-center px-5 py-5 text-center lg:order-none lg:col-span-1 lg:mb-0">
+            {/* <div className="order-first col-span-2 mb-2 flex min-h-40 flex-col items-center justify-center px-5 py-5 text-center lg:order-none lg:col-span-1 lg:mb-0">
               <div className="flex items-center gap-3 text-primary">
                 <Award className="size-10 text-amber-300" strokeWidth={1.6} />
                 <span className="text-[11px] font-black uppercase tracking-[0.22em] text-muted-foreground">Recognised for</span>
@@ -235,7 +235,7 @@ export default async function HomePage({
                 Curated holidays across India &amp; beyond
               </p>
               <span className="mt-4 h-1 w-12 rounded-full bg-amber-300" />
-            </div>
+            </div> */}
 
             <WhyStat icon={UsersRound} value="150K+" label="Happy travellers" />
             <WhyStat icon={BadgeCheck} value="95%" label="Visa success" />
@@ -325,10 +325,10 @@ export default async function HomePage({
 function WhyStat({ icon: Icon, value, label }: { icon: LucideIcon; value: string; label: string }) {
   return (
     <div className="group flex min-h-40 flex-col items-center justify-center px-3 py-5 text-center transition duration-300 hover:-translate-y-1">
-      <span className="flex size-14 items-center justify-center text-primary transition-transform duration-300 group-hover:scale-105">
+      {/* <span className="flex size-14 items-center justify-center text-primary transition-transform duration-300 group-hover:scale-105">
         <Icon className="size-7" strokeWidth={1.8} />
-      </span>
-      <p className="mt-3 text-3xl font-black leading-none tracking-tight text-primary sm:text-4xl">{value}</p>
+      </span> */}
+      <p className="mt-3 text-3xl font-black leading-none tracking-tight text-primary font-light sm:text-6xl">{value}</p>
       <p className="mt-2 text-sm font-bold text-slate-700 dark:text-slate-200 sm:text-base">{label}</p>
     </div>
   );

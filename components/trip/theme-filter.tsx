@@ -2,8 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { TRIP_CATEGORIES, tripThemeLabel, type TripCategoryOption } from "@/lib/constants";
+import { TRIP_CATEGORIES, type TripCategoryOption } from "@/lib/constants";
+import { getTripThemeVisual } from "@/components/trip/trip-theme-visual";
 
 export function ThemeFilter({
   selectedCategory,
@@ -22,13 +22,6 @@ export function ThemeFilter({
   const params = useSearchParams();
   const categoryRef = useRef<HTMLDivElement>(null);
 
-  function scrollCategories(direction: -1 | 1) {
-    categoryRef.current?.scrollBy({
-      left: direction * Math.max(240, categoryRef.current.clientWidth * 0.7),
-      behavior: "smooth",
-    });
-  }
-
   function applyCategory(category: string) {
     const next = new URLSearchParams(params.toString());
     if (category) next.set("category", category);
@@ -39,33 +32,38 @@ export function ThemeFilter({
   }
 
   return (
-    <div className=" w-fit overflow-hidden rounded-2xl border border-white/20 bg-white px-8 py-3 shadow-md  ">
-   
+    <div className="w-full overflow-hidden rounded-2xl bg-white/95 p-2 shadow-md backdrop-blur-sm">
       <div ref={categoryRef} className="overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="grid auto-cols-[92px] grid-flow-col items-stretch gap-2 sm:auto-cols-[106px] sm:gap-3">
+        <div className="grid auto-cols-[92px] grid-flow-col items-stretch gap-2 sm:auto-cols-[108px] sm:gap-3">
           <button
             type="button"
             onClick={() => applyCategory("")}
             aria-pressed={!selectedCategory}
-            className={`flex min-h-[70px] flex-col items-center justify-center gap-1 rounded-xl border px-2 py-1.5 text-center transition   ${!selectedCategory ? "bg-white" : "bg-sky-100 border-white text-slate-700 "}`}
+            title="All packages"
+            className={`group flex min-h-[84px] flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-center transition ${!selectedCategory ? "bg-sky-100 text-primary" : "bg-transparent text-slate-700 hover:bg-slate-50"}`}
           >
-            <span className="text-2xl leading-none">🌐</span>
-            <span className="text-[11px] font-extrabold leading-tight text-black">All packages</span>
-            {/* <span className="text-[10px] font-semibold text-slate-400">{totalCount}</span> */}
+            <span className="text-[38px] leading-none transition-transform group-hover:scale-105" aria-hidden="true">🌐</span>
+            <span className="text-[11px] font-extrabold leading-tight text-slate-800">All packages</span>
+            <span className="sr-only">{totalCount} packages</span>
           </button>
-          {categories.map((item) => (
-            <button
-              key={item.label}
-              type="button"
-              onClick={() => applyCategory(item.label)}
-              aria-pressed={selectedCategory === item.label}
-              className={`flex min-h-[70px] flex-col items-center justify-center gap-1 rounded-xl border px-2 py-1.5 text-center transition  ${selectedCategory === item.label ? " bg-sky-100 border-white text-slate-700" : "bg-white"}`}
-            >
-              <span className="text-2xl leading-none">{item.icon}</span>
-              <span className="line-clamp-2 text-[11px] font-extrabold leading-tight text-black">{tripThemeLabel(item.label)}</span>
-              {/* <span className="text-[10px] font-semibold text-slate-400">{categoryCounts[item.label] ?? 0}</span> */}
-            </button>
-          ))}
+          {categories.map((item) => {
+            const theme = getTripThemeVisual(item.label);
+            const active = selectedCategory === item.label;
+            return (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => applyCategory(item.label)}
+                aria-pressed={active}
+                title={`${theme.label} · ${categoryCounts[item.label] ?? 0} packages`}
+                className={`group flex min-h-[84px] flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-center transition ${active ? "bg-sky-100 text-primary" : "bg-transparent text-slate-700 hover:bg-slate-50"}`}
+              >
+                <span className="text-[38px] leading-none drop-shadow-sm transition-transform group-hover:scale-105" aria-hidden="true">{theme.icon}</span>
+                <span className="line-clamp-2 text-[11px] font-extrabold leading-tight text-slate-800">{theme.label}</span>
+                <span className="sr-only">{categoryCounts[item.label] ?? 0} packages</span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

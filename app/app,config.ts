@@ -1,8 +1,8 @@
 export const appConfig = {
     appName: "Voibee",
     appNameCap: "VOIBEE",
-    appLogo: "/voibee-logo-with-name.png",
-    appLogoWithName: "/voibee-logo.png",
+    appLogoWithName: "/voibee-logo-with-name.png",
+    appLogo: "/voibee-logo.png",
     mobile:"+91 9746341376",
     whtsapp:"+91 9746341376",
     email:"info@voibee.com",

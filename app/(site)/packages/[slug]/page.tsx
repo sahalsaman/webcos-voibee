@@ -4,6 +4,7 @@ import {
   MapPin,
   Star,
   Clock,
+  CloudSun,
   Tag,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -16,12 +17,13 @@ import { DetailedItinerary } from "@/components/trip/detailed-itinerary";
 import { PackageActions } from "@/components/trip/package-actions";
 import { SafeStay } from "@/components/trip/safe-stay";
 import { PackageContentsTabs } from "@/components/trip/package-contents-tabs";
+import { TripThemeVisual } from "@/components/trip/trip-theme-visual";
 import {
   getTripBySlug,
   getReviewsForTrip,
   getRelatedTrips,
 } from "@/lib/data";
-import { isCustomDateTripCategory, tripThemeLabel } from "@/lib/constants";
+import { isCustomDateTripCategory } from "@/lib/constants";
 import { formatDate, tripDuration } from "@/lib/utils";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -103,10 +105,11 @@ export default async function TripDetailPage({ params }: Props) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
         />
-        <section id="summary" className=" mb-4 flex jusify-between w-full items-center">
+        <section id="summary" className="mb-4 flex w-full items-center justify-between gap-4">
 
           <div className="mt-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-            <div>
+            <div className="flex items-start gap-4">
+              <div>
               <h1 className="text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">{trip.title}</h1>
               <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1">
@@ -115,12 +118,14 @@ export default async function TripDetailPage({ params }: Props) {
                 <span className="flex items-center gap-1">
                   <Clock className="size-4 text-primary" /> {scheduleLabel}
                 </span>
+                {trip.climate ? <span className="flex items-center gap-1"><CloudSun className="size-4 text-primary" /> {trip.climate}</span> : null}
                 {trip.rating > 0 ? (
                   <span className="flex items-center gap-1">
                     <Star className="size-4 fill-warning text-warning" />
                     {trip.rating.toFixed(1)} ({trip.reviewCount} reviews)
                   </span>
                 ) : null}
+              </div>
               </div>
             </div>
             {trip.rating > 0 ? <div className="hidden min-w-24 rounded-2xl border border-border bg-white p-3 text-center shadow-sm sm:block"><p className="text-xl font-extrabold">{trip.rating.toFixed(1)}</p><div className="my-1 flex justify-center"><Star className="size-4 fill-warning text-warning" /></div><p className="text-xs text-muted-foreground">{trip.reviewCount} reviews</p></div> : null}
@@ -139,13 +144,13 @@ export default async function TripDetailPage({ params }: Props) {
         {/* Package summary */}
         <section id="summary" className="">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">{scheduleLabel}</Badge>
-            <Badge>{tripThemeLabel(trip.category)}</Badge>
-            <Badge variant="outline">{trip.packageType ?? "Standard"}</Badge>
+            <Badge variant="secondary">{trip.category}</Badge>
+            <Badge variant="outline">{trip.packageType ?? "Standard"} Category</Badge>
+            {trip.climate ? <Badge variant="outline"><CloudSun className="size-3.5" /> {trip.climate}</Badge> : null}
             {trip.featured ? <Badge variant="accent">Featured</Badge> : null}
           </div>
 
-          {includedServices.length ? <PackageServiceIcons includedServices={includedServices} showcase className="mt-7" /> : null}
+          {includedServices.length ? <div className="mt-7"><h2 className="mb-3 text-base font-bold">Package includes</h2><PackageServiceIcons includedServices={includedServices} showcase /></div> : null}
         </section>
    {/* Overview */}
         <section>

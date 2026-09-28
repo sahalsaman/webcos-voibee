@@ -1,26 +1,26 @@
-import {
-  Binoculars,
-  BusFront,
-  FileCheck2,
-  Hotel,
-  Plane,
-  ShieldCheck,
-  Utensils,
-  UserRoundCheck,
-  type LucideIcon,
-} from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { PACKAGE_SERVICES, PACKAGE_SERVICE_LABELS, type PackageService } from "@/lib/constants";
 
-const SERVICE_DETAILS: Record<PackageService, { label: string; icon: LucideIcon; pattern: RegExp }> = {
-  flights: { label: PACKAGE_SERVICE_LABELS.flights, icon: Plane, pattern: /\b(flights?|airfare|air tickets?)\b/i },
-  hotels: { label: PACKAGE_SERVICE_LABELS.hotels, icon: Hotel, pattern: /\b(hotels?|accommodation|stays?)\b/i },
-  sightseeing: { label: PACKAGE_SERVICE_LABELS.sightseeing, icon: Binoculars, pattern: /\b(sightseeing|excursions?|attractions?)\b/i },
-  visa: { label: PACKAGE_SERVICE_LABELS.visa, icon: FileCheck2, pattern: /\bvisa\b/i },
-  meals: { label: PACKAGE_SERVICE_LABELS.meals, icon: Utensils, pattern: /\b(meals?|breakfast|lunch|dinner)\b/i },
-  "tour-manager": { label: PACKAGE_SERVICE_LABELS["tour-manager"], icon: UserRoundCheck, pattern: /\b(tour manager|trip captain|tour guide|guide)\b/i },
-  transfers: { label: PACKAGE_SERVICE_LABELS.transfers, icon: BusFront, pattern: /\b(transfers?|transport|cab|vehicle)\b/i },
-  "travel-insurance": { label: PACKAGE_SERVICE_LABELS["travel-insurance"], icon: ShieldCheck, pattern: /\b(travel insurance|insurance)\b/i },
+const SERVICE_DETAILS: Record<PackageService, { label: string; image: string; pattern: RegExp }> = {
+  flights: { label: PACKAGE_SERVICE_LABELS.flights, image: "/package-flights.png", pattern: /\b(flights?|airfare|air tickets?)\b/i },
+  hotels: { label: PACKAGE_SERVICE_LABELS.hotels, image: "/package-hotel-resort.png", pattern: /\b(hotels?|hotel|resort|accommodation|stays?)\b/i },
+  sightseeing: { label: PACKAGE_SERVICE_LABELS.sightseeing, image: "/package-sightseeing.png", pattern: /\b(sightseeing|excursions?|attractions?)\b/i },
+  visa: { label: PACKAGE_SERVICE_LABELS.visa, image: "/package-visa.png", pattern: /\bvisa\b/i },
+  meals: { label: PACKAGE_SERVICE_LABELS.meals, image: "/package-meals.png", pattern: /\b(meals?|breakfast|lunch|dinner)\b/i },
+  "tour-manager": { label: PACKAGE_SERVICE_LABELS["tour-manager"], image: "/package-tour-manager.png", pattern: /\b(tour manager|trip captain|tour guide|guide|coordinator)\b/i },
+  transfers: { label: PACKAGE_SERVICE_LABELS.transfers, image: "/package-transfers.png", pattern: /\b(transfers?|airport shuttle|pickup|drop)\b/i },
+  "travel-insurance": { label: PACKAGE_SERVICE_LABELS["travel-insurance"], image: "/package-travel-insurance.png", pattern: /\b(travel insurance|insurance)\b/i },
+  "ac-premium-transportation": { label: PACKAGE_SERVICE_LABELS["ac-premium-transportation"], image: "/package-ac-premium-transportation.png", pattern: /\b(ac premium transportation)\b/i },
+  transportation: { label: PACKAGE_SERVICE_LABELS.transportation, image: "/package-transportation.png", pattern: /\btransportation\b/i },
+  "cam-fire": { label: PACKAGE_SERVICE_LABELS["cam-fire"], image: "/package-campfire.png", pattern: /\b(campfire|camp fire|bonfire)\b/i },
+  "swimming-pool": { label: PACKAGE_SERVICE_LABELS["swimming-pool"], image: "/package-swimming-pool.png", pattern: /\b(swimming pool|pool)\b/i },
+  activities: { label: PACKAGE_SERVICE_LABELS.activities, image: "/package-activities.png", pattern: /\b(activities|games|ice-breaking|social games|team challenges)\b/i },
+  photography: { label: PACKAGE_SERVICE_LABELS.photography, image: "/package-photography.png", pattern: /\b(photography|photograph|photo|reel|videography)\b/i },
+  "first-aid": { label: PACKAGE_SERVICE_LABELS["first-aid"], image: "/package-first-aid.png", pattern: /\b(first[- ]aid)\b/i },
+  "drinking-water": { label: PACKAGE_SERVICE_LABELS["drinking-water"], image: "/package-drinking-water.png", pattern: /\bdrinking water\b/i },
+  "luggage-assistance": { label: PACKAGE_SERVICE_LABELS["luggage-assistance"], image: "/package-luggage-assistance.png", pattern: /\b(luggage|baggage)\b/i },
+  "welcome-drink": { label: PACKAGE_SERVICE_LABELS["welcome-drink"], image: "/package-welcome-drink.png", pattern: /\b(welcome drink|mocktail)\b/i },
 };
 
 export function resolveIncludedServices(includedServices: PackageService[] = [], inclusions: string[] = []) {
@@ -52,19 +52,19 @@ export function PackageServiceIcons({
   return (
     <div className={cn(compact ? "flex flex-wrap gap-2" : showcase ? "flex flex-wrap gap-x-7 gap-y-4 sm:gap-x-10" : "grid grid-cols-2 gap-3 sm:grid-cols-4", className)}>
       {visible.map((service) => {
-        const { label, icon: Icon } = SERVICE_DETAILS[service];
+        const { label, image } = SERVICE_DETAILS[service];
         return compact ? (
-          <span key={service} title={label} aria-label={label} className="flex size-8 items-center justify-center rounded-lg bg-primary/8 text-primary ring-1 ring-primary/10">
-            <Icon className="size-4" />
+          <span key={service} title={label} aria-label={label} className="flex size-9 items-center justify-center">
+            <Image src={image} alt="" width={36} height={36} className="size-9 object-contain drop-shadow-sm" />
           </span>
         ) : showcase ? (
-          <div key={service} className="flex min-w-16 flex-col items-center gap-2 text-center">
-            <span className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary"><Icon className="size-6" /></span>
+          <div key={service} className="flex min-w-20 flex-col items-center gap-2 text-center">
+            <Image src={image} alt="" width={64} height={64} className="size-16 object-contain drop-shadow-sm" />
             <span className="text-xs font-bold text-slate-700">{label}</span>
           </div>
         ) : (
           <div key={service} className="flex items-center gap-3 rounded-xl border border-border/70 bg-card p-3 shadow-sm">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"><Icon className="size-5" /></span>
+            <Image src={image} alt="" width={48} height={48} className="size-12 shrink-0 object-contain drop-shadow-sm" />
             <span className="text-sm font-semibold">{label}</span>
           </div>
         );

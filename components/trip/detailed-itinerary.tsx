@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { BadgeCheck, Binoculars, BusFront, Check, ChevronDown, Hotel, MapPin, Utensils } from "lucide-react";
+import { BadgeCheck, Binoculars, BusFront, Check, ChevronDown, Clock3, Hotel, MapPin, Utensils } from "lucide-react";
 import type { ItineraryItem } from "@/types";
 
 const FALLBACK_PLACE = "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=75";
@@ -16,7 +16,7 @@ export function DetailedItinerary({ days }: { days: ItineraryItem[] }) {
 }
 
 function ItineraryDay({ day, index }: { day: ItineraryItem; index: number }) {
-  const hasStructuredContent = Boolean(day.transports?.length || day.hotels?.length || day.meals?.length || day.sightseeing?.length);
+  const hasStructuredContent = Boolean(day.schedule?.length || day.transports?.length || day.hotels?.length || day.meals?.length || day.sightseeing?.length);
   return (
     <details open={index === 0} className="group relative overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
       <summary className="flex cursor-pointer list-none items-center gap-4 bg-brand-gradient px-5 py-4 text-white select-none sm:px-6 [&::-webkit-details-marker]:hidden">
@@ -26,6 +26,8 @@ function ItineraryDay({ day, index }: { day: ItineraryItem; index: number }) {
       </summary>
       <div className="space-y-4 p-4 sm:p-6">
         {day.description ? <p className="leading-7 text-muted-foreground">{day.description}</p> : null}
+
+        {day.schedule?.length ? <ContentBlock icon={Clock3} title="Schedule"><div className="relative ml-2 space-y-4 border-l-2 border-primary/20 pl-5">{day.schedule.map((item, itemIndex) => <div key={itemIndex} className="relative"><span className="absolute -left-[26px] top-1.5 size-3 rounded-full border-2 border-primary bg-card" /><div className="flex flex-wrap items-baseline gap-x-3 gap-y-1"><time className="text-sm font-extrabold text-primary">{item.time}</time><p className="font-semibold">{item.title}</p></div>{item.description ? <p className="mt-1 text-sm leading-6 text-muted-foreground">{item.description}</p> : null}</div>)}</div></ContentBlock> : null}
 
         {day.transports?.length ? <ContentBlock icon={BusFront} title="Transport"><div className="space-y-3">{day.transports.map((item, itemIndex) => <div key={itemIndex}><p className="font-semibold">{item.title}</p>{item.description ? <p className="mt-1 text-sm leading-6 text-muted-foreground">{item.description}</p> : null}</div>)}</div></ContentBlock> : null}
 

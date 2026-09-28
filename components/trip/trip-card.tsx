@@ -3,7 +3,8 @@ import Image from "next/image";
 import { ArrowRight, MapPin, Star, Calendar, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PackageServiceIcons } from "@/components/trip/package-service-icons";
-import { isCustomDateTripCategory, tripThemeLabel } from "@/lib/constants";
+import { TripThemeVisual } from "@/components/trip/trip-theme-visual";
+import { isCustomDateTripCategory } from "@/lib/constants";
 import { tripDuration, formatDate } from "@/lib/utils";
 import { CurrencyPrice } from "@/components/currency/currency-price";
 import type { TripDTO } from "@/types";
@@ -45,10 +46,14 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
           sizes="(max-width: 768px) 100vw, 33vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute left-3 top-3 flex gap-2">
-          <Badge variant="glass">{tripThemeLabel(trip.category)}</Badge>
-          <Badge variant="glass">{trip.packageType ?? "Standard"}</Badge>
-          {trip.featured ? <Badge variant="accent">Featured</Badge> : null}
+        <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
+          <span className="drop-shadow-lg">
+            <TripThemeVisual category={trip.category} size="md" />
+          </span>
+          <div className="flex flex-wrap justify-end gap-2">
+            <Badge variant="glass">{trip.packageType ?? "Standard"}</Badge>
+            {trip.featured ? <Badge variant="accent">Featured</Badge> : null}
+          </div>
         </div>
         {soldOut ? (
           <div className="absolute inset-0 flex items-center justify-center bg-black/50">
@@ -68,9 +73,7 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
           <MapPin className="size-3.5 text-primary" />
           {trip.destination}
         </div>
-        <h3 className="mt-1 line-clamp-2 font-semibold leading-snug group-hover:text-primary">
-          {trip.title}
-        </h3>
+        <h3 className="mt-1 line-clamp-2 font-semibold leading-snug group-hover:text-primary">{trip.title}</h3>
 
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
@@ -84,12 +87,10 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
           ) : null}
         </div>
 
-        <PackageServiceIcons
-          includedServices={trip.includedServices}
-          inclusions={trip.inclusions}
-          compact
-          className="mt-3"
-        />
+        <div className="mt-3">
+          <p className="mb-1 text-[11px] font-semibold text-muted-foreground">Package includes</p>
+          <PackageServiceIcons includedServices={trip.includedServices} inclusions={trip.inclusions} compact />
+        </div>
 
         <div className="mt-4 flex items-end justify-between border-t border-border pt-3">
           <div>

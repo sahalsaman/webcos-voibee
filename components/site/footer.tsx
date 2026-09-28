@@ -47,12 +47,7 @@ export function Footer() {
 
             <span className="font-bold">Office:</span> <br />
             <span className="block">{appConfig.address}</span>
-            {/* <span className="font-bold">Follow us:</span> <br />
-            <div className="flex gap-3 pt-1">
-              <a href={appConfig.facebook} target="_blank" rel="noreferrer" className="hover:text-primary">
-                FB</a>
-              <a href={appConfig.instagram} target="_blank" rel="noreferrer" className="hover:text-primary">Instagram</a>
-            </div> */}
+          
           </div>
         </div>
 
