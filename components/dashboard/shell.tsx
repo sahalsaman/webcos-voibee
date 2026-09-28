@@ -33,7 +33,7 @@ export function DashboardShell({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const appLogo = "/voibee-logo-with-name.png";
+  const appLogo = "/voibee-global-travel-experts.png";
 
   const isActive = (href: string) =>
     pathname === href || (href !== nav[0]?.href && pathname.startsWith(href));
@@ -41,7 +41,7 @@ export function DashboardShell({
   const SidebarContent = (
     <div className="flex h-full flex-col">
       <Link href="/" className="flex items-center gap-2 px-5 py-5 font-bold text-lg">
-          <Image src={appLogo} alt="Voibee" width={112} height={40} loading="eager" />
+          <Image src={appLogo} alt="Voibee Global Travel Experts" width={174} height={84} loading="eager" className="h-12 w-auto" />
       </Link>
       <div className="px-5 pb-3">
         <Badge variant="secondary">{roleLabel}</Badge>

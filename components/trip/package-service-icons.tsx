@@ -50,21 +50,21 @@ export function PackageServiceIcons({
   const visible = compact ? services.slice(0, 6) : services;
 
   return (
-    <div className={cn(compact ? "flex flex-wrap gap-2" : showcase ? "flex flex-wrap gap-x-7 gap-y-4 sm:gap-x-10" : "grid grid-cols-2 gap-3 sm:grid-cols-4", className)}>
+    <div className={cn(compact ? "flex flex-wrap gap-2" : showcase ? "grid grid-cols-6 gap-x-2 gap-y-4 md:grid-cols-8 md:gap-x-4" : "grid grid-cols-2 gap-3 sm:grid-cols-10", className)}>
       {visible.map((service) => {
         const { label, image } = SERVICE_DETAILS[service];
         return compact ? (
-          <span key={service} title={label} aria-label={label} className="flex size-9 items-center justify-center">
-            <Image src={image} alt="" width={36} height={36} className="size-9 object-contain drop-shadow-sm" />
+          <span key={service} title={label} aria-label={label} className="flex size-8 items-center justify-center">
+            <Image src={image} alt="" width={36} height={36} className="size-8 object-contain drop-shadow-sm" />
           </span>
         ) : showcase ? (
-          <div key={service} className="flex min-w-20 flex-col items-center gap-2 text-center">
-            <Image src={image} alt="" width={64} height={64} className="size-16 object-contain drop-shadow-sm" />
-            <span className="text-xs font-bold text-slate-700">{label}</span>
+          <div key={service} className="flex min-w-0 flex-col items-center gap-1.5 text-center">
+            <Image src={image} alt="" width={48} height={48} className="size-9 object-contain drop-shadow-sm sm:size-11" />
+            <span className="line-clamp-2 text-[9px] font-bold leading-3 text-slate-700 sm:text-[11px]">{label}</span>
           </div>
         ) : (
           <div key={service} className="flex items-center gap-3 rounded-xl border border-border/70 bg-card p-3 shadow-sm">
-            <Image src={image} alt="" width={48} height={48} className="size-12 shrink-0 object-contain drop-shadow-sm" />
+            <Image src={image} alt="" width={48} height={48} className="size-8 shrink-0 object-contain drop-shadow-sm" />
             <span className="text-sm font-semibold">{label}</span>
           </div>
         );

@@ -34,7 +34,7 @@ function dashboardPath(role?: string) {
   return "/traveler";
 }
 
-const appLogo = "/voibee-logo-with-name.png";
+const appLogo = "/voibee-global-travel-experts.png";
 const supportNumber = appConfig.mobile.replace(/\D/g, "");
 
 export function Navbar() {
@@ -65,7 +65,7 @@ export function Navbar() {
               <Headset className="size-3.5" />
             </span>
             <span className="hidden  sm:inline text-black">Need help?</span>
-            <span className="truncate text-blue-600 underline">Contact us</span>
+            <span className="truncate text-primary underline">Contact us</span>
           </a>
           <div className="flex items-center gap-2">
             <CurrencySelector className="gap-1.5 [&>select]:h-8 [&>select]:rounded-full  [&>select]:bg-white/80 [&>select]:px-3 [&>select]:text-xs " />
@@ -74,8 +74,8 @@ export function Navbar() {
       </div>
       <div className="glass border-b border-border/70 bg-card/95">
         <nav className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2 font-extrabold text-2xl text-[#1261e0]">
-            <Image src={appLogo} alt="Voibee" width={112} height={40} loading="eager" />
+          <Link href="/" className="flex items-center gap-2 font-extrabold text-2xl text-primary">
+            <Image src={appLogo} alt="Voibee Global Travel Experts" width={174} height={84} loading="eager" className="h-12 w-auto" />
           </Link>
 
           <div className="hidden items-center gap-1 md:flex">

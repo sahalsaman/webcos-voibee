@@ -2,13 +2,10 @@
 
 import Link from "next/link";
 import { TRIP_CATEGORIES, tripThemeLabel } from "@/lib/constants";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { DestinationDTO } from "@/types";
 import { appConfig } from "@/app/app,config";
-
-const app_logo = "/voibee-logo-with-name.png"
 
 export function Footer() {
   const params = useSearchParams();

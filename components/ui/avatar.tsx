@@ -12,7 +12,7 @@ interface AvatarProps {
 export function Avatar({ src, name = "User", size = 40, className }: AvatarProps) {
   const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(
     name,
-  )}&background=0080FF&color=fff&bold=true`;
+  )}&background=0D4884&color=fff&bold=true`;
   return (
     <span
       className={cn(
@@ -21,7 +21,7 @@ export function Avatar({ src, name = "User", size = 40, className }: AvatarProps
       )}
       style={{ width: size, height: size }}
     >
-      <Image
+      <Image 
         src={src || fallback}
         alt={name}
         width={size}

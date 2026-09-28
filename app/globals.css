@@ -5,28 +5,28 @@
 
 /* ============================================================
    Design tokens — Voibee
-   Blue primary + cyan accent. Premium travel aesthetic.
+   Navy, ivory and wine. Premium travel aesthetic.
    ============================================================ */
 :root {
-  --background: #f6f9fd;
-  --foreground: #001c47;
+  --background: #fffdf7;
+  --foreground: #092f59;
 
   --card: #ffffff;
-  --card-foreground: #001c47;
+  --card-foreground: #092f59;
 
   --popover: #ffffff;
-  --popover-foreground: #001c47;
+  --popover-foreground: #092f59;
 
-  --primary: #0060e6; /* deep blue */
+  --primary: #0d4884;
   --primary-foreground: #ffffff;
 
-  --secondary: #e0f7fc; /* light cyan tint */
-  --secondary-foreground: #001c47;
+  --secondary: #f4e8c0;
+  --secondary-foreground: #092f59;
 
-  --muted: #eaf2f8;
-  --muted-foreground: #343e4b; /* charcoal */
+  --muted: #f7f1e2;
+  --muted-foreground: #645c57;
 
-  --accent: #00b6f0; /* bright cyan/blue */
+  --accent: #a40860;
   --accent-foreground: #ffffff;
 
   --destructive: #e11d48;
@@ -35,38 +35,38 @@
   --success: #16a34a;
   --warning: #f59e0b;
 
-  --border: #dbe6f2;
-  --input: #dbe6f2;
-  --ring: #0060e6;
+  --border: #e6dac0;
+  --input: #e6dac0;
+  --ring: #a40860;
 
   --radius: 0.85rem;
 
   /* glass surfaces */
   --glass-bg: rgba(255, 255, 255, 0.88);
-  --glass-border: rgba(155, 180, 205, 0.42);
+  --glass-border: rgba(13, 72, 132, 0.16);
 }
 
 .dark {
-  --background: #000c1a;
-  --foreground: #e0f7fc;
+  --background: #071d38;
+  --foreground: #fff8e6;
 
-  --card: #001633;
-  --card-foreground: #e0f7fc;
+  --card: #0d315a;
+  --card-foreground: #fff8e6;
 
-  --popover: #001633;
-  --popover-foreground: #e0f7fc;
+  --popover: #0d315a;
+  --popover-foreground: #fff8e6;
 
-  --primary: #00b6f0; /* vibrant blue/cyan */
-  --primary-foreground: #001c47;
+  --primary: #f4e8c0;
+  --primary-foreground: #092f59;
 
-  --secondary: #001c47;
-  --secondary-foreground: #e0f7fc;
+  --secondary: #153d69;
+  --secondary-foreground: #fff8e6;
 
-  --muted: #00224d;
-  --muted-foreground: #a4bfdb;
+  --muted: #12345c;
+  --muted-foreground: #c9c2b5;
 
-  --accent: #00b6f0;
-  --accent-foreground: #000c1a;
+  --accent: #d45c94;
+  --accent-foreground: #fff8e6;
 
   --destructive: #fb7185;
   --destructive-foreground: #2a0a10;
@@ -74,11 +74,11 @@
   --success: #4ade80;
   --warning: #fbbf24;
 
-  --border: #002b5c;
-  --input: #002b5c;
-  --ring: #00b6f0;
+  --border: #1f4b78;
+  --input: #1f4b78;
+  --ring: #f4e8c0;
 
-  --glass-bg: rgba(0, 12, 26, 0.55);
+  --glass-bg: rgba(7, 29, 56, 0.68);
   --glass-border: rgba(255, 255, 255, 0.08);
 }
 

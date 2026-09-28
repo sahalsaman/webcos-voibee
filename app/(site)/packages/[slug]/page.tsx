@@ -150,7 +150,7 @@ export default async function TripDetailPage({ params }: Props) {
             {trip.featured ? <Badge variant="accent">Featured</Badge> : null}
           </div>
 
-          {includedServices.length ? <div className="mt-7"><h2 className="mb-3 text-base font-bold">Package includes</h2><PackageServiceIcons includedServices={includedServices} showcase /></div> : null}
+          {includedServices.length ? <div className="mt-7"><h2 className="mb-3 text-base font-bold">Highlights</h2><PackageServiceIcons includedServices={includedServices} showcase /></div> : null}
         </section>
    {/* Overview */}
         <section>

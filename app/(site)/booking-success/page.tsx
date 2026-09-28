@@ -34,10 +34,10 @@ export default async function BookingSuccessPage({ searchParams }: { searchParam
   const tripImage = booking.trip?.images?.[0];
 
   return (
-    <main className={`${paid ? "bg-gradient-to-b from-emerald-50/80" : "bg-gradient-to-b from-blue-50/80"} via-background to-background px-4 py-10 sm:px-6 sm:py-14`}>
+    <main className={`${paid ? "bg-gradient-to-b from-emerald-50/80" : "bg-gradient-to-b from-secondary/55"} via-background to-background px-4 py-10 sm:px-6 sm:py-14`}>
       <div className="mx-auto max-w-5xl">
         <section className="overflow-hidden rounded-[30px] border border-emerald-200/70 bg-card shadow-xl shadow-emerald-950/5">
-          <div className={`${paid ? "from-emerald-600 to-teal-500" : "from-primary to-blue-500"} bg-gradient-to-r px-6 py-9 text-center text-white sm:px-10`}>
+          <div className={`${paid ? "from-emerald-600 to-teal-500" : "from-primary to-accent"} bg-gradient-to-r px-6 py-9 text-center text-white sm:px-10`}>
             <span className="mx-auto flex size-16 items-center justify-center rounded-full bg-white/20 ring-1 ring-white/35">
               <CheckCircle2 className="size-9" />
             </span>

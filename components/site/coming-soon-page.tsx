@@ -16,11 +16,11 @@ export function ComingSoonPage({
 }) {
   return (
     <main className="relative isolate flex min-h-[calc(100vh-72px)] items-center overflow-hidden px-4 py-16 sm:px-6">
-      <div className="absolute inset-0 -z-20 bg-gradient-to-br from-sky-50 via-background to-indigo-50 dark:from-sky-950/30 dark:via-background dark:to-indigo-950/20" />
+      <div className="absolute inset-0 -z-20 bg-gradient-to-br from-secondary/50 via-background to-accent/10 dark:from-primary/15 dark:via-background dark:to-accent/15" />
       <div className="absolute left-1/2 top-1/2 -z-10 size-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl" />
 
       <section className="mx-auto w-full max-w-3xl rounded-[32px] border border-border/70 bg-card/85 px-6 py-14 text-center shadow-2xl shadow-primary/10 backdrop-blur-xl sm:px-12 sm:py-16">
-        <div className="mx-auto flex size-20 items-center justify-center rounded-3xl bg-gradient-to-br from-primary to-sky-400 text-primary-foreground shadow-xl shadow-primary/25">
+        <div className="mx-auto flex size-20 items-center justify-center rounded-3xl bg-brand-gradient text-primary-foreground shadow-xl shadow-primary/25">
           <Icon className="size-10" />
         </div>
         <p className="mt-7 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-primary">

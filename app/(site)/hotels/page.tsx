@@ -40,10 +40,10 @@ export default async function HotelsPage({ searchParams }: { searchParams: Promi
     <main className="min-h-screen bg-white">
       <section className="relative overflow-hidden bg-slate-950 px-4 py-16 text-white sm:px-6 lg:px-8 lg:py-20">
         <Image src="/hero-experience.webp" alt="Verified hotel stays" fill priority sizes="100vw" className="object-cover opacity-35" />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-blue-950/45" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-primary/45" />
         <div className="relative mx-auto max-w-7xl">
           <div className="max-w-3xl">
-            <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-blue-200"><ShieldCheck className="size-4" />SafeStay™ by Voibee</p>
+            <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-secondary"><ShieldCheck className="size-4" />SafeStay™ by Voibee</p>
             <h1 className="mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">Verified stays for better journeys</h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-white/80 sm:text-lg">Explore properties included in active Voibee packages, with clear stay details and support throughout your trip.</p>
           </div>

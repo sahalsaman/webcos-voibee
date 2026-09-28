@@ -15,7 +15,7 @@ export default async function CustomerQuotationPage({ params }: { params: Promis
     <main className="min-h-screen bg-secondary/30 px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-border bg-background shadow-xl">
         <header className="flex flex-wrap items-start justify-between gap-6 border-b border-border p-6 sm:p-8">
-          <div><Image src="/voibee-logo-with-name.png" alt="Voibee" width={160} height={57} className="h-auto w-40" /><p className="mt-3 text-sm text-muted-foreground">Explore · Connect · Escape</p></div>
+          <div><Image src="/voibee-global-travel-experts.png" alt="Voibee Global Travel Experts" width={174} height={84} className="h-auto w-44" /><p className="mt-3 text-sm text-muted-foreground">Explore · Connect · Escape</p></div>
           <div className="text-left sm:text-right"><p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Quotation</p><p className="font-mono font-semibold">{quotation.quotationNumber}</p><p className="mt-2 text-sm text-muted-foreground">Issued {formatDate(quotation.createdAt)}</p><p className="text-sm font-medium">Valid until {formatDate(quotation.validUntil)}</p></div>
         </header>
 

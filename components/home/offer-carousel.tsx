@@ -74,7 +74,7 @@ export function OfferCarousel({ offers }: { offers: OfferSlide[] }) {
 
               <div className="relative mx-auto flex min-h-[clamp(540px,calc(100svh-140px),680px)] max-w-7xl items-center px-6 pb-36 pt-14 sm:px-10 sm:pb-40 lg:px-16 lg:pb-44">
                 <div className="max-w-2xl text-white">
-                  <p className="mb-4 text-xs font-bold uppercase tracking-[0.24em] text-blue-200 sm:text-sm">
+                  <p className="mb-4 text-xs font-bold uppercase tracking-[0.24em] text-secondary sm:text-sm">
                     Curated journeys by Voibee
                   </p>
                   <h1 className="text-4xl font-semibold leading-[1.08] tracking-tight sm:text-6xl">
@@ -84,7 +84,7 @@ export function OfferCarousel({ offers }: { offers: OfferSlide[] }) {
                     {offer.description}
                   </p>
                   <div className="mt-7 flex flex-wrap items-center gap-3">
-                    <Button asChild size="lg" className="rounded-full bg-white px-6 text-slate-950 shadow-lg hover:bg-blue-50">
+                    <Button asChild size="lg" className="rounded-full bg-white px-6 text-primary shadow-lg hover:bg-secondary">
                       <Link href={offer.href} tabIndex={visible ? 0 : -1}>
                         {offer.ctaLabel ?? "Explore packages"}
                         <ArrowRight className="size-4" />

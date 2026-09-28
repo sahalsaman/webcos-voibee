@@ -61,8 +61,7 @@ export default async function VibeCirclesPage({ searchParams }: { searchParams: 
   return (
     <main className="min-h-screen bg-white">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <header className="relative mb-18  rounded-[28px] bg-slate-950 px-6 py-16 text-white shadow-xl sm:px-10 lg:px-12">
-          <Image src={destinationImage("Rishikesh")} alt="Voibee Vibe Circles" fill priority className="object-cover rounded-[28px]" />
+         <header className="relative mb-18 rounded-[28px] bg-slate-950 px-6 py-16 text-white shadow-xl sm:px-10 lg:px-12 z-10"> <Image src={destinationImage("Rishikesh")} alt="Voibee Vibe Circles" fill priority className="object-cover rounded-[28px]" />
           <div className="absolute inset-0 bg-slate-950/65 rounded-[28px]" />
           <div className="relative mx-auto max-w-3xl text-center">
             <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl">Voibee Vibe Circles</h1>
@@ -72,13 +71,14 @@ export default async function VibeCirclesPage({ searchParams }: { searchParams: 
             <div className="mt-7 text-left"><SearchBar basePath="/vibe-circles" /></div>
           
           </div>  
-          <div className="mt-5 flex justify-center text-left absolute left-6 right-6 sm:left-10 sm:right-10 lg:left-12 lg:right-12 z-40">
+          <div className="mt-5 flex justify-center text-left">
               <ThemeFilter
                 basePath="/vibe-circles"
                 selectedCategory={selectedCategory ?? ""}
                 categoryCounts={categoryCounts}
                 totalCount={Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)}
                 categories={VIBE_CIRCLE_TRIP_CATEGORIES}
+                fitContent
               />
             </div>
         </header>

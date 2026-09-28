@@ -35,7 +35,7 @@ export function BookingReview({ trip }: { trip: TripSummary }) {
       if (mode === "offline") return finish(String(data.bookingNumber), String(data.confirmationToken));
       if (data.mock) return confirm({ bookingId: data.bookingId, confirmationToken: data.confirmationToken, mock: true });
       const ready = await loadRazorpay(); if (!ready) throw new Error("Could not load Razorpay");
-      const razorpay = new window.Razorpay!({ key: data.keyId, amount: Number(data.amount) * 100, currency: "INR", name: appConfig.appName, description: trip.title, order_id: data.razorpayOrderId, prefill: { name: draft.name, email: draft.email, contact: draft.mobile }, theme: { color: "#0060E6" }, handler: (payment: Record<string, string>) => void confirm({ bookingId: data.bookingId, confirmationToken: data.confirmationToken, ...payment }), modal: { ondismiss: () => { setLoading(null); toast.message("Payment cancelled. Your unpaid booking is saved."); } } });
+      const razorpay = new window.Razorpay!({ key: data.keyId, amount: Number(data.amount) * 100, currency: "INR", name: appConfig.appName, description: trip.title, order_id: data.razorpayOrderId, prefill: { name: draft.name, email: draft.email, contact: draft.mobile }, theme: { color: "#0D4884" }, handler: (payment: Record<string, string>) => void confirm({ bookingId: data.bookingId, confirmationToken: data.confirmationToken, ...payment }), modal: { ondismiss: () => { setLoading(null); toast.message("Payment cancelled. Your unpaid booking is saved."); } } });
       razorpay.open();
     } catch (error) { toast.error((error as Error).message); setLoading(null); }
   }

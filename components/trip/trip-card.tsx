@@ -48,7 +48,7 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
         />
         <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
           <span className="drop-shadow-lg">
-            <TripThemeVisual category={trip.category} size="md" />
+            {trip.category ? <Badge variant="secondary">{trip.category}</Badge> : null}
           </span>
           <div className="flex flex-wrap justify-end gap-2">
             <Badge variant="glass">{trip.packageType ?? "Standard"}</Badge>
@@ -72,10 +72,7 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <MapPin className="size-3.5 text-primary" />
           {trip.destination}
-        </div>
-        <h3 className="mt-1 line-clamp-2 font-semibold leading-snug group-hover:text-primary">{trip.title}</h3>
-
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+              <div className=" ml-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <Calendar className="size-3.5" /> {duration}
           </span>
@@ -86,9 +83,13 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
             </span>
           ) : null}
         </div>
+        </div>
+        <h3 className="mt-1 line-clamp-2 font-semibold leading-snug group-hover:text-primary">{trip.title}</h3>
+
+    
 
         <div className="mt-3">
-          <p className="mb-1 text-[11px] font-semibold text-muted-foreground">Package includes</p>
+          {/* <p className="mb-1 text-[11px] font-semibold text-muted-foreground">Highlights</p> */}
           <PackageServiceIcons includedServices={trip.includedServices} inclusions={trip.inclusions} compact />
         </div>
 

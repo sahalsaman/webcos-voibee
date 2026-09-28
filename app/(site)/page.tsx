@@ -3,16 +3,9 @@ import Image from "next/image";
 import {
   Compass,
   ArrowRight,
-  Star,
   Users,
   Camera,
   Share2,
-  SlidersHorizontal,
-  Headphones,
-  UsersRound,
-  BadgeCheck,
-  Award,
-  type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,7 +30,7 @@ const TESTIMONIALS = [
     role: "Traveler · Manali",
     date: "24 July, 2026",
     rating: "4.3/5",
-    accent: "#0060e6",
+    accent: "#0d4884",
     text: "Booking was effortless and the package exceeded expectations. The itinerary was clear, comfortable and exactly what we wanted.",
   },
   {
@@ -45,7 +38,7 @@ const TESTIMONIALS = [
     role: "Traveler · Goa",
     date: "24 July, 2026",
     rating: "4.8/5",
-    accent: "#0284c7",
+    accent: "#a40860",
     text: "The whole package felt smooth from the first search to the final day. Loved having support whenever we needed it.",
   },
   {
@@ -53,7 +46,7 @@ const TESTIMONIALS = [
     role: "Traveler · Dubai",
     date: "24 July, 2026",
     rating: "4.6/5",
-    accent: "#2563eb",
+    accent: "#b57d22",
     text: "Voibee made comparing packages easy, and the booking details were transparent before we paid.",
   },
 ] as const;
@@ -176,7 +169,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Moments ---------------- */}
-      <section className="overflow-hidden bg-sky-50  px-4 py-16 sm:px-6 lg:px-8">
+      <section className="overflow-hidden bg-secondary/35 px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
           <div className="max-w-xl lg:pr-8">
             <SectionHeading
@@ -188,7 +181,7 @@ export default async function HomePage({
             />
             
             <div className="mt-7 flex flex-wrap gap-3">
-            <a href="https://www.instagram.com/voibee_" target="_blank">  <Button type="button" size="lg" variant="gradient" className="rounded-full px-6">
+            <a href="https://www.instagram.com/voibee_" target="_blank">  <Button type="button" size="lg" variant="default" className="rounded-full px-6">
                 <Camera className="size-5" /> Instagram
               </Button></a>
              <a href="https://www.facebook.com/voibee" target="_blank"> <Button type="button" size="lg" variant="outline" className="rounded-full px-6">
@@ -198,11 +191,11 @@ export default async function HomePage({
           </div>
           <div className="relative min-h-[420px] overflow-hidden sm:min-h-[520px] lg:min-h-[600px]">
             <Image
-              src="/moments-road-collage.webp"
-              alt="Voibee travelers sharing adventure moments"
+        src="/moments-road-premium.png"
+        alt="Voibee travelers enjoying a premium Kerala road trip"
               fill
               sizes="(min-width: 1024px) 720px, 100vw"
-              className="object-cover object-top"
+        className="object-cover object-center"
             />
           </div>
         </div>
@@ -221,9 +214,9 @@ export default async function HomePage({
             </p>
           </div> */}
 
-          <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-9 lg:grid-cols-[1fr_1fr_1fr_1fr] lg:items-center lg:gap-6">
-            <WhyStat icon={SlidersHorizontal} value="100%" label="Customisation" />
-            <WhyStat icon={Headphones} value="24×7" label="Travel concierge" />
+          <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-8 lg:grid-cols-4 lg:gap-x-12">
+            <WhyStat image="/benefit-customisation.png" value="100%" label="Customisation" />
+            <WhyStat image="/benefit-concierge.png" value="24×7" label="Travel concierge" />
 
             {/* <div className="order-first col-span-2 mb-2 flex min-h-40 flex-col items-center justify-center px-5 py-5 text-center lg:order-none lg:col-span-1 lg:mb-0">
               <div className="flex items-center gap-3 text-primary">
@@ -237,55 +230,52 @@ export default async function HomePage({
               <span className="mt-4 h-1 w-12 rounded-full bg-amber-300" />
             </div> */}
 
-            <WhyStat icon={UsersRound} value="150K+" label="Happy travellers" />
-            <WhyStat icon={BadgeCheck} value="95%" label="Visa success" />
+            <WhyStat image="/benefit-happy-travellers.png" value="150K+" label="Happy travellers" />
+            <WhyStat image="/benefit-visa-success.png" value="95%" label="Visa success" />
           </div>
         </div>
       </section>
 
       {/* ---------------- Testimonials ---------------- */}
       <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
-          <SectionHeading eyebrow="Loved by" title="What our community says" />
-          <div className="grid gap-8 md:grid-cols-3">
-            {TESTIMONIALS.map((testimonial) => (
-              <article
-                key={testimonial.name}
-                className="relative flex min-h-[430px] flex-col overflow-hidden rounded-xl border border-border bg-card p-7 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10"
-              >
-                <span
-                  aria-hidden="true"
-                  className="absolute left-0 top-1/2 h-8 w-1 -translate-y-1/2 rounded-r-full"
-                  style={{ backgroundColor: testimonial.accent }}
-                />
-                <p className="text-sm text-muted-foreground">
-                  {testimonial.date}
-                </p>
-                <div className="mt-8 flex flex-wrap items-center gap-4">
-                  <div className="flex gap-1.5 text-white">
-                    {Array.from({ length: 5 }).map((_, index) => (
-                      <span
-                        key={index}
-                        className="flex size-6 items-center justify-center rounded-md"
-                        style={{ backgroundColor: testimonial.accent }}
-                      >
-                        <Star className="size-3 fill-current" />
-                      </span>
-                    ))}
+        <div className="mx-auto max-w-7xl">
+          <h2 className="sr-only">Loved by Voibee travellers</h2>
+          <div className="grid items-center gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12">
+            <div className="flex flex-col items-center text-center">
+              <p className="text-2xl font-black uppercase tracking-tight text-slate-950 sm:text-3xl">Excellent</p>
+              <ReviewStars className="mt-2 justify-center text-4xl" />
+              <p className="mt-2 text-sm font-medium text-slate-700">Loved by our travellers</p>
+              <GoogleWordmark className="mt-4 justify-center" />
+            </div>
+
+            <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {TESTIMONIALS.map((testimonial) => (
+                <article
+                  key={testimonial.name}
+                  className="flex min-h-[238px] w-[278px] shrink-0 snap-start flex-col rounded-2xl bg-slate-50 p-5 sm:w-[300px]"
+                >
+                  <div className="flex items-start gap-3">
+                    <span
+                      className="flex size-11 shrink-0 items-center justify-center rounded-full text-base font-bold text-white"
+                      style={{ backgroundColor: testimonial.accent }}
+                    >
+                      {testimonial.name.slice(0, 1)}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-black uppercase tracking-tight text-slate-950">{testimonial.name}</p>
+                      <p className="mt-0.5 text-sm text-slate-500">{testimonial.date}</p>
+                    </div>
+                    <GoogleWordmark compact />
                   </div>
-                  <span className="text-sm text-foreground/75">
-                    {testimonial.rating}
-                  </span>
-                </div>
-                <p className="mt-7 text-lg font-bold leading-8 text-foreground sm:text-xl ">
-                  {testimonial.text}
-                </p>
-                <div className="mt-auto pt-8">
-                  <p className="text-sm font-semibold text-foreground">{testimonial.name}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{testimonial.role}</p>
-                </div>
-              </article>
-            ))}
+                  <div className="mt-3 flex items-center gap-2">
+                    <ReviewStars />
+                    <span className="flex size-4 items-center justify-center rounded-full bg-[#4285f4] text-[10px] font-black text-white">✓</span>
+                  </div>
+                  <p className="mt-3 line-clamp-3 text-base font-medium leading-6 text-slate-900">{testimonial.text}</p>
+                  <button type="button" className="mt-auto pt-3 text-left text-sm font-medium text-slate-500">Read more</button>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -304,7 +294,7 @@ export default async function HomePage({
               Join group packages, choose custom-date experiences, or plan your own escape with like-minded TripMates.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Button asChild size="lg" variant="gradient">
+              <Button asChild size="lg" variant="default">
                 <Link href={hrefWithCountry("/packages", country)}>
                   Join the community <ArrowRight className="size-4" />
                 </Link>
@@ -322,15 +312,29 @@ export default async function HomePage({
   );
 }
 
-function WhyStat({ icon: Icon, value, label }: { icon: LucideIcon; value: string; label: string }) {
+function WhyStat({ image, value, label }: { image: string; value: string; label: string }) {
   return (
-    <div className="group flex min-h-40 flex-col items-center justify-center px-3 py-5 text-center transition duration-300 hover:-translate-y-1">
-      {/* <span className="flex size-14 items-center justify-center text-primary transition-transform duration-300 group-hover:scale-105">
-        <Icon className="size-7" strokeWidth={1.8} />
-      </span> */}
-      <p className="mt-3 text-3xl font-black leading-none tracking-tight text-primary font-light sm:text-6xl">{value}</p>
-      <p className="mt-2 text-sm font-bold text-slate-700 dark:text-slate-200 sm:text-base">{label}</p>
+    <div className="group flex min-h-44 flex-col items-center justify-center px-3 py-5 text-center transition duration-300 hover:-translate-y-1">
+      <Image src={image} alt="" width={80} height={80} className="size-16 object-contain sm:size-20" />
+      <p className="mt-4 text-3xl font-black leading-none tracking-tight text-slate-950 sm:text-4xl">{value}</p>
+      <p className="mt-2 text-sm font-semibold text-slate-700 sm:text-base">{label}</p>
     </div>
+  );
+}
+
+function ReviewStars({ className = "" }: { className?: string }) {
+  return <span aria-label="Five star review" className={`flex gap-0.5 text-lg leading-none text-[#fbbc04] ${className}`}>{"★★★★★"}</span>;
+}
+
+function GoogleWordmark({ compact = false, className = "" }: { compact?: boolean; className?: string }) {
+  if (compact) {
+    return <span aria-label="Google review" className="text-2xl font-black leading-none"><span className="text-[#4285f4]">G</span></span>;
+  }
+
+  return (
+    <span aria-label="Google reviews" className={`flex text-3xl font-black tracking-tight ${className}`}>
+      <span className="text-[#4285f4]">G</span><span className="text-[#ea4335]">o</span><span className="text-[#fbbc04]">o</span><span className="text-[#4285f4]">g</span><span className="text-[#34a853]">l</span><span className="text-[#ea4335]">e</span>
+    </span>
   );
 }
 
