@@ -19,7 +19,7 @@ function ItineraryDay({ day, index }: { day: ItineraryItem; index: number }) {
   const hasStructuredContent = Boolean(day.schedule?.length || day.transports?.length || day.hotels?.length || day.meals?.length || day.sightseeing?.length);
   return (
     <details open={index === 0} className="group relative overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
-      <summary className="flex cursor-pointer list-none items-center gap-4 bg-brand-gradient px-5 py-4 text-white select-none sm:px-6 [&::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer list-none items-center gap-4 bg-primary px-5 py-4 text-white select-none sm:px-6 [&::-webkit-details-marker]:hidden">
         <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-white font-extrabold text-primary shadow-sm">{index + 1}</span>
         <div className="min-w-0 flex-1"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/75">Day {index + 1}</p><h3 className="mt-0.5 truncate text-lg font-bold sm:text-xl">{day.title}</h3></div>
         <ChevronDown className="size-5 shrink-0 transition-transform duration-300 group-open:rotate-180" />

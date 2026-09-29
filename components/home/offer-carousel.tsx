@@ -21,6 +21,11 @@ export function OfferCarousel({ offers }: { offers: OfferSlide[] }) {
   const slides = useMemo(() => offers.slice(0, 6), [offers]);
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [loadedSlides, setLoadedSlides] = useState(() => new Set([0]));
+
+  useEffect(() => {
+    setLoadedSlides((current) => current.has(active) ? current : new Set(current).add(active));
+  }, [active]);
 
   useEffect(() => {
     if (slides.length <= 1 || paused) return;
@@ -61,14 +66,14 @@ export function OfferCarousel({ offers }: { offers: OfferSlide[] }) {
               )}
               aria-hidden={!visible}
             >
-              <Image
+              {visible || loadedSlides.has(index) ? <Image
                 src={offer.image}
                 alt=""
                 fill
                 priority={index === 0}
                 sizes="100vw"
                 className="object-cover"
-              />
+              /> : null}
               <div className="absolute inset-0 bg-gradient-to-r from-slate-950/82 via-slate-950/50 to-slate-950/12" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-transparent to-slate-950/15" />
 

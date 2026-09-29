@@ -31,18 +31,22 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     }, 0);
 
     const controller = new AbortController();
-    fetch("/api/currency-rates", { signal: controller.signal })
-      .then((response) => (response.ok ? response.json() : Promise.reject(new Error("Unable to load rates"))))
-      .then((data: { rates?: Partial<CurrencyRates> }) => {
-        if (!data.rates) return;
-        setRates({ ...DEFAULT_CURRENCY_RATES, ...data.rates, INR: 1 });
-      })
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-      });
+    const refreshRates = () => {
+      fetch("/api/currency-rates", { signal: controller.signal })
+        .then((response) => (response.ok ? response.json() : Promise.reject(new Error("Unable to load rates"))))
+        .then((data: { rates?: Partial<CurrencyRates> }) => {
+          if (!data.rates) return;
+          setRates({ ...DEFAULT_CURRENCY_RATES, ...data.rates, INR: 1 });
+        })
+        .catch((error: unknown) => {
+          if (error instanceof DOMException && error.name === "AbortError") return;
+        });
+    };
+    const rateTimer = window.setTimeout(refreshRates, 1_200);
 
     return () => {
       window.clearTimeout(restoreTimer);
+      window.clearTimeout(rateTimer);
       controller.abort();
     };
   }, []);

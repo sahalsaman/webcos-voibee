@@ -223,7 +223,7 @@ export default async function HomePage({
           </div>
           <div className="relative min-h-[420px] overflow-hidden sm:min-h-[520px] lg:min-h-[600px]">
             <Image
-        src="/moments-road-premium.png"
+        src="/moments-road-premium.webp"
         alt="Voibee travelers enjoying a premium Kerala road trip"
               fill
               sizes="(min-width: 1024px) 720px, 100vw"
