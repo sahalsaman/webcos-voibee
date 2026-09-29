@@ -52,14 +52,14 @@ const TESTIMONIALS = [
 ] as const;
 
 const TRIP_THEME_DETAILS = [
-  { name: "Holiday Package", image: destinationImage("Goa"), description: "Classic escapes" },
-  { name: "Honeymoon", image: destinationImage("Maldives"), description: "Romantic getaways" },
-  { name: "Family", image: destinationImage("Singapore"), description: "Fun for every age" },
-  { name: "Group Trip", image: destinationImage("Ladakh"), description: "Better together" },
-  { name: "Strangers", image: destinationImage("Rishikesh"), description: "Meet your travel tribe" },
-  { name: "Wellness", image: destinationImage("Kerala"), description: "Rest and recharge" },
-  { name: "Spiritual", image: destinationImage("Varanasi"), description: "Meaningful journeys" },
-  { name: "Festival", image: destinationImage("Jaipur"), description: "Celebrate the world" },
+  { name: "Holiday Package", image: "/filter-holiday-package.png", description: "Classic escapes" },
+  { name: "Honeymoon", image: "/filter-honeymoon.png", description: "Romantic getaways" },
+  { name: "Family", image: "/filter-family.png", description: "Fun for every age" },
+  { name: "Group Trip", image: "/filter-group-trip.png", description: "Better together" },
+  { name: "Strangers", image: "/filter-voibee-circles.png", description: "Meet your travel tribe" },
+  { name: "Wellness", image: "/filter-wellness.png", description: "Rest and recharge" },
+  { name: "Spiritual", image: "/filter-spiritual.png", description: "Meaningful journeys" },
+  { name: "Festival", image: "/filter-festival.png", description: "Celebrate the world" },
 ] satisfies Array<{
   name: TripCategory;
   image: string;
@@ -221,13 +221,13 @@ export default async function HomePage({
               </Button></a>
             </div>
           </div>
-          <div className="relative min-h-[420px] overflow-hidden sm:min-h-[520px] lg:min-h-[600px]">
+          <div className="relative min-h-[420px] sm:min-h-[520px] lg:min-h-[600px]">
             <Image
         src="/moments-road-premium.webp"
         alt="Voibee travelers enjoying a premium Kerala road trip"
               fill
               sizes="(min-width: 1024px) 720px, 100vw"
-        className="object-cover object-center"
+        className="object-contain object-center"
             />
           </div>
         </div>

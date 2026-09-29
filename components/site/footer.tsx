@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { TRIP_CATEGORIES, tripThemeLabel } from "@/lib/constants";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -38,13 +39,9 @@ export function Footer() {
         <div className="md:col-span-1">
 
           <div className="mt-4 space-y-2 text-sm text-muted-foreground">
-            <span className="font-bold">Contact us:</span> <br />
-       <div>     <a href={`tel:${appConfig.mobile.replace(/\s/g, "")}`} className="block hover:text-primary">{appConfig.mobile}</a>
-            <a href={`mailto:${appConfig.email}`} className="block hover:text-primary">{appConfig.email}</a></div>
-
-            <span className="font-bold">Office:</span> <br />
-            <span className="block">{appConfig.address}</span>
-          
+            <a href={`tel:${appConfig.mobile.replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-primary"><Phone className="size-4 shrink-0 text-primary" />{appConfig.mobile}</a>
+            <a href={`mailto:${appConfig.email}`} className="flex items-center gap-2 hover:text-primary"><Mail className="size-4 shrink-0 text-primary" />{appConfig.email}</a>
+            <span className="flex items-start gap-2"><MapPin className="mt-0.5 size-4 shrink-0 text-primary" />{appConfig.address}</span>
           </div>
         </div>
 
