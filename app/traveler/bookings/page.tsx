@@ -92,7 +92,7 @@ export default async function TravelerBookingsPage({
           title="No bookings yet"
           description="Your booked packages will show up here."
           action={
-            <Button asChild variant="gradient">
+            <Button asChild variant="default">
               <Link href="/packages">Explore packages</Link>
             </Button>
           }

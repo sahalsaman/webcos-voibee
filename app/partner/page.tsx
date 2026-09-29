@@ -49,7 +49,7 @@ export default async function PartnerDashboard() {
           <h1 className="text-2xl font-bold">Welcome, {partner.businessName}</h1>
           <p className="text-muted-foreground">Your reselling performance at a glance</p>
         </div>
-        <Button asChild variant="gradient">
+        <Button asChild variant="default">
           <Link href="/partner/browse">
             <Link2 className="size-4" /> Create white-label link
           </Link>

@@ -69,7 +69,7 @@ function LoginForm() {
           ) : null}
         </div>
 
-        <Button type="submit" variant="gradient" size="lg" className="w-full" disabled={loading}>
+        <Button type="submit" variant="default" size="lg" className="w-full" disabled={loading}>
           {loading ? <Loader2 className="size-4 animate-spin" /> : null}
           Log in
         </Button>

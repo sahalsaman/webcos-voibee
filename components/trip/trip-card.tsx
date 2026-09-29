@@ -1,9 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, MapPin, Star, Calendar, Users } from "lucide-react";
+import { ArrowRight, Bookmark, CalendarDays, MapPin, Star, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PackageServiceIcons } from "@/components/trip/package-service-icons";
-import { TripThemeVisual } from "@/components/trip/trip-theme-visual";
 import { isCustomDateTripCategory } from "@/lib/constants";
 import { tripDuration, formatDate } from "@/lib/utils";
 import { CurrencyPrice } from "@/components/currency/currency-price";
@@ -34,11 +33,11 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
     <Link
       href={link}
       className={cn(
-        "group relative flex h-full overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-xl hover:shadow-primary/10",
-        view === "list" ? "flex-col sm:flex-row" : "flex-col",
+        "group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-slate-200 bg-white p-3 shadow-[0_12px_34px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_20px_44px_rgba(13,72,132,0.16)]",
+        view === "list" && "sm:grid sm:grid-cols-[minmax(280px,0.78fr)_minmax(0,1.22fr)] sm:gap-0",
       )}
     >
-      <div className={cn("relative aspect-[4/3] overflow-hidden", view === "list" && "sm:aspect-auto sm:min-h-64 sm:w-[38%] sm:shrink-0")}>
+      <div className={cn("relative aspect-[4/3] overflow-hidden rounded-[23px]", view === "list" && "sm:aspect-auto sm:min-h-full")}>
         <Image
           src={img}
           alt={trip.title}
@@ -47,13 +46,8 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
-          <span className="drop-shadow-lg">
-            {trip.category ? <Badge variant="secondary">{trip.category}</Badge> : null}
-          </span>
-          <div className="flex flex-wrap justify-end gap-2">
-            <Badge variant="glass">{trip.packageType ?? "Standard"}</Badge>
-            {trip.featured ? <Badge variant="accent">Featured</Badge> : null}
-          </div>
+          <span className="rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-slate-700 shadow-sm backdrop-blur">{trip.category}</span>
+          <span className="flex size-10 items-center justify-center rounded-full border border-white/50 bg-slate-950/45 text-white backdrop-blur"><Bookmark className="size-4" /></span>
         </div>
         {soldOut ? (
           <div className="absolute inset-0 flex items-center justify-center bg-black/50">
@@ -61,56 +55,37 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
           </div>
         ) : null}
         <div className="absolute bottom-3 right-3">
-          <Badge variant="glass" className="font-semibold">
+          <span className="flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-slate-800 shadow-sm backdrop-blur">
             <Star className="size-3 fill-warning text-warning" />
             {trip.rating > 0 ? trip.rating.toFixed(1) : "New"}
-          </Badge>
+          </span>
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col p-4">
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <MapPin className="size-3.5 text-primary" />
-          {trip.destination}
-              <div className=" ml-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <Calendar className="size-3.5" /> {duration}
-          </span>
-          {!customDate ? (
-            <span className="flex items-center gap-1">
-              <Users className="size-3.5" />
-              {soldOut ? "Waitlist" : `${trip.availableSeats} seats left`}
-            </span>
-          ) : null}
+      <div className="flex min-w-0 flex-1 flex-col px-2 pb-2 pt-4 sm:px-3 sm:pb-3">
+        <div className="flex items-center justify-between gap-3 text-xs font-semibold text-slate-500">
+          <span className="flex min-w-0 items-center gap-1.5 truncate"><MapPin className="size-3.5 shrink-0 text-primary" /> {trip.destination}</span>
+          {trip.featured ? <Badge variant="accent" className="shrink-0">Featured</Badge> : <span className="shrink-0">{trip.packageType ?? "Standard"}</span>}
         </div>
-        </div>
-        <h3 className="mt-1 line-clamp-2 font-semibold leading-snug group-hover:text-primary">{trip.title}</h3>
+        <h3 className="mt-2 line-clamp-2 text-xl font-extrabold leading-7 text-slate-950 transition-colors group-hover:text-primary">{trip.title}</h3>
+        <p className="mt-2 line-clamp-2 text-sm leading-5 text-slate-600">{trip.description || `A curated ${trip.destination} experience by Voibee.`}</p>
 
-    
-
-        <div className="mt-3">
-          {/* <p className="mb-1 text-[11px] font-semibold text-muted-foreground">Highlights</p> */}
+        <div className="mt-3 min-h-8">
           <PackageServiceIcons includedServices={trip.includedServices} inclusions={trip.inclusions} compact />
         </div>
 
-        <div className="mt-4 flex items-end justify-between border-t border-border pt-3">
-          <div>
-            <p className="text-[11px] text-muted-foreground">
-              {priceLabel ?? "Starting from"}
-            </p>
-            <p className="text-lg font-bold">
-              <CurrencyPrice amount={price} />
-              <span className="text-xs font-normal text-muted-foreground"> /person</span>
-            </p>
-          </div>
-          <span className="text-xs font-medium text-muted-foreground">
-            {customDate ? "" : formatDate(trip.startDate)}
-          </span>
+        <div className="mt-4 grid grid-cols-3 divide-x divide-slate-200 border-y border-slate-200 py-3 text-center">
+          <div className="px-1"><p className="text-sm font-extrabold text-slate-950"><Star className="mr-0.5 inline size-3.5 fill-warning text-warning" />{trip.rating > 0 ? trip.rating.toFixed(1) : "New"}</p><p className="mt-0.5 text-[10px] font-medium text-slate-500">Rating</p></div>
+          <div className="px-1"><p className="text-sm font-extrabold text-slate-950">{duration}</p><p className="mt-0.5 text-[10px] font-medium text-slate-500">Duration</p></div>
+          <div className="px-1"><p className="text-sm font-extrabold text-slate-950"><CurrencyPrice amount={price} /></p><p className="mt-0.5 text-[10px] font-medium text-slate-500">{priceLabel ?? "From / person"}</p></div>
         </div>
-        <span
-          className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-all group-hover:bg-primary/90 group-hover:shadow-md"
-        >
-          View details
+
+        <div className="mt-3 flex min-h-5 items-center justify-between gap-2 text-xs font-medium text-slate-500">
+          <span className="flex items-center gap-1"><CalendarDays className="size-3.5 text-primary" /> {customDate ? "Flexible dates" : formatDate(trip.startDate)}</span>
+          {!customDate ? <span className={`flex items-center gap-1 ${soldOut ? "text-rose-600" : "text-emerald-600"}`}><Users className="size-3.5" /> {soldOut ? "Sold out" : `${trip.availableSeats} spots left`}</span> : null}
+        </div>
+        <span className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-4 text-sm font-bold text-white transition-all group-hover:bg-primary group-hover:shadow-lg group-hover:shadow-primary/20">
+          View package
           <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
         </span>
       </div>

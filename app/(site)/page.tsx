@@ -11,14 +11,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { TripCard } from "@/components/trip/trip-card";
+import { VibeCircleCard } from "@/components/trip/vibe-circle-card";
 import { OfferCarousel, type OfferSlide } from "@/components/home/offer-carousel";
-import { getFeaturedTrips, getHomeDestinations, getOfferCards, isIndiaCountry } from "@/lib/data";
+import { getFeaturedTrips, getHomeDestinations, getOfferCards, getTrips } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
 import { normalizePackageHref, withCountryParam as hrefWithCountry } from "@/lib/utils";
-import type { TripCategory } from "@/lib/constants";
+import { VIBE_CIRCLE_TRIP_CATEGORY_LABELS, type TripCategory } from "@/lib/constants";
 import type { OfferCardDTO } from "@/types";
-import { DestinationSwitcher } from "@/components/site/destination-switcher";
-import { DestinationCarousel } from "@/components/home/destination-carousel";
+import { DestinationCollage } from "@/components/home/destination-collage";
 import { ThemeCarousel } from "@/components/home/theme-carousel";
 
 // Re-fetch featured packages from the DB at most once a minute.
@@ -79,13 +79,14 @@ export default async function HomePage({
 }) {
   const sp = await searchParams;
   const country = str(sp.c)?.toUpperCase();
-  const showDomestic = isIndiaCountry(country);
-  const [featured, homeDestinations, offerCards] = await Promise.all([
+  const [featured, homeDestinations, offerCards, vibeCircles] = await Promise.all([
     getFeaturedTrips(6),
     getHomeDestinations(country),
     getOfferCards(country, 4),
+    getTrips({ categories: VIBE_CIRCLE_TRIP_CATEGORY_LABELS, pageSize: 4, sort: "newest" }),
   ]);
   const offers: OfferSlide[] = offerCards.map((offer) => toOfferSlide(offer, country));
+  const collageDestinations = [...homeDestinations.domestic, ...homeDestinations.international].slice(0, 6);
 
   return (
     <main className="min-h-screen bg-white">
@@ -110,13 +111,15 @@ export default async function HomePage({
 
       {/* ---------------- Popular destinations ---------------- */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <DestinationSwitcher
-          hasIndia={showDomestic && homeDestinations.domestic.length > 0}
-          inline
-          heading="Trending Holiday Destinations"
-          india={<DestinationCarousel title="India destinations" destinations={homeDestinations.domestic} country={country} hideTitle />}
-          global={<DestinationCarousel title="Global Escapes" destinations={homeDestinations.international} country={country} hideTitle />}
-        />
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">Explore more</p>
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">Trending Holiday Destinations</h2>
+          </div>
+          <Button asChild variant="outline" className="hidden sm:flex"><Link href={hrefWithCountry("/destinations", country)}>View all <ArrowRight className="size-4" /></Link></Button>
+        </div>
+        {collageDestinations.length ? <DestinationCollage destinations={collageDestinations} country={country} /> : null}
+        <Button asChild variant="outline" className="mt-6 w-full sm:hidden"><Link href={hrefWithCountry("/destinations", country)}>View all destinations <ArrowRight className="size-4" /></Link></Button>
       </section>
 
       {/* ---------------- Package themes ---------------- */}
@@ -159,12 +162,41 @@ export default async function HomePage({
               title="No packages published yet"
               description="Once the operator publishes packages (or you run the seed script), they'll appear here."
               action={
-                <Button asChild variant="gradient">
+                <Button asChild variant="default">
                   <Link href="/packages">Browse packages</Link>
                 </Button>
               }
             />
           )}
+        </div>
+      </section>
+
+      {/* ---------------- Voibee Vibe Circles ---------------- */}
+      <section className="bg-secondary/35 py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8 flex items-end justify-between gap-4 [&>div]:mb-0">
+            <SectionHeading
+              eyebrow="Travel your way"
+              title="Voibee Vibe Circles"
+              subtitle="Purposeful journeys, new connections and experiences made for every kind of traveller."
+              align="left"
+            />
+            <Button asChild variant="outline" className="hidden sm:flex">
+              <Link href={hrefWithCountry("/vibe-circles", country)}>Explore circles <ArrowRight className="size-4" /></Link>
+            </Button>
+          </div>
+          {vibeCircles.items.length ? (
+            <div className="grid gap-x-6 gap-y-9 sm:grid-cols-2 xl:grid-cols-4">
+              {vibeCircles.items.map((trip) => <VibeCircleCard key={trip._id} trip={trip} />)}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-primary/25 bg-white/70 p-8 text-center text-sm text-slate-600">
+              New Vibe Circle journeys are coming soon.
+            </div>
+          )}
+          <Button asChild variant="outline" className="mt-7 w-full sm:hidden">
+            <Link href={hrefWithCountry("/vibe-circles", country)}>Explore Voibee Vibe Circles <ArrowRight className="size-4" /></Link>
+          </Button>
         </div>
       </section>
 
@@ -282,19 +314,19 @@ export default async function HomePage({
 
       {/* ---------------- Final CTA ---------------- */}
       <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl overflow-hidden rounded-2xl border border-border bg-card shadow-xl shadow-slate-950/10 lg:grid-cols-[1fr_420px]">
-          <div className="p-8 sm:p-10 lg:p-12">
+        <div className="mx-auto grid max-w-7xl overflow-hidden rounded-2xl border border-border  shadow-xl shadow-slate-950/10 lg:grid-cols-[1fr_420px] bg-primary">
+          <div className="p-8 sm:p-10 lg:p-12 text-secondary">
             <Badge variant="secondary" className="mb-5 w-fit">
               <Users className="size-3.5" /> Travel buddies are waiting
             </Badge>
             <h2 className="max-w-2xl text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
               Start traveling together
             </h2>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
+            <p className="mt-4 max-w-2xl text-base leading-7 text-secondry sm:text-lg">
               Join group packages, choose custom-date experiences, or plan your own escape with like-minded TripMates.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Button asChild size="lg" variant="default">
+              <Button asChild size="lg" variant="secondary">
                 <Link href={hrefWithCountry("/packages", country)}>
                   Join the community <ArrowRight className="size-4" />
                 </Link>

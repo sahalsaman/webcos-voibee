@@ -75,7 +75,7 @@ function RegisterForm() {
           <Input type="password" placeholder="Min 6 characters" minLength={6} required {...register("password")} />
         </Field>
 
-        <Button type="submit" variant="gradient" size="lg" className="w-full" disabled={loading}>
+        <Button type="submit" variant="default" size="lg" className="w-full" disabled={loading}>
           {loading ? <Loader2 className="size-4 animate-spin" /> : null}
           Create account
         </Button>

@@ -35,7 +35,7 @@ export default async function PartnerLinksPage() {
           <h1 className="text-2xl font-bold">My Links</h1>
           <p className="text-muted-foreground">{links.length} white-label link(s)</p>
         </div>
-        <Button asChild variant="gradient">
+        <Button asChild variant="default">
           <Link href="/partner/browse"><Link2 className="size-4" /> New link</Link>
         </Button>
       </div>
@@ -94,7 +94,7 @@ export default async function PartnerLinksPage() {
           title="No links yet"
           description="Create your first white-label link to start earning commissions."
           action={
-            <Button asChild variant="gradient">
+            <Button asChild variant="default">
               <Link href="/partner/browse">Browse packages</Link>
             </Button>
           }

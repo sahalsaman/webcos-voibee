@@ -81,7 +81,7 @@ export default async function TravelerDashboard() {
               title="No bookings yet"
               description="Start exploring and book your first adventure!"
               action={
-                <Button asChild variant="gradient">
+                <Button asChild variant="default">
                   <Link href="/packages">Explore packages</Link>
                 </Button>
               }

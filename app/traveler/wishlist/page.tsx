@@ -30,7 +30,7 @@ export default async function TravelerWishlistPage() {
           title="Your wishlist is empty"
           description="Save packages you love to find them here later."
           action={
-            <Button asChild variant="gradient">
+            <Button asChild variant="default">
               <Link href="/packages">Explore packages</Link>
             </Button>
           }

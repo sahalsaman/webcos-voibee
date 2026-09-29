@@ -96,7 +96,7 @@ export default async function BookingSuccessPage({ searchParams }: { searchParam
                 </div>
               </article>
 
-              <Button asChild variant="gradient" size="lg" className="w-full">
+              <Button asChild variant="default" size="lg" className="w-full">
                 <a href={downloadUrl} download><Download className="size-4" />Download booking PDF</a>
               </Button>
               <Button asChild variant="outline" size="lg" className="w-full"><Link href={`/packages/${booking.trip.slug}`}>View trip details</Link></Button>

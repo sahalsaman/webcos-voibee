@@ -5,12 +5,17 @@ export default function PackagesLoading() {
   return (
     <main className="min-h-screen bg-white" aria-label="Loading tour packages" aria-busy="true">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <header className="relative mb-8 overflow-hidden rounded-[28px] bg-slate-200 px-6 py-16 shadow-xl sm:px-10 lg:px-12">
+        <header className="relative mb-18 rounded-[28px] bg-slate-200 px-6 py-16 shadow-xl sm:px-10 lg:px-12">
           <div className="relative mx-auto max-w-3xl text-center">
             <Skeleton className="mx-auto h-10 w-64 max-w-full bg-slate-300 sm:h-12 sm:w-80" />
             <div className="mt-7 flex rounded-2xl bg-white/90 p-3 shadow-lg">
               <Skeleton className="h-12 flex-1 bg-slate-200" />
               <Skeleton className="ml-3 size-12 shrink-0 rounded-xl bg-slate-300" />
+            </div>
+          </div>
+          <div className="absolute left-6 right-6 z-40 mt-5 rounded-2xl bg-white/95 p-2 shadow-md sm:left-10 sm:right-10 lg:left-12 lg:right-12">
+            <div className="flex gap-2 overflow-hidden sm:gap-3">
+              {Array.from({ length: 8 }).map((_, index) => <div key={index} className="flex min-h-[84px] w-[92px] shrink-0 flex-col items-center justify-center gap-2 rounded-xl sm:w-[108px]"><Skeleton className="size-10 rounded-xl" /><Skeleton className="h-3 w-16" /></div>)}
             </div>
           </div>
         </header>
@@ -31,11 +36,6 @@ export default function PackagesLoading() {
               <Skeleton className="h-12 min-w-[280px] flex-1 rounded-xl lg:max-w-[280px]" />
               <Skeleton className="h-12 w-[86px] rounded-xl" />
             </div>
-          </div>
-          <div className="relative mt-5 flex h-[58px] items-center gap-5 overflow-hidden rounded-2xl border border-border/70 bg-secondary/35 px-12 shadow-sm">
-            <Skeleton className="absolute left-1 size-9 rounded-full" />
-            {Array.from({ length: 7 }).map((_, index) => <Skeleton key={index} className="h-4 w-28 shrink-0" />)}
-            <Skeleton className="absolute right-1 size-9 rounded-full" />
           </div>
         </section>
 

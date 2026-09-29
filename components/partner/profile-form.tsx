@@ -114,7 +114,7 @@ export function ProfileForm({ profile, slug }: { profile: Profile; slug: string 
       </Card>
 
       <div className="flex justify-end">
-        <Button type="submit" variant="gradient" disabled={loading}>
+        <Button type="submit" variant="default" disabled={loading}>
           {loading ? <Loader2 className="size-4 animate-spin" /> : null}
           Save profile
         </Button>

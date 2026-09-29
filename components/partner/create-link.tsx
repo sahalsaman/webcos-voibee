@@ -73,7 +73,7 @@ export function CreateLink({
         <span className="text-muted-foreground">Selling price</span>
         <span className="font-semibold">{formatINR(sellingPrice)}</span>
       </div>
-      <Button onClick={generate} disabled={loading} variant="gradient" size="sm" className="w-full">
+      <Button onClick={generate} disabled={loading} variant="default" size="sm" className="w-full">
         {loading ? <Loader2 className="size-4 animate-spin" /> : <Link2 className="size-4" />}
         {existingCommission != null ? "Update link" : "Generate link"}
       </Button>

@@ -42,7 +42,7 @@ export default async function PartnerEarningsPage() {
           <h1 className="text-2xl font-bold">Earnings</h1>
           <p className="text-muted-foreground">Track your commissions & payouts</p>
         </div>
-        <Button variant="gradient" disabled={stats.pendingEarnings <= 0}>
+        <Button variant="default" disabled={stats.pendingEarnings <= 0}>
           <Banknote className="size-4" /> Request payout
         </Button>
       </div>

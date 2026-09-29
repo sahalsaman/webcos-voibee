@@ -116,13 +116,11 @@ export function Navbar() {
               </div>
             ) : (
               <div className="hidden items-center gap-2 md:flex">
-                {/* <Button asChild variant="gradient" size="default">
+                {/* <Button asChild variant="default" size="default">
                   <Link href="/register">Join Our Community</Link>
                 </Button> */}
-                <Button asChild variant="ghost" size="default" className="font-bold">
-                  <Link href="/login"><Headset className="size-8" /> Contact us</Link>
-                </Button>
-                <Button asChild variant="gradient" size="default" className="rounded-full px-6">
+            
+                <Button asChild variant="default" size="default" className="rounded-full px-6">
                   <Link href="/login">Log in <LogOut className="size-4" /></Link>
                 </Button>
               </div>
@@ -186,7 +184,7 @@ export function Navbar() {
               >
                 <UserCircle className="size-4" /> Log in
               </Link>
-              <Button asChild variant="gradient" className="mt-1">
+              <Button asChild variant="default" className="mt-1">
                 <Link href="/register" onClick={() => setOpen(false)}>
                   Join Our Community
                 </Link>

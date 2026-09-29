@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Compass } from "lucide-react";
-import { TripCard } from "@/components/trip/trip-card";
+import { VibeCircleCard } from "@/components/trip/vibe-circle-card";
 import { TripFilters } from "@/components/trip/trip-filters";
 import { ThemeFilter } from "@/components/trip/theme-filter";
 import { SearchBar } from "@/components/home/search-bar";
@@ -102,8 +102,8 @@ export default async function VibeCirclesPage({ searchParams }: { searchParams: 
 
         {result.items.length ? (
           <>
-            <div className={str(sp.view) === "list" ? "grid gap-6" : "grid gap-6 sm:grid-cols-2 xl:grid-cols-3"}>
-              {result.items.map((trip) => <TripCard key={trip._id} trip={trip} view={str(sp.view) === "list" ? "list" : "grid"} />)}
+            <div className="grid gap-x-6 gap-y-9 sm:grid-cols-2 xl:grid-cols-4">
+              {result.items.map((trip) => <VibeCircleCard key={trip._id} trip={trip} />)}
             </div>
             <Pagination base="/vibe-circles" params={linkParams} page={result.page} totalPages={result.totalPages} />
           </>
@@ -112,7 +112,7 @@ export default async function VibeCirclesPage({ searchParams }: { searchParams: 
             icon={Compass}
             title="No Vibe Circle packages match your filters"
             description="Try another destination, travel date or budget."
-            action={<Button asChild variant="gradient"><Link href="/vibe-circles">Clear filters</Link></Button>}
+            action={<Button asChild variant="default"><Link href="/vibe-circles">Clear filters</Link></Button>}
           />
         )}
       </div>

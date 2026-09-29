@@ -147,7 +147,7 @@ export default async function TripsPage({
               title="No packages match your filters"
               description="Try widening your budget or clearing some filters to see more results."
               action={
-                <Button asChild variant="gradient">
+                <Button asChild variant="default">
                   <Link href="/packages">Clear filters</Link>
                 </Button>
               }

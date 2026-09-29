@@ -30,7 +30,7 @@ export function ComingSoonPage({
         <h2 className="mt-4 text-xl font-bold sm:text-2xl">{title}</h2>
         <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">{description}</p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Button asChild variant="gradient" size="lg"><Link href="/packages">Explore holidays</Link></Button>
+          <Button asChild variant="default" size="lg"><Link href="/packages">Explore holidays</Link></Button>
           <Button asChild variant="outline" size="lg"><Link href="/"><ArrowLeft className="size-4" />Back to home</Link></Button>
         </div>
       </section>

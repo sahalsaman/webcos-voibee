@@ -14,7 +14,7 @@ export default function NotFound() {
         The page you&apos;re looking for has wandered off the map.
       </p>
       <div className="mt-6 flex gap-3">
-        <Button asChild variant="gradient">
+        <Button asChild variant="default">
           <Link href="/">
             <ArrowLeft className="size-4" /> Back home
           </Link>
