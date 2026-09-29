@@ -84,7 +84,7 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
           <span className="flex items-center gap-1"><CalendarDays className="size-3.5 text-primary" /> {customDate ? "Flexible dates" : formatDate(trip.startDate)}</span>
           {!customDate ? <span className={`flex items-center gap-1 ${soldOut ? "text-rose-600" : "text-emerald-600"}`}><Users className="size-3.5" /> {soldOut ? "Sold out" : `${trip.availableSeats} spots left`}</span> : null}
         </div>
-        <span className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-4 text-sm font-bold text-white transition-all group-hover:bg-primary group-hover:shadow-lg group-hover:shadow-primary/20">
+        <span className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-bold text-white transition-all group-hover:bg-primary group-hover:shadow-lg group-hover:shadow-primary/20">
           View package
           <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
         </span>

@@ -52,14 +52,14 @@ const TESTIMONIALS = [
 ] as const;
 
 const TRIP_THEME_DETAILS = [
-  { name: "Holiday Package", image: "/filter-holiday-package.png", description: "Classic escapes" },
-  { name: "Honeymoon", image: "/filter-honeymoon.png", description: "Romantic getaways" },
-  { name: "Family", image: "/filter-family.png", description: "Fun for every age" },
-  { name: "Group Trip", image: "/filter-group-trip.png", description: "Better together" },
-  { name: "Strangers", image: "/filter-voibee-circles.png", description: "Meet your travel tribe" },
-  { name: "Wellness", image: "/filter-wellness.png", description: "Rest and recharge" },
-  { name: "Spiritual", image: "/filter-spiritual.png", description: "Meaningful journeys" },
-  { name: "Festival", image: "/filter-festival.png", description: "Celebrate the world" },
+  { name: "Holiday Package", image: "/theme-holiday.webp", description: "Classic escapes" },
+  { name: "Honeymoon", image: "/theme-honeymoon.webp", description: "Romantic getaways" },
+  { name: "Family", image: "/theme-family.webp", description: "Fun for every age" },
+  { name: "Group Trip", image: "/theme-group.webp", description: "Better together" },
+  { name: "Strangers", image: "/theme-strangers.webp", description: "Meet your travel tribe" },
+  { name: "Wellness", image: "/theme-wellness.webp", description: "Rest and recharge" },
+  { name: "Spiritual", image: "/theme-spiritual.webp", description: "Meaningful journeys" },
+  { name: "Festival", image: "/theme-festival.webp", description: "Celebrate the world" },
 ] satisfies Array<{
   name: TripCategory;
   image: string;

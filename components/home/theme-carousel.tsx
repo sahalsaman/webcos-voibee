@@ -46,8 +46,9 @@ export function ThemeCarousel({ themes, country }: { themes: Theme[]; country?: 
       <div ref={carouselRef} className="grid snap-x snap-mandatory auto-cols-[calc(50%-0.375rem)] grid-flow-col grid-rows-2 gap-3 overflow-x-auto px-1 pb-2 scroll-smooth [scrollbar-width:none] sm:auto-cols-[calc(33.333%-0.834rem)] sm:grid-rows-1 sm:gap-5 lg:auto-cols-[calc(16.667%-1.042rem)] [&::-webkit-scrollbar]:hidden">
         {themes.map((theme) => (
           <Link key={theme.name} href={withCountryParam(`/packages?category=${encodeURIComponent(theme.name)}`, country)} className="group relative block snap-start pb-10 sm:pb-10">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[28px] bg-secondary sm:rounded-[34px]">
-              <Image src={theme.image} alt={`${tripThemeLabel(theme.name)} tour packages`} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 38vw, 17vw" className="object-contain p-4 transition duration-500 group-hover:scale-105 sm:p-6" />
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[28px] sm:rounded-[34px]">
+              <Image src={theme.image} alt={`${tripThemeLabel(theme.name)} tour packages`} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 38vw, 17vw" className="object-cover transition duration-500 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/30 via-transparent to-transparent" />
             </div>
             <div className="absolute inset-x-2 bottom-0 mx-auto flex min-h-24 max-w-[88%] flex-col items-center justify-center rounded-t-[999px] bg-white px-2 pb-2 pt-3 text-center shadow-[0_-8px_24px_rgba(15,23,42,0.08)] sm:min-h-28 sm:px-3 sm:pt-5">
             
