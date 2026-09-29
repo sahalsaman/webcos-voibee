@@ -148,7 +148,6 @@ export const TRIP_CATEGORIES = [
   {label : "Honeymoon",icon : "💖"},
   {label : "Family",icon : "👨‍👩‍👧‍👦"},
   {label : "Group Trip",icon : "🧑‍🤝‍🧑"},
-  {label : "Strangers",icon : "🤝"},
   {label : "Wellness",icon : "🧘‍♀️"},
   {label : "Spiritual",icon : "🕉️"},
   {label : "Festival",icon : "🎉"},

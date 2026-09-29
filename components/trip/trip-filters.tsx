@@ -58,7 +58,7 @@ export function TripFilters({
   }
 
   return (
-    <div className="mb-8 ">
+    <div className="mb-8">
     
 
       <div className="grid items-end gap-4 sm:grid-cols-2 lg:grid-cols-4">

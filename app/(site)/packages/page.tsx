@@ -106,6 +106,7 @@ export default async function TripsPage({
               categoryCounts={categoryCounts}
               totalCount={Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)}
               categories={HOLIDAY_TRIP_CATEGORIES}
+              fitContent
             />
           </div>
       </header>

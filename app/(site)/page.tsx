@@ -13,7 +13,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { TripCard } from "@/components/trip/trip-card";
 import { VibeCircleCard } from "@/components/trip/vibe-circle-card";
 import { OfferCarousel, type OfferSlide } from "@/components/home/offer-carousel";
-import { getFeaturedTrips, getHomeDestinations, getOfferCards, getTrips } from "@/lib/data";
+import { getHomeDestinations, getOfferCards, getTrips } from "@/lib/data";
 import { destinationImage } from "@/lib/images";
 import { normalizePackageHref, withCountryParam as hrefWithCountry } from "@/lib/utils";
 import { VIBE_CIRCLE_TRIP_CATEGORY_LABELS, type TripCategory } from "@/lib/constants";
@@ -52,11 +52,10 @@ const TESTIMONIALS = [
 ] as const;
 
 const TRIP_THEME_DETAILS = [
-  { name: "Holiday Package", image: "/theme-holiday.webp", description: "Classic escapes" },
+  // { name: "Holiday Package", image: "/theme-holiday.webp", description: "Classic escapes" },
   { name: "Honeymoon", image: "/theme-honeymoon.webp", description: "Romantic getaways" },
   { name: "Family", image: "/theme-family.webp", description: "Fun for every age" },
   { name: "Group Trip", image: "/theme-group.webp", description: "Better together" },
-  { name: "Strangers", image: "/theme-strangers.webp", description: "Meet your travel tribe" },
   { name: "Wellness", image: "/theme-wellness.webp", description: "Rest and recharge" },
   { name: "Spiritual", image: "/theme-spiritual.webp", description: "Meaningful journeys" },
   { name: "Festival", image: "/theme-festival.webp", description: "Celebrate the world" },
@@ -79,8 +78,12 @@ export default async function HomePage({
 }) {
   const sp = await searchParams;
   const country = str(sp.c)?.toUpperCase();
-  const [featured, homeDestinations, offerCards, vibeCircles] = await Promise.all([
-    getFeaturedTrips(6),
+  const [normalPackages, homeDestinations, offerCards, vibeCircles] = await Promise.all([
+    getTrips({
+      excludeCategories: VIBE_CIRCLE_TRIP_CATEGORY_LABELS,
+      pageSize: 6,
+      sort: "newest",
+    }),
     getHomeDestinations(country),
     getOfferCards(country, 4),
     getTrips({ categories: VIBE_CIRCLE_TRIP_CATEGORY_LABELS, pageSize: 4, sort: "newest" }),
@@ -150,9 +153,9 @@ export default async function HomePage({
             </Button>
           </div>
 
-          {featured.length > 0 ? (
+        {normalPackages.items.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {featured.map((trip) => (
+            {normalPackages.items.map((trip) => (
                 <TripCard key={trip._id} trip={trip} />
               ))}
             </div>
@@ -172,7 +175,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Voibee Vibe Circles ---------------- */}
-      <section className="bg-secondary/35 py-16 sm:py-20">
+      <section className=" py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-end justify-between gap-4 [&>div]:mb-0">
             <SectionHeading
