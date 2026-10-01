@@ -37,11 +37,23 @@ export interface ItineraryItem {
   day: number;
   title: string;
   description: string;
+  specials?: string[];
+  iconHighlights?: ItineraryIconHighlight[];
+  highlights?: ItineraryHighlight[];
   schedule?: ItineraryScheduleItem[];
   transports?: ItineraryTransport[];
   hotels?: ItineraryHotel[];
   meals?: ItineraryMeal[];
   sightseeing?: SightseeingPlace[];
+}
+
+export type ItineraryIconHighlight = "ac-bus" | "non-ac-bus" | "car" | "xuv" | "tempo-traveller" | "train" | "flight" | "boat" | "transport" | "breakfast" | "lunch" | "dinner" | "mineral-water" | "first-aid" | "welcome-drink" | "tour-manager" | "campfire" | "luggage-assistance";
+export type ItineraryHighlightType = "hotel" | "resort" | "activity" | "vibes" | "other";
+
+export interface ItineraryHighlight {
+  type: ItineraryHighlightType;
+  label: string;
+  image: string;
 }
 
 export interface ItineraryScheduleItem {
@@ -92,6 +104,7 @@ export interface TripDTO {
   exclusions: string[];
   holidayPackage?: boolean;
   basePrice: number;
+  fixedPrice?: boolean;
   durationDays?: number;
   totalSeats: number;
   availableSeats: number;

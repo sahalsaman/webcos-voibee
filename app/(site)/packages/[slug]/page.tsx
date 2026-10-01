@@ -12,6 +12,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Gallery } from "@/components/trip/gallery";
 import { TripCard } from "@/components/trip/trip-card";
 import { BookingBox } from "@/components/booking/booking-box";
+import { PackageEnquiryForm } from "@/components/trip/package-enquiry-form";
 import { PackageServiceIcons, resolveIncludedServices } from "@/components/trip/package-service-icons";
 import { DetailedItinerary } from "@/components/trip/detailed-itinerary";
 import { PackageActions } from "@/components/trip/package-actions";
@@ -230,6 +231,9 @@ export default async function TripDetailPage({ params }: Props) {
               departureCities={trip.departureCities}
               durationDays={configuredDays}
               customDate={customDate}
+              fixedPrice={trip.fixedPrice}
+              rating={trip.rating}
+              reviewCount={trip.reviewCount}
               visaRequired={trip.visaRequired}
               visaNote={trip.visaNote}
               visaDocuments={trip.visaDocuments}
@@ -239,6 +243,8 @@ export default async function TripDetailPage({ params }: Props) {
               permitDocuments={trip.permitDocuments}
               permitFee={trip.permitFee}
             />
+            <section className="mt-5 rounded-2xl border border-border bg-secondary/20 p-5"><h2 className="font-extrabold">Why book with Voibee Holidays?</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Verified stays, clear inclusions, and a travel team with you from planning to return.</p></section>
+            <PackageEnquiryForm packageTitle={trip.title} />
           </aside>
         </div>
 

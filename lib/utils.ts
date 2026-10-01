@@ -46,14 +46,14 @@ export function formatDate(date: Date | string | number) {
   });
 }
 
-/** Inclusive day count between two dates: "5D / 4N" friendly. */
+/** Inclusive day count between two dates. */
 export function tripDuration(start: Date | string, end: Date | string, configuredDays?: number) {
   const s = new Date(start).getTime();
   const e = new Date(end).getTime();
   const dateDays = Math.max(1, Math.round((e - s) / 86_400_000) + 1);
   const days = configuredDays && configuredDays > 0 ? Math.round(configuredDays) : dateDays;
   const nights = Math.max(0, days - 1);
-  return { days, nights, label: `${days}D / ${nights}N` };
+  return { days, nights, label: `${days} Days / ${nights} Nights` };
 }
 
 /** URL-safe slug from arbitrary text. */

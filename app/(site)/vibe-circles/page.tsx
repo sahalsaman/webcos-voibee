@@ -60,7 +60,7 @@ export default async function VibeCirclesPage({ searchParams }: { searchParams: 
 
   return (
     <main className="min-h-screen bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
          <header className="relative mb-18 sm:mb-22 rounded-[28px] bg-slate-950 px-6 py-16 text-white shadow-xl sm:px-10 lg:px-12 z-10"> <Image src={destinationImage("Rishikesh")} alt="Voibee Vibe Circles" fill priority className="object-cover rounded-[28px]" />
           <div className="absolute inset-0 bg-slate-950/65 rounded-[28px]" />
           <div className="relative mx-auto max-w-3xl text-center">

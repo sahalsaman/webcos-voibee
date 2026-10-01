@@ -49,7 +49,7 @@ export default async function TripsPage({
     destination: str(sp.destination),
     country: str(sp.country),
     category: selectedCategory,
-    excludeCategories: VIBE_CIRCLE_TRIP_CATEGORY_LABELS,
+    excludeCategories: selectedCategory ? VIBE_CIRCLE_TRIP_CATEGORY_LABELS : undefined,
     startDate: str(sp.startDate),
     endDate: str(sp.endDate),
     minPrice: str(sp.minPrice) ? Number(str(sp.minPrice)) : undefined,

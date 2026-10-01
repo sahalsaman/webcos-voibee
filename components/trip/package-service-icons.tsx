@@ -66,7 +66,7 @@ export function PackageServiceIcons({
           </span>
         ) : showcase ? (
           <div key={service} className="flex min-w-0 flex-col items-center gap-1.5 text-center">
-            <Image src={image} alt="" width={48} height={48} className="size-9 object-contain drop-shadow-sm sm:size-11" />
+            <Image src={image} alt="" width={56} height={56} className="size-11 object-contain drop-shadow-sm sm:size-14" />
             <span className="line-clamp-2 text-[9px] font-bold leading-3 text-slate-700 sm:text-[11px]">{label}</span>
           </div>
         ) : (
