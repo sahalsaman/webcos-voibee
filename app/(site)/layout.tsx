@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { Suspense } from "react";
 import { Navbar } from "@/components/site/navbar";
 import { Footer } from "@/components/site/footer";
+import { InitialSplash } from "@/components/site/initial-splash";
 import { WhatsAppEnquiry } from "@/components/site/whatsapp-enquiry";
 
 export default function SiteLayout({
@@ -11,6 +12,7 @@ export default function SiteLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col">
+      <InitialSplash />
       <Navbar />
       <div className="flex-1 pb-20 md:pb-0">{children}</div>
       <Suspense fallback={null}>

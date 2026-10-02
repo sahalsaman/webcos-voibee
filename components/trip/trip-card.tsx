@@ -76,7 +76,7 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
 
         <div className="mt-4 grid grid-cols-3 divide-x divide-slate-200 border-y border-slate-200 py-3 text-center">
           <div className="px-1"><p className="text-sm font-extrabold text-slate-950"><Star className="mr-0.5 inline size-3.5 fill-warning text-warning" />{trip.rating > 0 ? trip.rating.toFixed(1) : "New"}</p><p className="mt-0.5 text-[10px] font-medium text-slate-500">Rating</p></div>
-          <div className="px-1"><p className="text-sm font-extrabold text-slate-950">{duration}</p><p className="mt-0.5 text-[10px] font-medium text-slate-500">Duration</p></div>
+          <div className="px-1"><p className="text-sm font-extrabold text-slate-950">{duration}</p></div>
           <div className="px-1"><p className="text-sm font-extrabold text-slate-950"><CurrencyPrice amount={price} /></p><p className="mt-0.5 text-[10px] font-medium text-slate-500">{priceLabel ?? "From / person"}</p></div>
         </div>
 

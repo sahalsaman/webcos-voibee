@@ -22,6 +22,7 @@ import Image from "next/image";
 import { NotificationMenu } from "@/components/site/notification-menu";
 import { CurrencySelector } from "@/components/currency/currency-selector";
 import { appConfig } from "@/app/app,config";
+import { HomeScreenSkeleton } from "@/components/site/home-screen-skeleton";
 
 const NAV_LINKS = [
   { href: "/packages", label: "Holidays" },
@@ -91,8 +92,10 @@ function MobileBottomNavigation({
 
 export function Navbar() {
   const { data: session } = useSession();
+  const pathname = usePathname();
   const [country, setCountry] = useState<string | undefined>();
   const [open, setOpen] = useState(false);
+  const [openingHome, setOpeningHome] = useState(false);
   const user = session?.user;
   const withCountry = (href: string) =>
     country ? `${href}${href.includes("?") ? "&" : "?"}c=${encodeURIComponent(country)}` : href;
@@ -105,8 +108,19 @@ export function Navbar() {
     return () => window.clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    if (!openingHome || pathname !== "/") return;
+    const timer = window.setTimeout(() => setOpeningHome(false), 350);
+    return () => window.clearTimeout(timer);
+  }, [openingHome, pathname]);
+
   return (
     <>
+    {openingHome ? (
+      <div className="fixed inset-0 z-[100] overflow-y-auto bg-white" role="status" aria-live="polite">
+        <HomeScreenSkeleton />
+      </div>
+    ) : null}
     <header className="sticky top-0 z-50 shadow-[0_1px_12px_rgba(15,23,42,0.05)]">
       <div className="bg-white text-black/80">
         <div className=" mx-auto flex h-10 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
@@ -126,8 +140,14 @@ export function Navbar() {
         </div>
       </div>
       <div className="glass border-b border-border/70 bg-card/95">
-        <nav className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2 font-extrabold text-2xl text-primary">
+        <nav className="mx-auto flex h-14 sm:h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link
+            href="/"
+            onClick={(event) => {
+              if (!event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey && pathname !== "/") setOpeningHome(true);
+            }}
+            className="flex items-center gap-2 font-extrabold text-2xl text-primary"
+          >
             <Image src={appLogo} alt="Voibee Global Travel Experts" width={174} height={84} loading="eager" className="h-12 w-auto" />
           </Link>
 
