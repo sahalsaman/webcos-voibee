@@ -35,7 +35,10 @@ function ItineraryDay({ day, index }: { day: ItineraryItem; index: number }) {
       <div className="min-w-0 space-y-4 p-4 sm:p-6">
         {day.iconHighlights?.length ?<div className="flex flex-wrap gap-2">{day.iconHighlights.map((highlight) => <IconHighlight key={highlight} type={highlight} />)}</div>: null}
 
-        {day.highlights?.length ? <HighlightCarousel images={day.highlights.map((highlight) => highlight.image).filter(Boolean)} /> : null}
+        {day.highlights?.length ? <>
+          <div className="md:hidden"><HighlightCarousel images={day.highlights.map((highlight) => highlight.image).filter(Boolean)} perPage={1} /></div>
+          <div className="hidden md:block"><HighlightCarousel images={day.highlights.map((highlight) => highlight.image).filter(Boolean)} perPage={3} /></div>
+        </> : null}
 
         {day.description ? <p className="leading-7 text-muted-foreground">{day.description}</p> : null}
 
@@ -43,9 +46,9 @@ function ItineraryDay({ day, index }: { day: ItineraryItem; index: number }) {
 
         {day.hotels?.length ? <div className="space-y-2">{day.hotels.map((hotel, hotelIndex) => <div key={hotelIndex} className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 border-b border-border/70 last:border-b-0"><Hotel className="size-8 shrink-0 rounded-md bg-secondary/35 p-2 text-primary" /><p className="min-w-0 break-words font-semibold">{assetName(hotel.hotel_id, hotel.name, "Selected hotel")}</p></div>)}</div> : null}
 
-        {day.meals?.length ? <div className="flex flex-wrap items-center gap-y-2 py-1 text-sm font-medium capitalize"><ForkKnife className="size-8 rounded-md shrink-0 text-primary bg-secondary/35 p-2 mr-2" />{day.meals.map((meal) => <p key={meal} className="font-semibold pl-1"> {meal},</p>)}</div> : null}
-
         {day.transports?.length ? <div className="space-y-2">{day.transports.map((item, itemIndex) => <div key={itemIndex} className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 border-b border-border/70 last:border-b-0"><BusFront className="size-8 shrink-0 rounded-md bg-secondary/35 p-2 text-primary" /><p className="min-w-0 break-words font-semibold">{assetName(item.vehicle_id, item.title, "Selected transport")}</p></div>)}</div> : null}
+
+        {day.meals?.length ? <div className="flex flex-wrap items-center gap-y-2 py-1 text-sm font-medium capitalize"><ForkKnife className="size-8 rounded-md shrink-0 text-primary bg-secondary/35 p-2 mr-2" />{day.meals.map((meal) => <p key={meal} className="font-semibold pl-1"> {meal},</p>)}</div> : null}
 
         {day.sightseeing?.length ? <ContentBlock icon={Binoculars} title="Sightseeing"><div className="space-y-4">{day.sightseeing.map((place, placeIndex) => <div key={placeIndex} className="grid gap-4 rounded-xl border border-border bg-background p-3 sm:grid-cols-[180px_1fr] sm:items-center"><div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-secondary"><Image src={place.image || FALLBACK_PLACE} alt={place.name} fill sizes="(max-width: 640px) 100vw, 180px" className="object-cover" /></div><div><p className="flex items-center gap-2 font-bold"><MapPin className="size-4 shrink-0 text-primary" />{place.name}</p><p className="mt-2 text-sm leading-6 text-muted-foreground">{place.description}</p></div></div>)}</div></ContentBlock> : null}
 
@@ -67,12 +70,12 @@ function DayHighlight({ image }: {  image?: string }) {
   return <div className="overflow-hidden rounded-xl border border-border bg-background">{image ? <div className="relative aspect-[16/7] bg-secondary"><Image src={image} alt={image} fill sizes="(max-width: 640px) 100vw, 260px" className="object-cover" /></div> : null}</div>;
 }
 
-function HighlightCarousel({ images }: { images: string[] }) {
+function HighlightCarousel({ images, perPage }: { images: string[]; perPage: number }) {
   const [page, setPage] = useState(0);
-  const pages = Math.ceil(images.length / 3);
-  const shown = images.slice(page * 3, page * 3 + 3);
+  const pages = Math.ceil(images.length / perPage);
+  const shown = images.slice(page * perPage, page * perPage + perPage);
   if (!shown.length) return null;
-  return <div className="relative"><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{shown.map((image, index) => <DayHighlight key={`${page}-${index}`} image={image} />)}</div>{pages > 1 ? <div className="mt-3 flex items-center justify-end gap-2"><button type="button" aria-label="Previous highlight images" onClick={() => setPage((current) => (current - 1 + pages) % pages)} className="flex size-9 items-center justify-center rounded-full border bg-background text-primary transition hover:bg-secondary"><ChevronLeft className="size-5" /></button><span className="text-xs font-semibold text-muted-foreground">{page + 1} / {pages}</span><button type="button" aria-label="Next highlight images" onClick={() => setPage((current) => (current + 1) % pages)} className="flex size-9 items-center justify-center rounded-full border bg-background text-primary transition hover:bg-secondary"><ChevronRight className="size-5" /></button></div> : null}</div>;
+  return <div className="relative"><div className="grid gap-3 md:grid-cols-3">{shown.map((image, index) => <DayHighlight key={`${page}-${index}`} image={image} />)}</div>{pages > 1 ? <div className="mt-3 flex items-center justify-end gap-2"><button type="button" aria-label="Previous highlight images" onClick={() => setPage((current) => (current - 1 + pages) % pages)} className="flex size-9 items-center justify-center rounded-full border bg-background text-primary transition hover:bg-secondary"><ChevronLeft className="size-5" /></button><span className="text-xs font-semibold text-muted-foreground">{page + 1} / {pages}</span><button type="button" aria-label="Next highlight images" onClick={() => setPage((current) => (current + 1) % pages)} className="flex size-9 items-center justify-center rounded-full border bg-background text-primary transition hover:bg-secondary"><ChevronRight className="size-5" /></button></div> : null}</div>;
 }
 
 function assetName(asset: unknown, fallback: string | undefined, empty: string) {

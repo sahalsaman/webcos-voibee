@@ -72,7 +72,7 @@ export default async function TripsPage({
   const heroTitle = "Tour Packages";
   const heroImage = selectedDestination
     ? selectedDestination.images[0] || destinationImage(selectedDestination.title)
-    : destinationImage("Goa");
+    : "/hero-experience.webp";
   // Flatten current filters into a clean param map for pagination links.
   const linkParams: Record<string, string> = {};
   for (const k of ["q", "destination", "country", "category", "startDate", "endDate", "minPrice", "maxPrice", "sort", "view", "compare", "c"]) {
