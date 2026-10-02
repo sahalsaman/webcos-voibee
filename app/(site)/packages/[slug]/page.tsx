@@ -54,9 +54,8 @@ export default async function TripDetailPage({ params }: Props) {
   const trip = await getTripBySlug(slug);
   if (!trip) notFound();
 
-  const [reviews, related] = await Promise.all([
+  const [reviews] = await Promise.all([
     getReviewsForTrip(trip._id),
-    getRelatedTrips(trip._id, trip.destination, 3),
   ]);
 
   const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
@@ -100,7 +99,7 @@ export default async function TripDetailPage({ params }: Props) {
   };
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white pb-20 md:pb-0">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <script
           type="application/ld+json"
@@ -176,8 +175,6 @@ export default async function TripDetailPage({ params }: Props) {
 
             <PackageContentsTabs inclusions={trip.inclusions} exclusions={trip.exclusions} />
 
-            <SafeStay />
-
             {/* Reviews */}
             {reviews.length ? <section>
               <h2 className="mb-4 text-xl font-semibold">
@@ -243,22 +240,13 @@ export default async function TripDetailPage({ params }: Props) {
               permitDocuments={trip.permitDocuments}
               permitFee={trip.permitFee}
             />
-            <section className="mt-5 rounded-2xl border border-border bg-secondary/20 p-5"><h2 className="font-extrabold">Why book with Voibee Holidays?</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Verified stays, clear inclusions, and a travel team with you from planning to return.</p></section>
+            <div className="mt-5"><SafeStay /></div>
+            <section className="mt-5 rounded-2xl border border-border bg-secondary/20 p-5"><h2 className="font-extrabold">Why book with Voibee Holidays?</h2><ul className="mt-4 space-y-3 text-sm font-semibold text-slate-700"><li className="flex gap-2"><span className="text-primary">•</span>10,000+ happy travellers</li><li className="flex gap-2"><span className="text-primary">•</span>Tours across the globe</li><li className="flex gap-2"><span className="text-primary">•</span>Experienced trip guides</li><li className="flex gap-2"><span className="text-primary">•</span>Verified stays and clear inclusions</li></ul></section>
             <PackageEnquiryForm packageTitle={trip.title} />
           </aside>
         </div>
 
-        {/* Related */}
-        {related.length ? (
-          <section className="mt-16">
-            <h2 className="mb-6 text-2xl font-bold">You may also like</h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((t) => (
-                <TripCard key={t._id} trip={t} />
-              ))}
-            </div>
-          </section>
-        ) : null}
+    
       </div>
     </main>
   );

@@ -51,9 +51,9 @@ export type ItineraryIconHighlight = "ac-bus" | "non-ac-bus" | "car" | "xuv" | "
 export type ItineraryHighlightType = "hotel" | "resort" | "activity" | "vibes" | "other";
 
 export interface ItineraryHighlight {
-  type: ItineraryHighlightType;
-  label: string;
   image: string;
+  type?: ItineraryHighlightType;
+  label?: string;
 }
 
 export interface ItineraryScheduleItem {
@@ -63,16 +63,20 @@ export interface ItineraryScheduleItem {
 }
 
 export interface ItineraryTransport {
-  title: string;
-  description: string;
+  vehicle_id?: ItineraryAsset | string;
+  title?: string;
+  description?: string;
 }
 
 export interface ItineraryHotel {
-  name: string;
-  description: string;
-  image: string;
+  hotel_id?: ItineraryAsset | string;
+  name?: string;
+  description?: string;
+  image?: string;
   verified?: boolean;
 }
+
+export interface ItineraryAsset { _id: string; name: string; image?: string; description?: string; }
 
 export type ItineraryMeal = "breakfast" | "lunch" | "dinner";
 

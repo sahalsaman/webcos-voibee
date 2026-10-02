@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import {
@@ -10,6 +11,9 @@ import {
   LogOut,
   UserCircle,
   Headset,
+  House,
+  Luggage,
+  UsersRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
@@ -37,6 +41,54 @@ function dashboardPath(role?: string) {
 const appLogo = "/voibee-global-travel-experts.png";
 const supportNumber = appConfig.mobile.replace(/\D/g, "");
 
+function MobileBottomNavigation({
+  country,
+  profileHref,
+}: {
+  country?: string;
+  profileHref: string;
+}) {
+  const pathname = usePathname();
+  const withCountry = (href: string) =>
+    country ? `${href}${href.includes("?") ? "&" : "?"}c=${encodeURIComponent(country)}` : href;
+  const links = [
+    { href: "/", label: "Home", icon: House },
+    { href: "/packages", label: "Holiday", icon: Luggage },
+    { href: "/vibe-circles", label: "Voibee Circle", icon: UsersRound },
+    { href: profileHref, label: "Profile", icon: UserCircle },
+  ];
+
+  return (
+    <nav
+      aria-label="Mobile navigation"
+      className="fixed inset-x-0 bottom-0 z-[60] border-t border-border/80 bg-white/95 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 shadow-[0_-8px_24px_rgba(15,23,42,0.1)] backdrop-blur md:hidden"
+    >
+      <div className="mx-auto grid max-w-md grid-cols-4">
+        {links.map(({ href, label, icon: Icon }) => {
+          const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+          return (
+            <Link
+              key={label}
+              href={label === "Profile" ? href : withCountry(href)}
+              className={cn(
+                "flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[10px] font-semibold transition-colors",
+                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
+              )}
+              aria-current={isActive ? "page" : undefined}
+            >
+              <span className={cn("flex size-7 items-center justify-center rounded-lg", isActive && "bg-primary/10")}>
+                <Icon className="size-5" strokeWidth={isActive ? 2.5 : 2} />
+              </span>
+              <span className="truncate">{label}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
 export function Navbar() {
   const { data: session } = useSession();
   const [country, setCountry] = useState<string | undefined>();
@@ -54,6 +106,7 @@ export function Navbar() {
   }, []);
 
   return (
+    <>
     <header className="sticky top-0 z-50 shadow-[0_1px_12px_rgba(15,23,42,0.05)]">
       <div className="bg-white text-black/80">
         <div className=" mx-auto flex h-10 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
@@ -194,5 +247,7 @@ export function Navbar() {
         </div>
       </div>
     </header>
+    <MobileBottomNavigation country={country} profileHref={user ? dashboardPath(user.role) : "/login"} />
+    </>
   );
 }

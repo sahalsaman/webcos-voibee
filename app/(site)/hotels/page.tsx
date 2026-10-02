@@ -22,13 +22,21 @@ export default async function HotelsPage({ searchParams }: { searchParams: Promi
   const country = one(params.c)?.toUpperCase();
   const result = await getTrips({ page: 1, pageSize: 100, sort: "rating" });
   const seen = new Set<string>();
-  const properties = result.items.flatMap((trip) => trip.itinerary.flatMap((day) => (day.hotels ?? []).map((hotel) => ({
-    ...hotel,
-    destination: trip.destination,
-    country: trip.country,
-    packageTitle: trip.title,
-    packageSlug: trip.slug,
-  })))).filter((hotel) => {
+  const properties = result.items.flatMap((trip) => trip.itinerary.flatMap((day) => (day.hotels ?? []).flatMap((hotel) => {
+    const asset = typeof hotel.hotel_id === "object" && hotel.hotel_id ? hotel.hotel_id : null;
+    const name = asset?.name || hotel.name;
+    if (!name) return [];
+    return [{
+      name,
+      image: asset?.image || hotel.image || "",
+      description: asset?.description || hotel.description || "",
+      verified: hotel.verified,
+      destination: trip.destination,
+      country: trip.country,
+      packageTitle: trip.title,
+      packageSlug: trip.slug,
+    }];
+  }))).filter((hotel) => {
     const key = `${hotel.name}|${hotel.destination}`.toLowerCase();
     if (seen.has(key)) return false;
     seen.add(key);

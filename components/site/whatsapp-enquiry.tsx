@@ -12,7 +12,7 @@ export function WhatsAppEnquiry() {
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="fixed bottom-5 right-4 z-50 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-bold text-white shadow-lg shadow-black/20 transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:right-6"
+      className="fixed bottom-20 right-4 z-50 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-bold text-white shadow-lg shadow-black/20 transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:right-6 md:bottom-5"
       aria-label="Enquire on WhatsApp"
     >
       <MessageCircle className="size-5" />
