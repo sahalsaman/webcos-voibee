@@ -53,7 +53,7 @@ export function BookingBox(props:BookingBoxProps){
         {!props.fixedPrice ? <p className="text-[11px] font-medium text-muted-foreground">Starting from</p> : null}
         <p className="truncate text-lg font-extrabold">{formatCurrency(props.pricePerPerson)} <span className="text-xs font-medium text-muted-foreground">/ person</span></p>
       </div>
-      <Button disabled={soldOut} size="lg" className="shrink-0 px-6" onClick={()=>setOpen(true)}>{soldOut ? "Sold Out" : "Book Now"}</Button>
+      <Button disabled={soldOut} size="default" className="shrink-0 px-6" onClick={()=>setOpen(true)}>{soldOut ? "Sold Out" : "Book Now"}</Button>
     </div>
   </div>
   {open&&<div className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/55 backdrop-blur-sm sm:items-center sm:p-5" role="dialog" aria-modal="true" onMouseDown={(event)=>{if(event.target===event.currentTarget)setOpen(false)}}><div className="max-h-[94vh] w-full max-w-5xl overflow-y-auto rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl"><div className="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-4 sm:px-7"><div><p className="text-xs font-bold uppercase tracking-wider text-primary">Plan your booking</p><h2 className="text-xl font-extrabold sm:text-2xl">Traveler and trip details</h2></div><button onClick={()=>setOpen(false)} className="flex size-10 items-center justify-center rounded-full bg-secondary"><X/></button></div><div className="space-y-7 p-5 sm:p-7">
