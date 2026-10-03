@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { unstable_cache } from "next/cache";
 
 type PortalPayload<T> = { success: boolean; data?: T; message?: string };
 
@@ -38,6 +39,30 @@ const publicFallbacks = new Map<string, (args: unknown[]) => unknown>([
   ["getSitemapRecords", () => ({ trips: [], destinations: [], partnerTrips: [], approvedPartners: [] })],
 ]);
 
+// These operations only return storefront content.  Keeping them outside the
+// request-specific cookie path lets Vercel reuse the result for every visitor.
+const cacheablePublicOperations = new Set([
+  "getActivityTypes",
+  "getActivities",
+  "getActivityBySlug",
+  "getDestinations",
+  "getHomeDestinations",
+  "getDestinationLanding",
+  "getOfferCards",
+  "getTripCategoryCounts",
+  "getTrips",
+  "getFeaturedTrips",
+  "getTripsByCategory",
+  "getTripBySlug",
+  "getRelatedTrips",
+  "getReviewsForTrip",
+  "getPartnerBySlug",
+  "getWhiteLabelTrip",
+  "getPartnerStorefront",
+  "getHomeStats",
+  "getSitemapRecords",
+]);
+
 function portalUrls(pathname: string) {
   const configured = process.env.PORTAL_API_URL;
   if (!configured) throw new Error("Configure PORTAL_API_URL.");
@@ -48,14 +73,14 @@ function portalUrls(pathname: string) {
   return [primary, ipv4];
 }
 
-async function fetchPortal(pathname: string, init: RequestInit) {
+async function fetchPortal(pathname: string, init: RequestInit, timeoutMs = 8_000) {
   let lastError: unknown;
   for (const url of portalUrls(pathname)) {
     try {
       return await fetch(url, {
         ...init,
         cache: "no-store",
-        signal: AbortSignal.timeout(8_000),
+        signal: AbortSignal.timeout(timeoutMs),
       });
     } catch (error) {
       lastError = error;
@@ -63,6 +88,26 @@ async function fetchPortal(pathname: string, init: RequestInit) {
   }
   throw new Error("Travels Portal is unreachable", { cause: lastError });
 }
+
+const getCachedPublicPayload = unstable_cache(
+  async (business: string, operation: string, serializedArgs: string) => {
+    const response = await fetchPortal("/api/storefront", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-business-slug": business,
+      },
+      body: JSON.stringify({ operation, args: JSON.parse(serializedArgs) }),
+    }, 3_000);
+    const result = await readPayload<unknown>(response);
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || `Travels Portal request failed (${response.status})`);
+    }
+    return result.data;
+  },
+  ["portal-public-storefront"],
+  { revalidate: 60 },
+);
 
 async function readPayload<T>(response: Response): Promise<PortalPayload<T>> {
   const text = await response.text();
@@ -74,11 +119,15 @@ async function readPayload<T>(response: Response): Promise<PortalPayload<T>> {
 }
 
 export async function portalCall<T>(operation: string, args: unknown[] = []): Promise<T> {
-  const incoming = await headers();
   const business = process.env.PORTAL_BUSINESS_SLUG;
   if (!business) throw new Error("Configure PORTAL_BUSINESS_SLUG.");
 
   try {
+    if (cacheablePublicOperations.has(operation)) {
+      return await getCachedPublicPayload(business, operation, JSON.stringify(args)) as T;
+    }
+
+    const incoming = await headers();
     const response = await fetchPortal("/api/storefront", {
       method: "POST",
       headers: {
