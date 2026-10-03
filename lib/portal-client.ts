@@ -98,7 +98,9 @@ const getCachedPublicPayload = unstable_cache(
         "x-business-slug": business,
       },
       body: JSON.stringify({ operation, args: JSON.parse(serializedArgs) }),
-    }, 3_000);
+    // The Portal can take a few seconds to wake its database connection. Do
+    // not replace real storefront content with an empty fallback too early.
+    }, 12_000);
     const result = await readPayload<unknown>(response);
     if (!response.ok || !result.success) {
       throw new Error(result.message || `Travels Portal request failed (${response.status})`);
@@ -106,7 +108,7 @@ const getCachedPublicPayload = unstable_cache(
     return result.data;
   },
   ["portal-public-storefront"],
-  { revalidate: 60 },
+  { revalidate: 300 },
 );
 
 async function readPayload<T>(response: Response): Promise<PortalPayload<T>> {
