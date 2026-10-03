@@ -45,6 +45,7 @@ export interface ItineraryItem {
   hotels?: ItineraryHotel[];
   meals?: ItineraryMeal[];
   sightseeing?: SightseeingPlace[];
+  activity?: ActivityItem[];
 }
 
 export type ItineraryIconHighlight = "ac-bus" | "non-ac-bus" | "car" | "xuv" | "tempo-traveller" | "train" | "flight" | "boat" | "transport" | "breakfast" | "lunch" | "dinner" | "mineral-water" | "first-aid" | "welcome-drink" | "tour-manager" | "campfire" | "luggage-assistance";
@@ -81,6 +82,12 @@ export interface ItineraryAsset { _id: string; name: string; image?: string; des
 export type ItineraryMeal = "breakfast" | "lunch" | "dinner";
 
 export interface SightseeingPlace {
+  name: string;
+  description: string;
+  image: string;
+}
+
+export interface ActivityItem {
   name: string;
   description: string;
   image: string;

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { BedDouble, Binoculars, BusFront, Check, ChevronDown, ChevronLeft, ChevronRight, Clock3, Coffee, Cross, Droplets, Flame, ForkKnife, GlassWater, Hotel, ImageIcon, Luggage, MapPin, Soup, UserRound, Utensils } from "lucide-react";
+import { BedDouble, Binoculars, BusFront, Check, ChevronDown, ChevronLeft, ChevronRight, Clock3, Coffee, Cross, Droplets, Flame, ForkKnife, GlassWater, Hotel, ImageIcon, Luggage, MapPin, Soup, Sparkles, UserRound, Utensils } from "lucide-react";
 import type { ItineraryHighlightType, ItineraryIconHighlight, ItineraryItem } from "@/types";
 
 const FALLBACK_PLACE = "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=75";
@@ -24,7 +24,7 @@ export function DetailedItinerary({ days }: { days: ItineraryItem[] }) {
 }
 
 function ItineraryDay({ day, index }: { day: ItineraryItem; index: number }) {
-  const hasStructuredContent = Boolean(day.iconHighlights?.length || day.highlights?.length || day.schedule?.length || day.transports?.length || day.hotels?.length || day.meals?.length || day.sightseeing?.length);
+  const hasStructuredContent = Boolean(day.iconHighlights?.length || day.highlights?.length || day.schedule?.length || day.transports?.length || day.hotels?.length || day.meals?.length || day.sightseeing?.length || day.activity?.length);
   return (
     <details open={index === 0} className="group relative w-full overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
       <summary className="flex cursor-pointer list-none items-center gap-3 bg-primary px-4 py-4 text-white select-none sm:gap-4 sm:px-6 [&::-webkit-details-marker]:hidden">
