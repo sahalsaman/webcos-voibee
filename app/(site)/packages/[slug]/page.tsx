@@ -15,6 +15,7 @@ import { BookingBox } from "@/components/booking/booking-box";
 import { PackageEnquiryForm } from "@/components/trip/package-enquiry-form";
 import { PackageServiceIcons, resolveIncludedServices } from "@/components/trip/package-service-icons";
 import { DetailedItinerary } from "@/components/trip/detailed-itinerary";
+import { HolidayItinerary } from "@/components/trip/holiday-itinerary";
 import { PackageActions } from "@/components/trip/package-actions";
 import { SafeStay } from "@/components/trip/safe-stay";
 import { PackageContentsTabs } from "@/components/trip/package-contents-tabs";
@@ -24,7 +25,7 @@ import {
   getReviewsForTrip,
   getRelatedTrips,
 } from "@/lib/data";
-import { isCustomDateTripCategory } from "@/lib/constants";
+import { isCustomDateTripCategory, VIBE_CIRCLE_TRIP_CATEGORY_LABELS } from "@/lib/constants";
 import { formatDate, tripDuration } from "@/lib/utils";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -59,6 +60,7 @@ export default async function TripDetailPage({ params }: Props) {
   ]);
 
   const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
+  const isVibeCircle = VIBE_CIRCLE_TRIP_CATEGORY_LABELS.includes(trip.category as (typeof VIBE_CIRCLE_TRIP_CATEGORY_LABELS)[number]);
   const configuredDays = trip.durationDays || trip.itinerary.length;
   const { label: duration } = tripDuration(trip.startDate, trip.endDate, configuredDays);
   const scheduleLabel = duration;
@@ -150,7 +152,7 @@ export default async function TripDetailPage({ params }: Props) {
             {trip.featured ? <Badge variant="accent">Featured</Badge> : null}
           </div>
 
-          {includedServices.length ? <div className="mt-7"><h2 className="mb-3 text-base font-bold">Highlights</h2><PackageServiceIcons includedServices={includedServices} showcase /></div> : null}
+          {includedServices.length ? <div className="mt-7"><h2 className="mb-3 text-base font-bold">{isVibeCircle ? "Highlights" : "Package includes"}</h2><PackageServiceIcons includedServices={includedServices} showcase /></div> : null}
         </section>
    {/* Overview */}
         <section>
@@ -170,7 +172,7 @@ export default async function TripDetailPage({ params }: Props) {
         </section>
 
             <section id="itinerary" className="scroll-mt-32">
-              {trip.itinerary?.length ? <DetailedItinerary days={trip.itinerary} /> : null}
+              {trip.itinerary?.length ? isVibeCircle ? <DetailedItinerary days={trip.itinerary} /> : <HolidayItinerary days={trip.itinerary} /> : null}
             </section>
 
             <PackageContentsTabs inclusions={trip.inclusions} exclusions={trip.exclusions} />
