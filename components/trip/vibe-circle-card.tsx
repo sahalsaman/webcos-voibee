@@ -16,7 +16,7 @@ export function VibeCircleCard({ trip }: { trip: TripDTO }) {
   const schedule = customDate ? duration : `${formatDate(trip.startDate)} · ${duration}`;
 
   return (
-    <Link href={`/packages/${trip.slug}`} className="group block min-w-0">
+    <Link href={`/vibe-circles/${trip.slug}`} className="group block min-w-0">
       <div className="relative aspect-[4/3] overflow-hidden rounded-[22px] bg-slate-100">
         <Image
           src={image}
