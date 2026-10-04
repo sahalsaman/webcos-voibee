@@ -47,8 +47,8 @@ export function ThemeFilter({
   }
 
   return (
-    <div className="mx-auto w-full max-w-full rounded-2xl bg-white/95 p-2 shadow-md backdrop-blur-sm">
-      <div className="flex flex-wrap items-stretch justify-center gap-1.5 sm:gap-3">
+    <div className={`mx-auto max-w-full rounded-2xl bg-white/95 p-2 shadow-md backdrop-blur-sm ${fitContent ? "w-fit" : "w-full"}`}>
+      <div className="flex flex-wrap items-stretch justify-center gap-.5 sm:gap-3">
           <button
             type="button"
             onClick={() => applyCategory("")}
