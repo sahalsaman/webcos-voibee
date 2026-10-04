@@ -53,7 +53,7 @@ export function OfferCarousel({ offers }: { offers: OfferSlide[] }) {
         if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false);
       }}
     >
-      <div className="relative min-h-[clamp(540px,calc(100svh-140px),680px)] overflow-hidden rounded-[26px] bg-slate-950 shadow-2xl shadow-slate-900/15">
+      <div className="relative min-h-[360px] overflow-hidden rounded-[26px] bg-slate-950 shadow-2xl shadow-slate-900/15 sm:min-h-[clamp(540px,calc(100svh-140px),680px)]">
         {slides.map((offer, index) => {
           const visible = index === active;
 
@@ -77,19 +77,25 @@ export function OfferCarousel({ offers }: { offers: OfferSlide[] }) {
               <div className="absolute inset-0 bg-gradient-to-r from-slate-950/82 via-slate-950/50 to-slate-950/12" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-transparent to-slate-950/15" />
 
-              <div className="relative mx-auto flex min-h-[clamp(540px,calc(100svh-140px),680px)] max-w-7xl items-center px-6 pb-36 pt-14 sm:px-10 sm:pb-40 lg:px-16 lg:pb-44">
+              <div className="relative mx-auto flex min-h-[360px] max-w-7xl items-center px-6 pb-36 pt-14 sm:min-h-[clamp(540px,calc(100svh-140px),680px)] sm:px-10 sm:pb-40 lg:px-16 lg:pb-44">
                 <div className="max-w-2xl text-white">
                   <p className="mb-4 text-xs font-bold uppercase tracking-[0.24em] text-secondary sm:text-sm">
                     Curated journeys by Voibee
                   </p>
-                  <h1 className="text-4xl font-semibold leading-[1.08] tracking-tight sm:text-6xl">
+                  <h1 className="text-2xl font-semibold leading-[1.08] tracking-tight sm:text-6xl">
                     {offer.title}
                   </h1>
-                  <p className="mt-5 max-w-xl text-base leading-7 text-white/85 sm:text-xl sm:leading-8">
+                  <p className="mt-5 hidden sm:block max-w-xl text-base leading-7 text-white/85 sm:text-xl sm:leading-8">
                     {offer.description}
                   </p>
                   <div className="mt-7 flex flex-wrap items-center gap-3">
-                    <Button asChild size="lg" className="rounded-full bg-white px-6 text-primary shadow-lg hover:bg-secondary">
+                    <Button asChild size="lg" className="hidden sm:block rounded-full bg-white px-6 text-primary shadow-lg hover:bg-secondary">
+                      <Link href={offer.href} tabIndex={visible ? 0 : -1}>
+                        {offer.ctaLabel ?? "Explore packages"}
+                        <ArrowRight className="size-4" />
+                      </Link>
+                    </Button>
+                     <Button asChild size="sm" className="sm:hidden  rounded-full bg-white py-2 text-primary shadow-lg hover:bg-secondary">
                       <Link href={offer.href} tabIndex={visible ? 0 : -1}>
                         {offer.ctaLabel ?? "Explore packages"}
                         <ArrowRight className="size-4" />

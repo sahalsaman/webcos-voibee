@@ -113,7 +113,7 @@ export default async function HomePage({
       </section> */}
 
       {/* ---------------- Popular destinations ---------------- */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">Explore more</p>
@@ -126,7 +126,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Package themes ---------------- */}
-      <section className="bg-white py-16 sm:py-20">
+      <section className="bg-white py-12 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-9 max-w-2xl text-center">
             <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">Find your kind of holiday</p>
@@ -138,7 +138,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Featured packages ---------------- */}
-      <section className="bg-white py-16">
+      <section className="bg-white py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-end justify-between gap-4 [&>div]:mb-0">
             <SectionHeading
@@ -175,7 +175,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Voibee Vibe Circles ---------------- */}
-      <section className=" py-16 sm:py-20">
+      <section className=" py-12 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-end justify-between gap-4 [&>div]:mb-0">
             <SectionHeading
@@ -204,7 +204,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Moments ---------------- */}
-      <section className="overflow-hidden bg-secondary/35 px-4 py-16 sm:px-6 lg:px-8">
+      <section className="overflow-hidden bg-secondary/35 px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
           <div className="max-w-xl lg:pr-8">
             <SectionHeading
@@ -237,7 +237,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Why Voibee ---------------- */}
-      <section id="why" className="scroll-mt-32 px-4 py-16 sm:px-6 lg:px-8">
+      <section id="why" className="scroll-mt-32 px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl px-1 py-6 sm:px-4 lg:px-6">
           {/* <div className="text-center">
             <p className="text-xs font-black uppercase tracking-[0.24em] text-primary">The Voibee advantage</p>
@@ -272,7 +272,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Testimonials ---------------- */}
-      <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
+      <section className="bg-white px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <h2 className="sr-only">Loved by Voibee travellers</h2>
           <div className="grid items-center gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12">

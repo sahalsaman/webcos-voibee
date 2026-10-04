@@ -100,7 +100,7 @@ export default async function TripsPage({
           </div>
           
         </div>
-          <div className="mt-5 text-left absolute left-6 right-6 sm:left-10 sm:right-10 lg:left-12 lg:right-12 z-40">
+          <div className="mt-5 text-left absolute left-1 right-1 sm:left-10 sm:right-10 lg:left-12 lg:right-12 z-40">
             <ThemeFilter
               selectedCategory={selectedCategory ?? ""}
               categoryCounts={categoryCounts}
@@ -110,7 +110,7 @@ export default async function TripsPage({
             />
           </div>
       </header>
-
+<div className=" mt-40 sm:mt-40 lg:mt-0"></div>
       <TripFilters
         key={JSON.stringify(linkParams)}
         initialFilters={{

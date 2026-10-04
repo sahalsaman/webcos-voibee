@@ -15,7 +15,7 @@ const ICON_HIGHLIGHT_VISUALS: Record<ItineraryIconHighlight, { label: string; ic
 export function DetailedItinerary({ days }: { days: ItineraryItem[] }) {
   return (
     <section>
-      <div className="mb-6"><p className="text-sm font-semibold text-primary">Day by day</p><h2 className="mt-1 text-2xl font-bold">Detailed itinerary</h2></div>
+      <div className="mb-6"><p className="text-sm font-semibold text-primary">Day by day</p><h2 className="mt-1 text-2xl font-bold">Itinerary</h2></div>
       <div className="space-y-6">
         {days.map((day, index) => <ItineraryDay key={`${day.day}-${index}`} day={day} index={index} />)}
       </div>

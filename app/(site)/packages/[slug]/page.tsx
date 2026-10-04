@@ -53,13 +53,15 @@ export default async function TripDetailPage({ params }: Props) {
   const { slug } = await params;
   const trip = await getTripBySlug(slug);
   if (!trip) notFound();
+  if (VIBE_CIRCLE_TRIP_CATEGORY_LABELS.includes(trip.category as (typeof VIBE_CIRCLE_TRIP_CATEGORY_LABELS)[number])) {
+    redirect(`/vibe-circles/${trip.slug}`);
+  }
 
   const [reviews] = await Promise.all([
     getReviewsForTrip(trip._id),
   ]);
 
   const customDate = trip.holidayPackage ?? isCustomDateTripCategory(trip.category);
-  const isVibeCircle = VIBE_CIRCLE_TRIP_CATEGORY_LABELS.includes(trip.category as (typeof VIBE_CIRCLE_TRIP_CATEGORY_LABELS)[number]);
   const configuredDays = trip.durationDays || trip.itinerary.length;
   const { label: duration } = tripDuration(trip.startDate, trip.endDate, configuredDays);
   const scheduleLabel = duration;
@@ -151,7 +153,6 @@ export default async function TripDetailPage({ params }: Props) {
             {trip.featured ? <Badge variant="accent">Featured</Badge> : null}
           </div>
 
-          {includedServices.length ? <div className="mt-7"><h2 className="mb-3 text-base font-bold">Package includes</h2><PackageServiceIcons includedServices={includedServices} showcase /></div> : null}
         </section>
    {/* Overview */}
         <section>
@@ -171,7 +172,7 @@ export default async function TripDetailPage({ params }: Props) {
         </section>
 
             <section id="itinerary" className="scroll-mt-32">
-              {trip.itinerary?.length ? isVibeCircle ? <DetailedItinerary days={trip.itinerary} /> : <HolidayItinerary days={trip.itinerary} /> : null}
+              {trip.itinerary?.length ? <HolidayItinerary days={trip.itinerary} /> : null}
             </section>
 
             <PackageContentsTabs inclusions={trip.inclusions} exclusions={trip.exclusions} />

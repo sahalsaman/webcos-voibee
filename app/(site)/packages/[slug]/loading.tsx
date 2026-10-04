@@ -31,7 +31,7 @@ export default function PackageDetailLoading() {
 
         <section className="py-7 sm:py-9">
           <div className="flex gap-2"><Skeleton className="h-6 w-24 rounded-full" /><Skeleton className="h-6 w-28 rounded-full" /></div>
-          <div className="mt-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+          <div className=" flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
             <div className="flex-1"><Skeleton className="h-9 w-2/3 max-w-xl sm:h-10" /><div className="mt-3 flex flex-wrap gap-4"><Skeleton className="h-4 w-24" /><Skeleton className="h-4 w-28" /><Skeleton className="h-4 w-32" /></div></div>
             <Skeleton className="hidden h-[82px] w-24 rounded-2xl sm:block" />
           </div>

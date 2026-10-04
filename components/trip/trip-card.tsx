@@ -47,7 +47,6 @@ export function TripCard({ trip, href, priceOverride, priceLabel, view = "grid" 
         />
         <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
           <span className="rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-slate-700 shadow-sm backdrop-blur">{trip.category}</span>
-          <span className="flex size-10 items-center justify-center rounded-full border border-white/50 bg-slate-950/45 text-white backdrop-blur"><Bookmark className="size-4" /></span>
         </div>
         {soldOut ? (
           <div className="absolute inset-0 flex items-center justify-center bg-black/50">

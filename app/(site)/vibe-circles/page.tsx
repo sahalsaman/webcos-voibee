@@ -83,6 +83,7 @@ export default async function VibeCirclesPage({ searchParams }: { searchParams: 
             </div>
         </header>
 
+<div className=" mt-40 sm:mt-40 lg:mt-0"></div>
         <TripFilters
           key={JSON.stringify(linkParams)}
           basePath="/vibe-circles"

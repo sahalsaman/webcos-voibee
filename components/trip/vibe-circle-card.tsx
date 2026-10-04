@@ -27,9 +27,7 @@ export function VibeCircleCard({ trip }: { trip: TripDTO }) {
         />
         <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
           <span className="rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur">{trip.destination}</span>
-          <span className="flex items-center gap-1 rounded-full bg-slate-950/45 px-2.5 py-1 text-xs font-bold text-white backdrop-blur">
-            <Heart className="size-3.5" /> Vibe
-          </span>
+         
         </div>
         <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-2">
           <span className="flex size-10 items-center justify-center rounded-full border-2 border-white bg-primary text-sm font-black text-primary-foreground shadow-md">V</span>

@@ -14,7 +14,7 @@ export default function SiteLayout({
     <div className="flex min-h-screen flex-col">
       <InitialSplash />
       <Navbar />
-      <div className="flex-1 pb-20 md:pb-0">{children}</div>
+      <div className="flex-1">{children}</div>
       <Suspense fallback={null}>
         <Footer />
       </Suspense>
