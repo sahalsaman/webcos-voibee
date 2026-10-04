@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useRef } from "react";
 import Image from "next/image";
 import { TRIP_CATEGORIES, type TripCategoryOption } from "@/lib/constants";
 
@@ -37,7 +36,6 @@ export function ThemeFilter({
 }) {
   const router = useRouter();
   const params = useSearchParams();
-  const categoryRef = useRef<HTMLDivElement>(null);
 
   function applyCategory(category: string) {
     const next = new URLSearchParams(params.toString());
@@ -49,15 +47,14 @@ export function ThemeFilter({
   }
 
   return (
-    <div className={`mx-auto max-w-full overflow-hidden rounded-2xl bg-white/95 p-2 shadow-md backdrop-blur-sm ${fitContent ? "w-fit" : "w-full"}`}>
-      <div ref={categoryRef} className="overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className={`grid w-max auto-cols-[92px] grid-flow-col items-stretch gap-2 sm:auto-cols-[108px] sm:gap-3 ${fitContent ? "" : "min-w-full justify-center"}`}>
+    <div className="mx-auto w-full max-w-full rounded-2xl bg-white/95 p-2 shadow-md backdrop-blur-sm">
+      <div className="flex flex-wrap items-stretch justify-center gap-1.5 sm:gap-3">
           <button
             type="button"
             onClick={() => applyCategory("")}
             aria-pressed={!selectedCategory}
             title="All packages"
-            className={`group flex min-h-[84px] flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-center transition ${!selectedCategory ? "bg-secondary text-primary" : "bg-transparent text-slate-700 hover:bg-secondary/40"}`}
+            className={`group flex min-h-[84px] w-[78px] flex-col items-center justify-center gap-1 rounded-xl py-2 text-center transition sm:w-[108px] ${!selectedCategory ? "bg-secondary text-primary" : "bg-transparent text-slate-700 hover:bg-secondary/40"}`}
           >
             <Image src="/filter-all-packages.png" alt="" width={48} height={48} className="size-10 object-contain transition-transform group-hover:scale-105 sm:size-11" />
             <span className="text-[11px] font-extrabold leading-tight text-slate-800">All packages</span>
@@ -72,7 +69,7 @@ export function ThemeFilter({
                 onClick={() => applyCategory(item.label)}
                 aria-pressed={active}
                 title={`${item.label} · ${categoryCounts[item.label] ?? 0} packages`}
-                className={`group flex min-h-[84px] flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-center transition ${active ? "bg-secondary text-primary" : "bg-transparent text-slate-700 hover:bg-secondary/40"}`}
+                className={`group flex min-h-[84px] w-[78px] flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center transition sm:w-[108px] sm:px-2 ${active ? "bg-secondary text-primary" : "bg-transparent text-slate-700 hover:bg-secondary/40"}`}
               >
                 <Image src={FILTER_IMAGES[item.label] ?? "/filter-all-packages.png"} alt="" width={56} height={56} className="size-10 object-contain transition-transform group-hover:scale-105 sm:size-13" />
                 <span className="line-clamp-2 text-[11px] font-extrabold leading-tight text-slate-800">{item.label}</span>
@@ -80,7 +77,6 @@ export function ThemeFilter({
               </button>
             );
           })}
-        </div>
       </div>
     </div>
   );
