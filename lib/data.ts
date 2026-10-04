@@ -5,6 +5,7 @@ export const getActivityTypes = (...args: Parameters<typeof Contract.getActivity
 export const getActivities = (...args: Parameters<typeof Contract.getActivities>): ReturnType<typeof Contract.getActivities> => portalCall("getActivities", args);
 export const getActivityBySlug = (...args: Parameters<typeof Contract.getActivityBySlug>): ReturnType<typeof Contract.getActivityBySlug> => portalCall("getActivityBySlug", args);
 export const getDestinations = (...args: Parameters<typeof Contract.getDestinations>): ReturnType<typeof Contract.getDestinations> => portalCall("getDestinations", args);
+export const getDirectBookingHotels = (...args: Parameters<typeof Contract.getDirectBookingHotels>): ReturnType<typeof Contract.getDirectBookingHotels> => portalCall("getDirectBookingHotels", args);
 export const getHomeDestinations = (...args: Parameters<typeof Contract.getHomeDestinations>): ReturnType<typeof Contract.getHomeDestinations> => portalCall("getHomeDestinations", args);
 export const getDestinationLanding = (...args: Parameters<typeof Contract.getDestinationLanding>): ReturnType<typeof Contract.getDestinationLanding> => portalCall("getDestinationLanding", args);
 export const getOfferCards = (...args: Parameters<typeof Contract.getOfferCards>): ReturnType<typeof Contract.getOfferCards> => portalCall("getOfferCards", args);

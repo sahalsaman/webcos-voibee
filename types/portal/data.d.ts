@@ -12,6 +12,20 @@ export declare function getActivities(filters?: {
 }): Promise<ActivityDTO[]>;
 export declare function getActivityBySlug(slug: string): Promise<ActivityDTO | null>;
 export declare function getDestinations(countryCode?: string): Promise<DestinationDTO[]>;
+export interface DirectBookingHotelDTO {
+    _id: string;
+    name: string;
+    image: string;
+    description: string;
+    facilities: string[];
+    directHotelBooking: true;
+    supplier?: {
+        companyName?: string;
+        city?: string;
+        country?: string;
+    } | string;
+}
+export declare function getDirectBookingHotels(): Promise<DirectBookingHotelDTO[]>;
 export declare function getHomeDestinations(countryCode?: string): Promise<{
     domestic: DestinationDTO[];
     international: DestinationDTO[];
