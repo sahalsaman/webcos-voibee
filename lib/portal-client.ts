@@ -109,7 +109,7 @@ const getCachedPublicPayload = unstable_cache(
     }
     return result.data;
   },
-  ["portal-public-storefront"],
+  ["portal-public-storefront-v2"],
   { revalidate: 300 },
 );
 
