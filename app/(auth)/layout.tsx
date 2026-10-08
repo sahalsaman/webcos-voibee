@@ -33,7 +33,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       {/* Form panel */}
       <div className="flex items-center justify-center px-4 py-12 sm:px-6">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md [&:has(.mobile-login-screen)>a]:hidden">
           <Link
             href="/"
             className="mb-8 flex items-center gap-2 text-lg font-bold lg:hidden"
