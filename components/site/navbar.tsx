@@ -39,7 +39,7 @@ function dashboardPath(role?: string) {
   return "/traveler";
 }
 
-const appLogo = "/voibee-global-travel-experts.png";
+const appLogo = "/voibee-logo.png";
 const supportNumber = appConfig.mobile.replace(/\D/g, "");
 
 function MobileBottomNavigation({
@@ -62,7 +62,7 @@ function MobileBottomNavigation({
   return (
     <nav
       aria-label="Mobile navigation"
-      className="fixed inset-x-0 bottom-0 z-[60] border-t border-border/80 bg-white/95 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 shadow-[0_-8px_24px_rgba(15,23,42,0.1)] backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-[60] border-t border-border/80 bg-white/95 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 shadow-[0_-8px_24px_rgba(15,23,42,0.1)] backdrop-blur md:hidden rounded-t-xl"
     >
       <div className="mx-auto grid max-w-md grid-cols-4">
         {links.map(({ href, label, icon: Icon }) => {
@@ -121,8 +121,8 @@ export function Navbar() {
         <HomeScreenSkeleton />
       </div>
     ) : null}
-    <header className="sticky top-0 z-50 shadow-[0_1px_12px_rgba(15,23,42,0.05)]">
-      <div className="bg-white text-black/80">
+    <header className="sticky top-0 z-50 sm:shadow-[0_1px_12px_rgba(15,23,42,0.05)]">
+      <div className="bg-white text-black/80 sm:border-b sm:border-border/70">
         <div className=" mx-auto flex h-10 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
           <a
             href={`tel:+${supportNumber}`}
@@ -139,7 +139,7 @@ export function Navbar() {
           </div>
         </div>
       </div>
-      <div className="glass border-b border-border/70 bg-card/95">
+      <div className="sm:glass sm:border-b sm:border-border/70 sm:bg-card/95 bg-white">
         <nav className="mx-auto flex h-14 sm:h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
@@ -148,7 +148,16 @@ export function Navbar() {
             }}
             className="flex items-center gap-2 font-extrabold text-2xl text-primary"
           >
-            <Image src={appLogo} alt="Voibee Global Travel Experts" width={174} height={84} loading="eager" className="h-12 w-auto" />
+            <Image
+              src={appLogo}
+              alt="Voibee Global Travel Experts"
+              width={214}
+              height={84}
+              loading="eager"
+              unoptimized
+              sizes="(max-width: 639px) 128px, 154px"
+              className="h-9 w-auto sm:h-11 lg:h-12"
+            />
           </Link>
 
           <div className="hidden items-center gap-1 md:flex">
@@ -215,8 +224,8 @@ export function Navbar() {
       {/* Mobile menu */}
       <div
         className={cn(
-          "glass overflow-hidden border-b border-border/70 bg-card/95 md:hidden",
-          open ? "max-h-96" : "max-h-0 border-b-0",
+          "bg-white overflow-hidden   md:hidden",
+          open ? "max-h-96" : "max-h-0 ",
           "transition-all duration-300",
         )}
       >

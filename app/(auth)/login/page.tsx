@@ -61,9 +61,11 @@ function LoginForm() {
           <Image
             src={appConfig.appLogoWithName}
             alt={appConfig.appNameCap}
-            width={126}
-            height={48}
-            className="h-10 w-auto object-contain"
+            width={154}
+            height={60}
+            sizes="128px"
+            unoptimized
+            className="h-9 w-auto object-contain"
             priority
           />
           <span className="size-11" aria-hidden="true" />
