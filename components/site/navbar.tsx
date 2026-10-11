@@ -114,6 +114,22 @@ export function Navbar() {
     return () => window.clearTimeout(timer);
   }, [openingHome, pathname]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [open]);
+
   return (
     <>
     {openingHome ? (
@@ -213,6 +229,8 @@ export function Navbar() {
               size="icon"
               className="md:hidden"
               aria-label="Menu"
+              aria-controls="mobile-menu-drawer"
+              aria-expanded={open}
               onClick={() => setOpen((v) => !v)}
             >
               {open ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -220,62 +238,84 @@ export function Navbar() {
           </div>
         </nav>
       </div>
-
-      {/* Mobile menu */}
-      <div
+    </header>
+    <div
+      className={cn(
+        "fixed inset-0 z-[90] md:hidden",
+        open ? "pointer-events-auto" : "pointer-events-none",
+      )}
+      aria-hidden={!open}
+    >
+      <button
+        type="button"
+        aria-label="Close menu"
+        onClick={() => setOpen(false)}
         className={cn(
-          "bg-white overflow-hidden   md:hidden",
-          open ? "max-h-96" : "max-h-0 ",
-          "transition-all duration-300",
+          "absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] transition-opacity duration-300",
+          open ? "opacity-100" : "opacity-0",
+        )}
+      />
+      <aside
+        id="mobile-menu-drawer"
+        aria-label="Mobile menu"
+        className={cn(
+          "absolute inset-y-0 right-0 flex w-[min(86vw,360px)] flex-col bg-white px-5 pb-[max(env(safe-area-inset-bottom),1.25rem)] pt-[max(env(safe-area-inset-top),1.25rem)] shadow-2xl transition-transform duration-300 ease-out",
+          open ? "translate-x-0" : "translate-x-full",
         )}
       >
-        <div className="flex flex-col gap-1 px-4 py-3">
+        <div className="flex items-center justify-between border-b border-border pb-5">
+          <Image src={appLogo} alt="Voibee Global Travel Experts" width={154} height={60} unoptimized className="h-9 w-auto" />
+          <Button type="button" variant="ghost" size="icon" aria-label="Close menu" onClick={() => setOpen(false)}>
+            <X className="size-5" />
+          </Button>
+        </div>
+        <nav className="mt-5 flex flex-col gap-1" aria-label="Main navigation">
           {NAV_LINKS.map((l) => (
             <Link
               key={`${l.href}-${l.label}`}
               href={withCountry(l.href)}
               onClick={() => setOpen(false)}
-              className="rounded-md px-3 py-2 text-sm font-medium hover:bg-secondary"
+              className="rounded-xl px-4 py-3 text-base font-semibold text-foreground transition-colors hover:bg-secondary hover:text-primary"
             >
               {l.label}
             </Link>
           ))}
-          <div className="my-2 h-px bg-border" />
-          {user ? (
-            <>
-              <Link
-                href={dashboardPath(user.role)}
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-secondary"
-              >
-                <LayoutDashboard className="size-4" /> Dashboard
+        </nav>
+        <div className="my-5 h-px bg-border" />
+        {user ? (
+          <div className="flex flex-col gap-2">
+            <Link
+              href={dashboardPath(user.role)}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 rounded-xl px-4 py-3 text-base font-semibold text-foreground hover:bg-secondary hover:text-primary"
+            >
+              <LayoutDashboard className="size-5" /> Dashboard
+            </Link>
+            <button
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="flex items-center gap-3 rounded-xl px-4 py-3 text-left text-base font-semibold text-foreground hover:bg-secondary hover:text-primary"
+            >
+              <LogOut className="size-5" /> Sign out
+            </button>
+          </div>
+        ) : (
+          <div className="mt-auto space-y-3">
+            <Link
+              href="/login"
+              onClick={() => setOpen(false)}
+              className="flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-base font-bold text-primary"
+            >
+              <UserCircle className="size-5" /> Log in
+            </Link>
+            <Button asChild variant="default" className="h-12 w-full rounded-xl text-base">
+              <Link href="/register" onClick={() => setOpen(false)}>
+                Join Our Community
               </Link>
-              <button
-                onClick={() => signOut({ callbackUrl: "/" })}
-                className="flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium hover:bg-secondary"
-              >
-                <LogOut className="size-4" /> Sign out
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-secondary"
-              >
-                <UserCircle className="size-4" /> Log in
-              </Link>
-              <Button asChild variant="default" className="mt-1">
-                <Link href="/register" onClick={() => setOpen(false)}>
-                  Join Our Community
-                </Link>
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
-    </header>
+            </Button>
+          </div>
+        )}
+      </aside>
+    </div>
     <MobileBottomNavigation country={country} profileHref={user ? dashboardPath(user.role) : "/login"} />
     </>
   );
