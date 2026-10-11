@@ -109,7 +109,7 @@ export function TripFilters({
         <button
           type="button"
           onClick={() => setMobileFiltersOpen(true)}
-          className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-primary shadow-sm sm:hidden"
+          className="fixed bottom-34 right-4 z-50 flex size-10 items-center justify-center rounded-xl border border-border bg-card text-primary shadow-lg sm:hidden"
           aria-label="Open package filters"
         >
           <Filter className="size-4" />
