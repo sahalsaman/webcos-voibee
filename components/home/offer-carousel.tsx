@@ -89,13 +89,13 @@ export function OfferCarousel({ offers }: { offers: OfferSlide[] }) {
                     {offer.description}
                   </p>
                   <div className="mt-7 flex flex-wrap items-center gap-3">
-                    <Button asChild size="lg" className="hidden sm:block rounded-full bg-white px-6 text-primary shadow-lg hover:bg-secondary">
+                    <Button asChild size="lg" className="hidden sm:flex items-center rounded-full bg-white px-6 text-primary shadow-lg hover:bg-secondary">
                       <Link href={offer.href} tabIndex={visible ? 0 : -1}>
                         {offer.ctaLabel ?? "Explore packages"}
                         <ArrowRight className="size-4" />
                       </Link>
                     </Button>
-                     <Button asChild size="sm" className="sm:hidden  rounded-full bg-white py-2 text-primary shadow-lg hover:bg-secondary">
+                     <Button asChild size="sm" className="sm:hidden rounded-full bg-white py-2 text-primary shadow-lg hover:bg-secondary">
                       <Link href={offer.href} tabIndex={visible ? 0 : -1}>
                         {offer.ctaLabel ?? "Explore packages"}
                         <ArrowRight className="size-4" />
