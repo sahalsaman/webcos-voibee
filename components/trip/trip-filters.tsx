@@ -59,7 +59,7 @@ export function TripFilters({
   }
 
   return (
-    <div className="mb-8">
+    <div className="mb-8 pt-4 md:pt-0">
     
 
       <div className="grid items-end gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -141,7 +141,7 @@ export function TripFilters({
             <option value="rating">Top rated</option>
           </Select>
         </div>
-        <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-1 shadow-sm" aria-label="Package layout">
+        <div className="hidden md:flex items-center gap-1 rounded-xl border border-border bg-card p-1 shadow-sm" aria-label="Package layout">
           <button
             type="button"
             onClick={() => { setView("grid"); apply({ view: "grid" }); }}
