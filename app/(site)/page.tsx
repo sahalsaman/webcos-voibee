@@ -113,11 +113,11 @@ export default async function HomePage({
       </section> */}
 
       {/* ---------------- Popular destinations ---------------- */}
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">Explore more</p>
-            <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">Trending Holiday Destinations</h2>
+            <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">Trending Holiday Destinations</h2>
           </div>
           <Button asChild variant="outline" className="hidden sm:flex"><Link href={hrefWithCountry("/destinations", country)}>View all <ArrowRight className="size-4" /></Link></Button>
         </div>
@@ -126,11 +126,11 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Package themes ---------------- */}
-      <section className="bg-white py-12 sm:py-20">
+      <section className="bg-white py-8 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-9 max-w-2xl text-center">
             <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">Find your kind of holiday</p>
-            <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">Choose the trip mood that fits you</h2>
+            <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">Choose the trip mood that fits you</h2>
             <p className="mt-3 text-sm leading-6 text-slate-500 sm:text-base">Pick a travel style and discover packages selected around the experience you want.</p>
           </div>
           <ThemeCarousel themes={TRIP_THEME_DETAILS} country={country} />
@@ -138,7 +138,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Featured packages ---------------- */}
-      <section className="bg-white py-12">
+      <section className="bg-white py-8 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-end justify-between gap-4 [&>div]:mb-0">
             <SectionHeading
@@ -175,7 +175,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Voibee Vibe Circles ---------------- */}
-      <section className=" py-12 sm:py-20">
+      <section className="py-8 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-end justify-between gap-4 [&>div]:mb-0">
             <SectionHeading
@@ -204,7 +204,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Moments ---------------- */}
-      <section className="overflow-hidden bg-secondary/35 px-4 py-12 sm:px-6 lg:px-8">
+      <section className="overflow-hidden bg-secondary/35 px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
           <div className="max-w-xl lg:pr-8">
             <SectionHeading
@@ -224,7 +224,7 @@ export default async function HomePage({
               </Button></a>
             </div>
           </div>
-          <div className="relative min-h-[420px] sm:min-h-[520px] lg:min-h-[600px]">
+          <div className="relative min-h-[330px] sm:min-h-[520px] lg:min-h-[600px]">
             <Image
         src="/moments-road-premium.webp"
         alt="Voibee travelers enjoying a premium Kerala road trip"
@@ -237,7 +237,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Why Voibee ---------------- */}
-      <section id="why" className="scroll-mt-32 px-4 py-12 sm:px-6 lg:px-8">
+      <section id="why" className="scroll-mt-32 px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <div className="mx-auto max-w-7xl px-1 py-6 sm:px-4 lg:px-6">
           {/* <div className="text-center">
             <p className="text-xs font-black uppercase tracking-[0.24em] text-primary">The Voibee advantage</p>
@@ -249,7 +249,7 @@ export default async function HomePage({
             </p>
           </div> */}
 
-          <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-8 lg:grid-cols-4 lg:gap-x-12">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-4 sm:gap-x-8 sm:gap-y-8 lg:grid-cols-4 lg:gap-x-12">
             <WhyStat image="/benefit-customisation.png" value="100%" label="Customisation" />
             <WhyStat image="/benefit-concierge.png" value="24×7" label="Travel concierge" />
 
@@ -272,7 +272,7 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Testimonials ---------------- */}
-      <section className="bg-white px-4 py-12 sm:px-6 lg:px-8">
+      <section className="bg-white px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <h2 className="sr-only">Loved by Voibee travellers</h2>
           <div className="grid items-center gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12">
@@ -316,13 +316,13 @@ export default async function HomePage({
       </section>
 
       {/* ---------------- Final CTA ---------------- */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
+      <section className="px-4 py-10 sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto grid max-w-7xl overflow-hidden rounded-2xl border border-border  shadow-xl shadow-slate-950/10 lg:grid-cols-[1fr_420px] bg-primary">
           <div className="p-8 sm:p-10 lg:p-12 text-secondary">
             <Badge variant="secondary" className="mb-5 w-fit">
               <Users className="size-3.5" /> Travel buddies are waiting
             </Badge>
-            <h2 className="max-w-2xl text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
+            <h2 className="max-w-2xl text-2xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
               Start traveling together
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-7 text-secondry sm:text-lg">
@@ -349,10 +349,10 @@ export default async function HomePage({
 
 function WhyStat({ image, value, label }: { image: string; value: string; label: string }) {
   return (
-    <div className="group flex min-h-44 flex-col items-center justify-center px-3 py-5 text-center transition duration-300 hover:-translate-y-1">
+    <div className="group flex min-h-32 flex-col items-center justify-center px-3 py-4 text-center transition duration-300 hover:-translate-y-1 sm:min-h-44 sm:py-5">
       <Image src={image} alt="" width={80} height={80} className="size-16 object-contain sm:size-20" />
-      <p className="mt-4 text-3xl font-black leading-none tracking-tight text-slate-950 sm:text-4xl">{value}</p>
-      <p className="mt-2 text-sm font-semibold text-slate-700 sm:text-base">{label}</p>
+      <p className="mt-2 text-2xl font-black leading-none tracking-tight text-slate-950 sm:mt-4 sm:text-4xl">{value}</p>
+      <p className="mt-1 text-xs font-semibold text-slate-700 sm:mt-2 sm:text-base">{label}</p>
     </div>
   );
 }

@@ -61,10 +61,10 @@ export default async function VibeCirclesPage({ searchParams }: { searchParams: 
   return (
     <main className="min-h-screen bg-white">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
-         <header className="relative mb-18 sm:mb-22 rounded-[28px] bg-slate-950 px-6 py-16 text-white shadow-xl sm:px-10 lg:px-12 z-10"> <Image src={destinationImage("Rishikesh")} alt="Voibee Vibe Circles" fill priority className="object-cover rounded-[28px]" />
+         <header className="relative mb-0 rounded-[28px] bg-slate-950 px-5 py-10 text-white shadow-xl sm:mb-22 sm:px-10 sm:py-16 lg:px-12 z-10"> <Image src={destinationImage("Rishikesh")} alt="Voibee Vibe Circles" fill priority className="object-cover rounded-[28px]" />
           <div className="absolute inset-0 bg-slate-950/65 rounded-[28px]" />
           <div className="relative mx-auto max-w-3xl text-center">
-            <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl">Voibee Vibe Circles</h1>
+            <h1 className="text-3xl font-extrabold leading-tight sm:text-5xl">Voibee Vibe Circles</h1>
             <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-white/85 sm:text-base">
               Community, senior-care, accessible and bespoke private journeys designed around the way you want to travel.
             </p>
@@ -83,7 +83,7 @@ export default async function VibeCirclesPage({ searchParams }: { searchParams: 
             </div>
         </header>
 
-<div className=" mt-40 sm:mt-40 lg:mt-0"></div>
+<div className="mt-36 sm:mt-40 lg:mt-0"></div>
         <TripFilters
           key={JSON.stringify(linkParams)}
           basePath="/vibe-circles"

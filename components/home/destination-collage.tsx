@@ -16,7 +16,7 @@ const TILE_LAYOUT = [
 
 export function DestinationCollage({ destinations, country }: { destinations: DestinationDTO[]; country?: string }) {
   return (
-    <div className="grid grid-cols-2 grid-rows-[140px_140px_165px_140px] gap-3 sm:grid-rows-none sm:gap-4 lg:grid-cols-4 lg:grid-rows-[210px_210px_210px]">
+    <div className="grid grid-cols-2 grid-rows-[120px_120px_140px_120px] gap-3 sm:grid-rows-none sm:gap-4 lg:grid-cols-4 lg:grid-rows-[210px_210px_210px]">
       {destinations.slice(0, 6).map((destination, index) => (
         <Link
           key={destination._id}

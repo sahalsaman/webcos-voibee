@@ -83,7 +83,7 @@ export default async function TripsPage({
   return (
     <main className="min-h-screen bg-white">
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <header className="relative mb-18 rounded-[28px] bg-slate-950 px-6 py-16 text-white shadow-xl sm:px-10 lg:px-12 z-10">
+      <header className="relative mb-0 rounded-[28px] bg-slate-950 px-5 py-10 text-white shadow-xl sm:mb-12 sm:px-10 sm:py-16 lg:mb-18 lg:px-12 z-10">
         <Image
           src={heroImage}
           alt={heroTitle}
@@ -93,7 +93,7 @@ export default async function TripsPage({
         />
         <div className="absolute inset-0 bg-slate-950/60 rounded-[28px]" />
         <div className="relative mx-auto max-w-3xl text-center">
-          <h1 className="mt-3 text-4xl font-extrabold leading-tight sm:text-5xl">{heroTitle}</h1>
+          <h1 className="mt-3 text-3xl font-extrabold leading-tight sm:text-5xl">{heroTitle}</h1>
        
           <div className="mt-7 text-left">
             <SearchBar />
@@ -110,7 +110,7 @@ export default async function TripsPage({
             />
           </div>
       </header>
-<div className=" mt-40 sm:mt-40 lg:mt-0"></div>
+<div className="mt-36 sm:mt-40 lg:mt-0"></div>
       <TripFilters
         key={JSON.stringify(linkParams)}
         initialFilters={{

@@ -77,7 +77,7 @@ export function OfferCarousel({ offers }: { offers: OfferSlide[] }) {
               <div className="absolute inset-0 bg-gradient-to-r from-slate-950/82 via-slate-950/50 to-slate-950/12" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-transparent to-slate-950/15" />
 
-              <div className="relative mx-auto flex min-h-[360px] max-w-7xl items-center px-6 pb-36 pt-14 sm:min-h-[clamp(540px,calc(100svh-140px),680px)] sm:px-10 sm:pb-40 lg:px-16 lg:pb-44">
+              <div className="relative mx-auto flex min-h-[310px] max-w-7xl items-center px-5 pb-26 pt-10 sm:min-h-[clamp(540px,calc(100svh-140px),680px)] sm:px-10 sm:pb-40 sm:pt-14 lg:px-16 lg:pb-44">
                 <div className="max-w-2xl text-white">
                   <p className="mb-4 text-xs font-bold uppercase tracking-[0.24em] text-secondary sm:text-sm">
                     Curated journeys by Voibee
