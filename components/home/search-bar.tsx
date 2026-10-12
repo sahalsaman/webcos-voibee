@@ -217,7 +217,7 @@ export function SearchBar({ basePath = "/packages" }: { basePath?: string }) {
       </button>
 
       {open ? (
-        <div className="fixed inset-x-0 bottom-0 top-28 z-40 flex items-start justify-center overflow-y-auto bg-slate-950/70 px-4 pb-8 pt-5 backdrop-blur-sm sm:pt-7" onMouseDown={() => setOpen(false)}>
+        <div className="fixed inset-x-0 bottom-0 top-28 z-[60] flex items-start justify-center overflow-y-auto bg-slate-950/70 px-4 pb-8 pt-5 backdrop-blur-sm sm:pt-7" onMouseDown={() => setOpen(false)}>
           <form
             onSubmit={submit}
             onMouseDown={(event) => event.stopPropagation()}
