@@ -1,0 +1,21 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { CircleHelp, Mail, MessageCircle } from "lucide-react";
+import { appConfig } from "@/app/app,config";
+
+export const metadata: Metadata = { title: "Frequently Asked Questions", description: "Answers to common questions about Voibee packages, bookings and travel support." };
+
+const questions = [
+  ["How do I book a package?", "Open a package, select Book now, add traveller details and review the booking. A booking is confirmed only after Voibee sends confirmation."],
+  ["Can I ask for a custom trip?", "Yes. Use the Customise Trip option or contact our team with your destination, travel dates, number of travellers and preferred experience."],
+  ["What does a package include?", "Every package has its own inclusions, exclusions, itinerary and accommodation details. Review these on the package page before booking."],
+  ["When will my booking be confirmed?", "Confirmation depends on availability from hotels, transport providers and other suppliers. We will share the confirmed details after the booking is processed."],
+  ["Can I change or cancel my booking?", "Contact us as early as possible. Changes and cancellations depend on the package, departure date and supplier terms provided with your booking."],
+  ["Do I need travel insurance or a visa?", "Travel insurance, visas, passports, vaccinations and permits are the traveller’s responsibility unless the package explicitly says otherwise. Our team can guide you on the details needed for your destination."],
+  ["How can I reach Voibee during my trip?", "Use the contact details shared in your booking confirmation or contact our support team by phone, WhatsApp or email."],
+] as const;
+
+export default function FaqPage() {
+  const whatsappNumber = appConfig.whtsapp.replace(/\D/g, "");
+  return <main className="min-h-screen bg-white"><section className="border-b border-border bg-secondary/35 px-4 py-14 sm:px-6 sm:py-20"><div className="mx-auto max-w-3xl text-center"><span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-primary text-white"><CircleHelp className="size-6" /></span><p className="mt-5 text-sm font-bold uppercase tracking-[0.16em] text-primary">Help centre</p><h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-5xl">Frequently asked questions</h1><p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">Useful answers before you plan, book and travel with Voibee.</p></div></section><section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16"><div className="space-y-3">{questions.map(([question, answer], index) => <details key={question} open={index === 0} className="group rounded-2xl border border-border bg-card px-5 shadow-sm"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-base font-bold text-slate-950 [&::-webkit-details-marker]:hidden"><span>{question}</span><span className="text-xl text-primary transition-transform group-open:rotate-45">+</span></summary><p className="border-t border-border pb-5 pt-4 text-sm leading-7 text-slate-600">{answer}</p></details>)}</div><div className="mt-12 grid gap-4 sm:grid-cols-2"><a href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hi Voibee, I need help with a trip.")}`} target="_blank" rel="noreferrer" className="rounded-3xl bg-primary p-6 text-white transition hover:brightness-105"><MessageCircle className="size-6" /><h2 className="mt-4 text-lg font-extrabold">Chat on WhatsApp</h2><p className="mt-1 text-sm text-white/80">Get quick help from the Voibee team.</p></a><a href={`mailto:${appConfig.email}`} className="rounded-3xl border border-border bg-slate-50 p-6 text-slate-950 transition hover:border-primary/30"><Mail className="size-6 text-primary" /><h2 className="mt-4 text-lg font-extrabold">Email us</h2><p className="mt-1 text-sm text-slate-600">{appConfig.email}</p></a></div><p className="mt-8 text-center text-sm text-muted-foreground">Need policy details? Read our <Link href="/privacy-policy" className="font-semibold text-primary hover:underline">Privacy Policy</Link> and <Link href="/terms-and-conditions" className="font-semibold text-primary hover:underline">Terms &amp; Conditions</Link>.</p></section></main>;
+}

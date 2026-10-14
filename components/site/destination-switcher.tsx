@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-export function DestinationSwitcher({ india, global, hasIndia = true, inline = false, heading, className }: { india: React.ReactNode; global: React.ReactNode; hasIndia?: boolean; inline?: boolean; heading?: string; className?: string }) {
+export function DestinationSwitcher({ india, global, hasIndia = true, inline = false, heading, className, indiaLabel = "India", globalLabel = "International" }: { india: React.ReactNode; global: React.ReactNode; hasIndia?: boolean; inline?: boolean; heading?: string; className?: string; indiaLabel?: string; globalLabel?: string }) {
   const [active, setActive] = useState<"india" | "global">(hasIndia ? "india" : "global");
 
   if (!hasIndia) return <div className={className}>{heading ? <h2 className="mb-7 text-2xl font-bold sm:text-3xl">{heading}</h2> : null}{global}</div>;
@@ -12,8 +12,8 @@ export function DestinationSwitcher({ india, global, hasIndia = true, inline = f
     <div className={cn(inline && "flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between")}>
       {inline && heading ? <h2 className="text-2xl font-bold sm:text-3xl">{heading}</h2> : null}
     <div className={cn("grid w-full max-w-[280px] grid-cols-2 rounded-full bg-card p-1 shadow-[0_10px_26px_rgba(15,23,42,0.09)] ring-1 ring-border/50", inline ? "sm:ml-auto" : "mx-auto")} role="tablist" aria-label="Destination region">
-      <SwitchButton active={active === "india"} onClick={() => setActive("india")} controls="india-destinations">India</SwitchButton>
-      <SwitchButton active={active === "global"} onClick={() => setActive("global")} controls="global-destinations">International</SwitchButton>
+      <SwitchButton active={active === "india"} onClick={() => setActive("india")} controls="india-destinations">{indiaLabel}</SwitchButton>
+      <SwitchButton active={active === "global"} onClick={() => setActive("global")} controls="global-destinations">{globalLabel}</SwitchButton>
     </div>
     </div>
     <div id="india-destinations" role="tabpanel" hidden={active !== "india"}>{india}</div>

@@ -37,7 +37,7 @@ function LoginForm() {
     setLoading(true);
     const res = await signIn("credentials", { ...values, redirect: false });
     if (res?.error) {
-      toast.error("Invalid email or password");
+      toast.error("Invalid email or password. Vendor accounts sign in through Travels Portal.");
       setLoading(false);
       return;
     }

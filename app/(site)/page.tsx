@@ -20,6 +20,7 @@ import { VIBE_CIRCLE_TRIP_CATEGORY_LABELS, type TripCategory } from "@/lib/const
 import type { OfferCardDTO } from "@/types";
 import { DestinationCollage } from "@/components/home/destination-collage";
 import { ThemeCarousel } from "@/components/home/theme-carousel";
+import { DestinationSwitcher } from "@/components/site/destination-switcher";
 
 // Re-fetch featured packages from the DB at most once a minute.
 export const revalidate = 60;
@@ -89,7 +90,8 @@ export default async function HomePage({
     getTrips({ categories: VIBE_CIRCLE_TRIP_CATEGORY_LABELS, pageSize: 4, sort: "newest" }),
   ]);
   const offers: OfferSlide[] = offerCards.map((offer) => toOfferSlide(offer, country));
-  const collageDestinations = [...homeDestinations.domestic, ...homeDestinations.international].slice(0, 6);
+  const domesticDestinations = homeDestinations.domestic.slice(0, 6);
+  const internationalDestinations = homeDestinations.international.slice(0, 6);
 
   return (
     <main className="min-h-screen bg-white">
@@ -121,7 +123,15 @@ export default async function HomePage({
           </div>
           <Button asChild variant="outline" className="hidden sm:flex"><Link href={hrefWithCountry("/destinations", country)}>View all <ArrowRight className="size-4" /></Link></Button>
         </div>
-        {collageDestinations.length ? <DestinationCollage destinations={collageDestinations} country={country} /> : null}
+        {domesticDestinations.length || internationalDestinations.length ? (
+          <DestinationSwitcher
+            className="space-y-5"
+            hasIndia={domesticDestinations.length > 0}
+            indiaLabel="Domestic"
+            india={<DestinationCollage destinations={domesticDestinations} country="IN" />}
+            global={<DestinationCollage destinations={internationalDestinations} country="INTL" />}
+          />
+        ) : null}
         <Button asChild variant="outline" className="mt-6 w-full sm:hidden"><Link href={hrefWithCountry("/destinations", country)}>View all destinations <ArrowRight className="size-4" /></Link></Button>
       </section>
 

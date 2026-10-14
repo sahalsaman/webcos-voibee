@@ -80,6 +80,9 @@ export function Footer() {
             <li><Link className="hover:text-foreground" href="/destinations">Destinations</Link></li>
             <li><Link className="hover:text-foreground" href="/login">Traveler Login</Link></li>
             <li><Link className="hover:text-foreground" href="/register">Create Account</Link></li>
+            <li><Link className="hover:text-foreground" href="/faq">FAQ</Link></li>
+            <li><Link className="hover:text-foreground" href="/privacy-policy">Privacy Policy</Link></li>
+            <li><Link className="hover:text-foreground" href="/terms-and-conditions">Terms &amp; Conditions</Link></li>
           </ul>
         </div>
       </div>

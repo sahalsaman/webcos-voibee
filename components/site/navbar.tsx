@@ -12,7 +12,9 @@ import {
   UserCircle,
   Headset,
   House,
+  Hotel,
   Luggage,
+  Plane,
   UsersRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -42,21 +44,16 @@ function dashboardPath(role?: string) {
 const appLogo = "/voibee-logo.png";
 const supportNumber = appConfig.mobile.replace(/\D/g, "");
 
-function MobileBottomNavigation({
-  country,
-  profileHref,
-}: {
-  country?: string;
-  profileHref: string;
-}) {
+function MobileBottomNavigation({ country }: { country?: string }) {
   const pathname = usePathname();
   const withCountry = (href: string) =>
     country ? `${href}${href.includes("?") ? "&" : "?"}c=${encodeURIComponent(country)}` : href;
   const links = [
     { href: "/", label: "Home", icon: House },
-    { href: "/packages", label: "Holiday", icon: Luggage },
+    { href: "/packages", label: "Holidays", icon: Luggage },
+    { href: "/flights", label: "Flights", icon: Plane },
+    { href: "/hotels", label: "Hotels", icon: Hotel },
     { href: "/vibe-circles", label: "Voibee Circle", icon: UsersRound },
-    { href: profileHref, label: "Profile", icon: UserCircle },
   ];
 
   return (
@@ -64,21 +61,21 @@ function MobileBottomNavigation({
       aria-label="Mobile navigation"
       className="fixed inset-x-0 bottom-0 z-[60] border-t border-border/80 bg-white/95 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 shadow-[0_-8px_24px_rgba(15,23,42,0.1)] backdrop-blur md:hidden rounded-t-xl"
     >
-      <div className="mx-auto grid max-w-md grid-cols-4">
+      <div className="mx-auto grid max-w-lg grid-cols-5">
         {links.map(({ href, label, icon: Icon }) => {
           const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
 
           return (
             <Link
               key={label}
-              href={label === "Profile" ? href : withCountry(href)}
+              href={withCountry(href)}
               className={cn(
                 "flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[10px] font-semibold transition-colors",
-                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
+                isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-slate-100 hover:text-foreground",
               )}
               aria-current={isActive ? "page" : undefined}
             >
-              <span className={cn("flex size-7 items-center justify-center rounded-lg", isActive && "bg-primary/10")}>
+              <span className="flex size-7 items-center justify-center rounded-lg">
                 <Icon className="size-5" strokeWidth={isActive ? 2.5 : 2} />
               </span>
               <span className="truncate">{label}</span>
@@ -235,6 +232,13 @@ export function Navbar() {
             >
               {open ? <X className="size-5" /> : <Menu className="size-5" />}
             </Button>
+            <Link
+              href={user ? dashboardPath(user.role) : "/login"}
+              aria-label="Profile"
+              className="flex size-10 items-center justify-center rounded-full text-primary transition-colors hover:bg-secondary md:hidden"
+            >
+              {user ? <Avatar src={user.image} name={user.name ?? "User"} size={30} /> : <UserCircle className="size-5" />}
+            </Link>
           </div>
         </nav>
       </div>
@@ -316,7 +320,7 @@ export function Navbar() {
         )}
       </aside>
     </div>
-    <MobileBottomNavigation country={country} profileHref={user ? dashboardPath(user.role) : "/login"} />
+    <MobileBottomNavigation country={country} />
     </>
   );
 }

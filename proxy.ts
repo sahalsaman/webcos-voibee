@@ -39,6 +39,9 @@ export function proxy(req: NextRequest) {
     const target = new URL(pathname + req.nextUrl.search, base);
     const forwarded = new Headers(req.headers);
     forwarded.set("x-business-slug", slug);
+    // Lets Travels Portal apply the public-site role policy to credential
+    // requests without affecting direct portal logins.
+    if (pathname.startsWith("/api/auth/")) forwarded.set("x-portal-client", "voibee-site");
     return NextResponse.rewrite(target, { request: { headers: forwarded } });
   }
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {

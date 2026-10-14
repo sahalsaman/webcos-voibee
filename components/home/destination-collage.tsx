@@ -34,7 +34,7 @@ export function DestinationCollage({ destinations, country }: { destinations: De
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-3 text-white sm:p-6">
             <div>
               <p className="text-base font-extrabold leading-tight sm:text-2xl">{destination.title}</p>
-              <p className="mt-1 text-xs font-medium text-white/80 sm:text-sm">Explore curated holidays</p>
+              <p className="mt-1 text-xs font-medium text-white/80 sm:text-sm hidden sm:block">Explore curated holidays</p>
             </div>
             <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/90 text-primary opacity-0 transition group-hover:opacity-100">
               <ArrowUpRight className="size-4" />
