@@ -61,7 +61,7 @@ function MobileBottomNavigation({ country }: { country?: string }) {
       aria-label="Mobile navigation"
       className="fixed inset-x-0 bottom-0 z-[60] border-t border-border/80 bg-white/95 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 shadow-[0_-8px_24px_rgba(15,23,42,0.1)] backdrop-blur md:hidden rounded-t-xl"
     >
-      <div className="mx-auto grid max-w-lg grid-cols-5">
+      <div className="mx-auto grid max-w-lg grid-cols-5 mb-2">
         {links.map(({ href, label, icon: Icon }) => {
           const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
 
@@ -70,13 +70,13 @@ function MobileBottomNavigation({ country }: { country?: string }) {
               key={label}
               href={withCountry(href)}
               className={cn(
-                "flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[10px] font-semibold transition-colors",
+                "flex min-h-14 flex-col items-center justify-center  rounded-xl px-1 text-center text-[10px] font-semibold transition-colors",
                 isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-slate-100 hover:text-foreground",
               )}
               aria-current={isActive ? "page" : undefined}
             >
               <span className="flex size-7 items-center justify-center rounded-lg">
-                <Icon className="size-5" strokeWidth={isActive ? 2.5 : 2} />
+                <Icon className="size-6" strokeWidth={isActive ? 2.5 : 2} />
               </span>
               <span className="truncate">{label}</span>
             </Link>
