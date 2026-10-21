@@ -27,6 +27,7 @@ import { appConfig } from "@/app/app,config";
 import { HomeScreenSkeleton } from "@/components/site/home-screen-skeleton";
 
 const NAV_LINKS = [
+  { href: "/", label: "Home" },
   { href: "/packages", label: "Holidays" },
   { href: "/flights", label: "Flights" },
   { href: "/hotels", label: "Hotels" },

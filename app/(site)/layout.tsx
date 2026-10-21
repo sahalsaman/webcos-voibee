@@ -4,6 +4,7 @@ import { Navbar } from "@/components/site/navbar";
 import { Footer } from "@/components/site/footer";
 import { InitialSplash } from "@/components/site/initial-splash";
 import { WhatsAppEnquiry } from "@/components/site/whatsapp-enquiry";
+import { PwaInstallPrompt } from "@/components/site/pwa-install-prompt";
 
 export default function SiteLayout({
   children,
@@ -19,6 +20,7 @@ export default function SiteLayout({
         <Footer />
       </Suspense>
       <WhatsAppEnquiry />
+      <PwaInstallPrompt />
     </div>
   );
 }
