@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function PackagesLoading() {
   return (
     <main className="min-h-screen bg-white" aria-label="Loading tour packages" aria-busy="true">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 pt-4 sm:pt-6">
         <header className="relative mb-18 rounded-[28px] bg-slate-200 px-6 py-16 shadow-xl sm:px-10 lg:px-12">
           <div className="relative mx-auto max-w-3xl text-center">
             <Skeleton className="mx-auto h-10 w-64 max-w-full bg-slate-300 sm:h-12 sm:w-80" />

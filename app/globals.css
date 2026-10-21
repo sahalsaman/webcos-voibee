@@ -199,14 +199,24 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Initial splash: destination moments glide past while the app opens. */
-@keyframes splash-destination-marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(calc(-50% - 0.375rem)); }
+/* Keep the brand visible while giving the opening screen a gentle pulse. */
+@keyframes splash-logo-breathe {
+  0%, 100% { opacity: .72; }
+  50% { opacity: 1; }
 }
 
-.splash-destination-marquee {
-  animation: splash-destination-marquee 6s linear infinite;
+.splash-logo-breathe {
+  animation: splash-logo-breathe 1.15s ease-in-out infinite;
+}
+
+@keyframes splash-word-reveal {
+  0% { opacity: 0; transform: translateY(10px); }
+  22%, 72% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+
+.splash-word-reveal {
+  animation: splash-word-reveal .52s ease-in-out both;
 }
 
 @keyframes splash-loading-dot {
@@ -227,4 +237,3 @@ html {
   width: 48%;
   animation: splash-loading-line 1.1s ease-in-out infinite;
 }
-

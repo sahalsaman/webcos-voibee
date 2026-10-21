@@ -26,7 +26,7 @@ function ItineraryDaySkeleton({ expanded = false }: { expanded?: boolean }) {
 export default function PackageDetailLoading() {
   return (
     <main className="min-h-screen bg-white" aria-label="Loading package details" aria-busy="true">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 pt-4 sm:pt-6">
         <Skeleton className="h-[260px] w-full rounded-2xl sm:h-[360px] sm:rounded-3xl lg:h-[390px]" />
 
         <section className="py-7 sm:py-9">

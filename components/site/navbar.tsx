@@ -136,7 +136,7 @@ export function Navbar() {
       </div>
     ) : null}
     <header className="sticky top-0 z-50 sm:shadow-[0_1px_12px_rgba(15,23,42,0.05)]">
-      <div className="bg-white text-black/80 sm:border-b sm:border-border/70">
+      <div className="hidden bg-white text-black/80 md:block md:border-b md:border-border/70">
         <div className=" mx-auto flex h-10 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
           <a
             href={`tel:+${supportNumber}`}
@@ -153,8 +153,8 @@ export function Navbar() {
           </div>
         </div>
       </div>
-      <div className="sm:glass sm:border-b sm:border-border/70 sm:bg-card/95 bg-white">
-        <nav className="mx-auto flex h-14 sm:h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="bg-white md:glass md:border-b md:border-border/70 md:bg-card/95 pt-4 md:pt-0">
+        <nav className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 md:h-18 md:px-6 lg:px-8">
           <Link
             href="/"
             onClick={(event) => {
@@ -169,8 +169,8 @@ export function Navbar() {
               height={84}
               loading="eager"
               unoptimized
-              sizes="(max-width: 639px) 128px, 154px"
-              className="h-9 w-auto sm:h-11 lg:h-12"
+              sizes="(max-width: 767px) 128px, 154px"
+              className="h-9 w-auto md:h-11 lg:h-12"
             />
           </Link>
 
@@ -187,7 +187,8 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
-            {user ? <NotificationMenu /> : null}
+            {user ? <span className="hidden md:block"><NotificationMenu /></span> : null}
+            <CurrencySelector className="gap-1 [&>select]:h-9 [&>select]:rounded-full [&>select]:px-2 [&>select]:text-xs md:hidden" />
             {/* <Button asChild variant="ghost" size="default">
                 <Link href="/saved">
                   <HeartIcon className="size-4 text-pink-500" /> Saved
@@ -222,6 +223,13 @@ export function Navbar() {
               </div>
             )}
 
+            <Link
+              href={user ? dashboardPath(user.role) : "/login"}
+              aria-label="Profile"
+              className="flex size-10 items-center justify-center rounded-full text-primary transition-colors hover:bg-secondary md:hidden"
+            >
+              {user ? <Avatar src={user.image} name={user.name ?? "User"} size={30} /> : <UserCircle className="size-5" />}
+            </Link>
             <Button
               variant="ghost"
               size="icon"
@@ -233,13 +241,6 @@ export function Navbar() {
             >
               {open ? <X className="size-5" /> : <Menu className="size-5" />}
             </Button>
-            <Link
-              href={user ? dashboardPath(user.role) : "/login"}
-              aria-label="Profile"
-              className="flex size-10 items-center justify-center rounded-full text-primary transition-colors hover:bg-secondary md:hidden"
-            >
-              {user ? <Avatar src={user.image} name={user.name ?? "User"} size={30} /> : <UserCircle className="size-5" />}
-            </Link>
           </div>
         </nav>
       </div>

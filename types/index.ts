@@ -172,6 +172,7 @@ export interface ActivityDTO {
   description: string;
   images: string[];
   basePrice: number;
+  childPrice?: number;
   originalPrice: number;
   duration: string;
   highlights: string[];

@@ -10,7 +10,6 @@ export function CurrencySelector({ className }: { className?: string }) {
 
   return (
     <label className={cn("flex items-center gap-2", className)}>
-      <Coins className="size-4 shrink-0 text-white" aria-hidden="true" />
       <span className="sr-only">Display currency</span>
       <select
         value={currency}

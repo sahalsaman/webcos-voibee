@@ -12,7 +12,7 @@ function VibeCircleCardSkeleton() {
 export default function VibeCirclesLoading() {
   return (
     <main className="min-h-screen bg-white" aria-label="Loading Voibee Vibe Circles" aria-busy="true">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 pt-4 sm:pt-6">
         <header className="relative mb-8 overflow-hidden rounded-[28px] bg-slate-200 px-6 py-16 shadow-xl sm:px-10 lg:px-12">
           <div className="mx-auto max-w-3xl text-center"><Skeleton className="mx-auto h-10 w-72 sm:h-12 sm:w-96" /><Skeleton className="mx-auto mt-4 h-4 w-full max-w-xl" /><div className="mt-7 flex rounded-2xl bg-white/90 p-3 shadow-lg"><Skeleton className="h-12 flex-1" /><Skeleton className="ml-3 size-12 rounded-xl" /></div></div>
           <div className="mt-5 flex justify-center"><div className="flex max-w-full gap-2 overflow-hidden rounded-2xl bg-white/95 p-2 shadow-md sm:gap-3">{Array.from({ length: 5 }).map((_, index) => <div key={index} className="flex min-h-[84px] w-[92px] shrink-0 flex-col items-center justify-center gap-2 rounded-xl sm:w-[108px]"><Skeleton className="size-10 rounded-xl" /><Skeleton className="h-3 w-16" /></div>)}</div></div>

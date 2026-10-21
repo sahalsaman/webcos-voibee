@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function HomeScreenSkeleton() {
   return (
     <main className="min-h-screen bg-white" aria-label="Loading home page" aria-busy="true">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 pt-4 sm:pt-6">
         <section className="relative h-[360px] overflow-hidden rounded-[32px] bg-slate-200 sm:h-[430px]">
           <Skeleton className="absolute inset-0 rounded-none bg-slate-200" />
           <div className="relative flex h-full max-w-xl flex-col justify-center p-7 sm:p-12">
