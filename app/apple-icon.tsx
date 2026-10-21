@@ -11,7 +11,7 @@ const logoSrc = `data:image/png;base64,${(await readFile(join(process.cwd(), "pu
 export default function AppleIcon() {
   return new ImageResponse(
     <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 36, background: "linear-gradient(135deg, #0d4884 0%, #a40860 100%)" }}>
-      <img src={logoSrc} alt="" width="112" height="112" style={{ objectFit: "contain" }} />
+      <img src={logoSrc} alt="" width={112} height={112} style={{ objectFit: "contain" }} />
     </div>,
     { ...size },
   );

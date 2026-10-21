@@ -34,7 +34,7 @@ export function InitialSplash() {
   return (
     <div className="fixed inset-0 z-[200] flex min-h-screen items-center justify-center bg-[#fffdf8] px-4" role="status" aria-label="Opening Voibee Holidays">
       <div className="flex w-full flex-col items-center text-center">
-        {step < splashWords.length ? <p key={splashWords[step]} className="splash-word-reveal text-4xl font-extrabold tracking-[0.22em] text-primary sm:text-5xl">{splashWords[step]}</p> : <Image
+        {step < splashWords.length ? <p key={splashWords[step]} className="splash-word-reveal text-4xl font-extrabold tracking-[0.22em] text-primary sm:text-5xl">{splashWords[step]}<span className="text-accent text-2xl">•</span></p> : <Image
           src="/voibee-logo-with-tahline.png"
           alt="Voibee Global Travel Experts"
           width={360}
