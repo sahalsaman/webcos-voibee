@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Download, Share, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -85,7 +86,7 @@ export function PwaInstallPrompt() {
   if (!show || (!ios && !deferredPrompt)) return null;
   return <div className="fixed inset-x-0 bottom-0 z-[80] px-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:hidden" role="dialog" aria-label="Install Voibee app">
     <div className="mx-auto max-w-md rounded-3xl border border-white/20 bg-slate-950 p-5 text-white shadow-2xl">
-      <div className="flex items-start gap-3"><div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-brand-gradient text-lg font-extrabold">V</div><div className="min-w-0 flex-1"><h2 className="font-extrabold">Add Voibee to your phone</h2><p className="mt-1 text-sm leading-5 text-white/75">Get faster access to your holidays and bookings, right from your home screen.</p></div><button type="button" onClick={close} className="rounded-full p-1 text-white/70 hover:bg-white/10 hover:text-white" aria-label="Dismiss install prompt"><X className="size-5" /></button></div>
+      <div className="flex items-start gap-3"><div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-brand-gradient"><Image src="/voibee-logo-white.png" alt="" width={36} height={36} className="size-7 object-contain" /></div><div className="min-w-0 flex-1"><h2 className="font-extrabold">Add Voibee to your phone</h2><p className="mt-1 text-sm leading-5 text-white/75">Get faster access to your holidays and bookings, right from your home screen.</p></div><button type="button" onClick={close} className="rounded-full p-1 text-white/70 hover:bg-white/10 hover:text-white" aria-label="Dismiss install prompt"><X className="size-5" /></button></div>
       {ios ? <div className="mt-4 rounded-2xl bg-white/10 p-3 text-sm leading-5 text-white/85"><span className="inline-flex items-center gap-1 font-bold text-white"><Share className="size-4" /> Tap Share</span>, then choose <strong>Add to Home Screen</strong>.</div> : <Button type="button" variant="gradient" size="lg" className="mt-4 w-full rounded-xl" onClick={install}><Download className="size-4" />Install app</Button>}
     </div>
   </div>;
