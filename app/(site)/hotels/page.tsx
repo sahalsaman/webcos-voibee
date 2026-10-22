@@ -9,7 +9,7 @@ import { destinationImage } from "@/lib/images";
 import { withCountryParam } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Verified Hotels & Stays",
+  title: "Hotels & Stays",
   description: "Discover SafeStay verified hotels included in Voibee holiday packages across India and international destinations.",
 };
 

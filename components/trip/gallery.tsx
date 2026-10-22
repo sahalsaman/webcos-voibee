@@ -5,8 +5,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, Images, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const FALLBACK =
-  "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1400&q=75";
+const FALLBACK = "/voibee_defaul_image.png";
 
 export function Gallery({ images, title }: { images: string[]; title: string }) {
   const pics = images.length > 0 ? images : [FALLBACK];
