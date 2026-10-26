@@ -7,11 +7,13 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { DestinationDTO } from "@/types";
 import { appConfig } from "@/app/app,config";
+import { useNativeMobileApp } from "@/lib/native-app";
 
 export function Footer() {
   const params = useSearchParams();
   const country = params.get("c")?.toUpperCase();
   const [destinations, setDestinations] = useState<DestinationDTO[]>([]);
+  const nativeApp = useNativeMobileApp();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -32,6 +34,8 @@ export function Footer() {
   }, [country]);
   const withCountry = (href: string) =>
     country ? `${href}${href.includes("?") ? "&" : "?"}c=${encodeURIComponent(country)}` : href;
+
+  if (nativeApp) return null;
 
   return (
     <footer className="border-t border-border bg-card">

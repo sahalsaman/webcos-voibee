@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import {
   Menu,
@@ -16,6 +16,11 @@ import {
   Luggage,
   Plane,
   UsersRound,
+  ArrowLeft,
+  Heart,
+  Settings,
+  CircleHelp,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
@@ -88,13 +93,19 @@ function MobileBottomNavigation({ country }: { country?: string }) {
   );
 }
 
-export function Navbar() {
+export function Navbar({ showMobileNavigation = true }: { showMobileNavigation?: boolean }) {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
   const [country, setCountry] = useState<string | undefined>();
   const [open, setOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [openingHome, setOpeningHome] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
   const user = session?.user;
+  const isTraveler = user?.role === "traveler" || user?.role === "vendor_traveler";
+  const profilePath = isTraveler ? "/traveler" : dashboardPath(user?.role);
+  const showBackButton = pathname.startsWith("/packages/");
   const withCountry = (href: string) =>
     country ? `${href}${href.includes("?") ? "&" : "?"}c=${encodeURIComponent(country)}` : href;
 
@@ -128,6 +139,23 @@ export function Navbar() {
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!profileOpen) return;
+    const close = (event: MouseEvent) => {
+      if (!profileRef.current?.contains(event.target as Node)) setProfileOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [profileOpen]);
+
+  const goBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push("/");
+  };
+
   return (
     <>
     {openingHome ? (
@@ -155,24 +183,31 @@ export function Navbar() {
       </div>
       <div className="bg-white md:glass md:border-b md:border-border/70 md:bg-card/95 pt-4 md:pt-0">
         <nav className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 md:h-18 md:px-6 lg:px-8">
-          <Link
-            href="/"
-            onClick={(event) => {
-              if (!event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey && pathname !== "/") setOpeningHome(true);
-            }}
-            className="flex items-center gap-2 font-extrabold text-2xl text-primary"
-          >
-            <Image
-              src={appLogo}
-              alt="Voibee Global Travel Experts"
-              width={214}
-              height={84}
-              loading="eager"
-              unoptimized
-              sizes="(max-width: 767px) 128px, 154px"
-              className="h-9 w-auto md:h-11 lg:h-12"
-            />
-          </Link>
+          <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+            {showBackButton ? (
+              <Button variant="ghost" size="icon" onClick={goBack} aria-label="Go back" className="shrink-0 md:hidden">
+                <ArrowLeft className="size-5" />
+              </Button>
+            ) : null}
+            <Link
+              href="/"
+              onClick={(event) => {
+                if (!event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey && pathname !== "/") setOpeningHome(true);
+              }}
+              className="flex items-center gap-2 font-extrabold text-2xl text-primary"
+            >
+              <Image
+                src={appLogo}
+                alt="Voibee Global Travel Experts"
+                width={214}
+                height={84}
+                loading="eager"
+                unoptimized
+                sizes="(max-width: 767px) 128px, 154px"
+                className="h-9 w-auto md:h-11 lg:h-12"
+              />
+            </Link>
+          </div>
 
           <div className="hidden items-center gap-1 md:flex">
             {NAV_LINKS.map((l) => (
@@ -184,6 +219,14 @@ export function Navbar() {
                 {l.label}
               </Link>
             ))}
+            {isTraveler ? (
+              <Link
+                href="/traveler/bookings"
+                className="rounded-md px-3 py-2 text-base text-muted-foreground transition-colors hover:text-foreground hover:font-semibold"
+              >
+                My Bookings
+              </Link>
+            ) : null}
           </div>
 
           <div className="flex items-center gap-2">
@@ -196,20 +239,44 @@ export function Navbar() {
               </Button> */}
             {user ? (
               <div className="hidden items-center gap-2 md:flex">
-                <Button asChild variant="ghost" size="default">
-                  <Link href={dashboardPath(user.role)}>
-                    <LayoutDashboard className="size-4" /> Dashboard
-                  </Link>
-                </Button>
-                <Avatar src={user.image} name={user.name ?? "User"} size={36} />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Sign out"
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                >
-                  <LogOut className="size-4" />
-                </Button>
+                {isTraveler ? (
+                  <>
+                    <Button asChild variant="ghost" size="icon" aria-label="Wishlist">
+                      <Link href="/traveler/wishlist"><Heart className="size-5" /></Link>
+                    </Button>
+                    <div ref={profileRef} className="relative">
+                      <button
+                        type="button"
+                        aria-label="Open profile menu"
+                        aria-expanded={profileOpen}
+                        onClick={() => setProfileOpen((value) => !value)}
+                        className="rounded-full outline-none ring-offset-2 transition focus-visible:ring-2 focus-visible:ring-primary"
+                      >
+                        <Avatar src={user.image} name={user.name ?? "User"} size={36} />
+                      </button>
+                      {profileOpen ? (
+                        <div className="absolute right-0 top-full z-[70] mt-2 w-80 overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
+                          <div className="flex items-center gap-3 border-b border-border px-4 py-4">
+                            <Avatar src={user.image} name={user.name ?? "User"} size={44} />
+                            <div className="min-w-0"><p className="truncate text-sm font-bold">{user.name || "Voibee traveler"}</p><p className="truncate text-xs text-muted-foreground">{user.email || "Your Voibee account"}</p></div>
+                          </div>
+                          <div className="space-y-1 p-2">
+                            <div className="rounded-xl px-3 py-2.5"><p className="flex items-center gap-2 text-sm font-semibold"><Mail className="size-4 text-primary" /> Personal information</p><p className="mt-1 truncate pl-6 text-xs text-muted-foreground">{user.email || "No email address added"}</p></div>
+                            <div className="rounded-xl px-3 py-2.5"><p className="flex items-center gap-2 text-sm font-semibold"><Settings className="size-4 text-primary" /> Settings</p><p className="mt-1 pl-6 text-xs text-muted-foreground">Manage preferences and notifications</p></div>
+                            <a href="mailto:support@voibee.com?subject=Voibee%20support%20request" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold hover:bg-secondary"><CircleHelp className="size-4 text-primary" /> Help &amp; support</a>
+                            <button type="button" onClick={() => signOut({ callbackUrl: "/" })} className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-destructive hover:bg-destructive/5"><LogOut className="size-4" /> Log out</button>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Button asChild variant="ghost" size="default"><Link href={profilePath}><LayoutDashboard className="size-4" /> Dashboard</Link></Button>
+                    <Link href={profilePath} aria-label="Profile"><Avatar src={user.image} name={user.name ?? "User"} size={36} /></Link>
+                    <Button variant="ghost" size="icon" aria-label="Sign out" onClick={() => signOut({ callbackUrl: "/" })}><LogOut className="size-4" /></Button>
+                  </>
+                )}
               </div>
             ) : (
               <div className="hidden items-center gap-2 md:flex">
@@ -224,7 +291,7 @@ export function Navbar() {
             )}
 
             <Link
-              href={user ? dashboardPath(user.role) : "/login"}
+              href={user ? profilePath : "/login"}
               aria-label="Profile"
               className="flex size-10 items-center justify-center rounded-full text-primary transition-colors hover:bg-secondary md:hidden"
             >
@@ -291,11 +358,11 @@ export function Navbar() {
         {user ? (
           <div className="flex flex-col gap-2">
             <Link
-              href={dashboardPath(user.role)}
+              href={profilePath}
               onClick={() => setOpen(false)}
               className="flex items-center gap-3 rounded-xl px-4 py-3 text-base font-semibold text-foreground hover:bg-secondary hover:text-primary"
             >
-              <LayoutDashboard className="size-5" /> Dashboard
+              <LayoutDashboard className="size-5" /> {user.role === "traveler" ? "Profile" : "Dashboard"}
             </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
@@ -322,7 +389,7 @@ export function Navbar() {
         )}
       </aside>
     </div>
-    <MobileBottomNavigation country={country} />
+    {showMobileNavigation ? <MobileBottomNavigation country={country} /> : null}
     </>
   );
 }

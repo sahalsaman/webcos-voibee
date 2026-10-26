@@ -13,7 +13,6 @@ export default function SiteLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col">
-      <InitialSplash />
       <Navbar />
       <div className="flex-1">{children}</div>
       <Suspense fallback={null}>

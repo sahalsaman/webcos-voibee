@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Analytics } from "@vercel/analytics/next"
+import { InitialSplash } from "@/components/site/initial-splash";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -85,11 +86,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className={`${jakarta.variable} h-full`}>
       <body className="min-h-full bg-background text-foreground antialiased">
-        <script
-          type="application/ld+json"
+        <template
+          data-structured-data="organization"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd).replace(/</g, "\\u003c") }}
         />
         <Analytics/>
+        <InitialSplash />
         <Providers>{children}</Providers>
       </body>
     </html>

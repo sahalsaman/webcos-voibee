@@ -19,6 +19,7 @@ import { PackageActions } from "@/components/trip/package-actions";
 import { SafeStay } from "@/components/trip/safe-stay";
 import { PackageContentsTabs } from "@/components/trip/package-contents-tabs";
 import { TripThemeVisual } from "@/components/trip/trip-theme-visual";
+import { JoinedTravellers } from "@/components/trip/joined-travellers";
 import {
   getTripBySlug,
   getReviewsForTrip,
@@ -104,8 +105,8 @@ export default async function TripDetailPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-white pb-20 md:pb-0">
       <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-        <script
-          type="application/ld+json"
+        <template
+          data-structured-data="package"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
         />
         <section id="summary" className="mb-4 flex w-full items-center justify-between gap-4">
@@ -152,6 +153,7 @@ export default async function TripDetailPage({ params }: Props) {
             {trip.climate ? <Badge variant="outline"><CloudSun className="size-3.5" /> {trip.climate}</Badge> : null}
             {trip.featured ? <Badge variant="accent">Featured</Badge> : null}
           </div>
+          {trip.category === "Group Trip" ? <div className="mt-5"><JoinedTravellers tripId={trip._id} /></div> : null}
 
         </section>
    {/* Overview */}

@@ -21,6 +21,7 @@ import type { OfferCardDTO } from "@/types";
 import { DestinationCollage } from "@/components/home/destination-collage";
 import { ThemeCarousel } from "@/components/home/theme-carousel";
 import { DestinationSwitcher } from "@/components/site/destination-switcher";
+import { HideInNativeApp } from "@/components/site/hide-in-native-app";
 
 // Re-fetch featured packages from the DB at most once a minute.
 export const revalidate = 60;
@@ -213,6 +214,7 @@ export default async function HomePage({
         </div>
       </section>
 
+      <HideInNativeApp>
       {/* ---------------- Moments ---------------- */}
       <section className="overflow-hidden bg-secondary/35 px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
@@ -353,6 +355,7 @@ export default async function HomePage({
           </div>
         </div>
       </section>
+      </HideInNativeApp>
     </main>
   );
 }

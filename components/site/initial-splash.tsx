@@ -4,32 +4,46 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const splashWords = ["ESCAPE", "EXPLORE", "BELONG"];
+const SKIP_SPLASH_KEY = "voibee-skip-next-splash";
 
 export function InitialSplash() {
-  const [visible, setVisible] = useState(true);
+  // Start with no UI on both server and client. Reading sessionStorage during
+  // render made the two trees differ and broke the splash animation.
+  const [visible, setVisible] = useState<boolean | null>(null);
   const [step, setStep] = useState(0);
   const [pageReady, setPageReady] = useState(false);
 
   useEffect(() => {
+    if (window.sessionStorage.getItem(SKIP_SPLASH_KEY) === "true") {
+      window.sessionStorage.removeItem(SKIP_SPLASH_KEY);
+      const timer = window.setTimeout(() => setVisible(false), 0);
+      return () => window.clearTimeout(timer);
+    }
+    const visibilityTimer = window.setTimeout(() => setVisible(true), 0);
     const onLoad = () => setPageReady(true);
     if (document.readyState === "complete") onLoad();
     else window.addEventListener("load", onLoad, { once: true });
-    return () => window.removeEventListener("load", onLoad);
+    return () => {
+      window.clearTimeout(visibilityTimer);
+      window.removeEventListener("load", onLoad);
+    };
   }, []);
 
   useEffect(() => {
+    if (!visible) return;
     if (step >= splashWords.length) return;
     const timer = window.setTimeout(() => setStep((current) => current + 1), 520);
     return () => window.clearTimeout(timer);
-  }, [step]);
+  }, [step, visible]);
 
   useEffect(() => {
+    if (!visible) return;
     if (step !== splashWords.length || !pageReady) return;
     const timer = window.setTimeout(() => setVisible(false), 480);
     return () => window.clearTimeout(timer);
-  }, [pageReady, step]);
+  }, [pageReady, step, visible]);
 
-  if (!visible) return null;
+  if (visible !== true) return null;
 
   return (
     <div className="fixed inset-0 z-[200] flex min-h-screen items-center justify-center bg-[#fffdf8] px-4" role="status" aria-label="Opening Voibee Holidays">

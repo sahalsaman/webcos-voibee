@@ -102,8 +102,8 @@ export default async function TripDetailPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-white pb-20 md:pb-0">
       <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-        <script
-          type="application/ld+json"
+        <template
+          data-structured-data="vibe-circle"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
         />
         <section id="summary" className="mb-4 flex w-full items-center justify-between gap-4">

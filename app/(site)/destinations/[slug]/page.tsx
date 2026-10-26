@@ -52,7 +52,7 @@ export default async function DestinationLandingPage({ params }: Props) {
   ] };
 
   return <main className="mx-auto max-w-7xl space-y-12 px-4 py-8 sm:px-6 lg:px-8">
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+    <template data-structured-data="destination" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
     <header className="relative overflow-hidden rounded-[28px] bg-slate-950 px-6 py-20 text-white shadow-xl sm:px-10 lg:px-14">
       <Image src={destination.images[0] || destinationImage(destination.title)} alt={`${destination.title} tour packages`} fill priority sizes="100vw" className="object-cover" />
       <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/58 to-slate-950/20" />

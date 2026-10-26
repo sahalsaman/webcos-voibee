@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 import { requireRole } from "@/lib/session";
-import { RoleShell } from "@/components/dashboard/role-shell";
+import { Navbar } from "@/components/site/navbar";
+import { TravelerShell } from "@/components/traveler/traveler-shell";
 
 export default async function TravelerLayout({
   children,
@@ -9,8 +10,13 @@ export default async function TravelerLayout({
 }) {
   const user = await requireRole(["traveler"]);
   return (
-    <RoleShell role="traveler" user={{ name: user.name, email: user.email, image: user.image }}>
-      {children}
-    </RoleShell>
+    <>
+      <div className="hidden md:block">
+        <Navbar showMobileNavigation={false} />
+      </div>
+      <TravelerShell user={{ name: user.name, email: user.email, image: user.image }}>
+        {children}
+      </TravelerShell>
+    </>
   );
 }
