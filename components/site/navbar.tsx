@@ -42,8 +42,8 @@ const NAV_LINKS = [
 ];
 
 function dashboardPath(role?: string) {
-  if (role === "admin" || role === "vendor" || role === "employee" || role === "vendor_employee") return "/admin";
-  if (role === "partner" || role === "vendor_partner") return "/partner";
+  if (role === "admin") return "/admin";
+  if (role === "partner" || role === "tenant_partner") return "/partner";
   return "/traveler";
 }
 
@@ -103,7 +103,7 @@ export function Navbar({ showMobileNavigation = true }: { showMobileNavigation?:
   const [openingHome, setOpeningHome] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const user = session?.user;
-  const isTraveler = user?.role === "traveler" || user?.role === "vendor_traveler";
+  const isTraveler = user?.role === "traveler" || user?.role === "tenant_traveler";
   const profilePath = isTraveler ? "/traveler" : dashboardPath(user?.role);
   const showBackButton = pathname.startsWith("/packages/");
   const withCountry = (href: string) =>

@@ -40,7 +40,7 @@ export default async function HotelsPage({ searchParams }: { searchParams: Promi
           <div className="max-w-3xl">
             <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-secondary"><ShieldCheck className="size-4" />SafeStay™ by Voibee</p>
             <h1 className="mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">Verified stays for better journeys</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-white/80 sm:text-lg">Explore hotels that vendors have enabled for direct booking through Voibee.</p>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-white/80 sm:text-lg">Explore hotels that tenants have enabled for direct booking through Voibee.</p>
           </div>
           <form className="mt-8 flex max-w-3xl flex-col gap-3 rounded-2xl bg-white p-3 shadow-2xl sm:flex-row" action="/hotels">
             {country ? <input type="hidden" name="c" value={country} /> : null}

@@ -8,7 +8,7 @@ import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { ArrowLeft, LockKeyhole, Loader2, Mail, MessageCircle, ShieldCheck, Smartphone } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, LockKeyhole, Loader2, Mail, MessageCircle, ShieldCheck, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,7 @@ function LoginForm() {
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [countryCode, setCountryCode] = useState("+91");
   const [countries, setCountries] = useState<Array<{ name: string; phoneCode: string; flag: string }>>([]);
 
@@ -42,7 +43,7 @@ function LoginForm() {
     setLoading(true);
     const res = await signIn("credentials", { ...values, redirect: false });
     if (res?.error) {
-      toast.error("Invalid email or password. Vendor accounts sign in through Travels Portal.");
+      toast.error("Invalid email or password. Please try again.");
       setLoading(false);
       return;
     }
@@ -167,7 +168,10 @@ function LoginForm() {
           <Label htmlFor="password" className="font-semibold text-foreground">Password <span className="text-destructive">*</span></Label>
           <div className="relative">
             <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input id="password" type="password" placeholder="Enter your password" required className="h-13 rounded-2xl border-border bg-[#fffdf8] pl-11 shadow-none focus-visible:ring-primary" {...register("password")} />
+            <Input id="password" type={showPassword ? "text" : "password"} placeholder="Enter your password" required className="h-13 rounded-2xl border-border bg-[#fffdf8] pl-11 pr-11 shadow-none focus-visible:ring-primary" {...register("password")} />
+            <button type="button" onClick={() => setShowPassword((current) => !current)} className="absolute inset-y-0 right-0 flex items-center px-4 text-muted-foreground transition-colors hover:text-foreground" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword}>
+              {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+            </button>
           </div>
           {errors.password ? (
             <p className="text-xs text-destructive">{errors.password.message}</p>

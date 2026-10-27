@@ -31,7 +31,7 @@ export async function requireUser(callbackUrl?: string): Promise<SessionUser> {
 export async function requireRole(roles: readonly string[]): Promise<SessionUser> {
   const user = await requireUser();
   const actual = String(user.role);
-  const allowed = roles.some((role) => role === actual || (role === "traveler" && actual === "vendor_traveler") || (role === "partner" && actual === "vendor_partner") || (role === "employee" && actual === "vendor_employee"));
+  const allowed = roles.some((role) => role === actual || (role === "traveler" && actual === "tenant_traveler") || (role === "partner" && actual === "tenant_partner"));
   if (!allowed) redirect("/");
   return user;
 }

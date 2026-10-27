@@ -1,6 +1,8 @@
 /** Shared enums & option lists used by models, forms and UI. */
 
-export const ROLES = ["admin", "vendor", "vendor_employee", "vendor_partner", "vendor_traveler"] as const;
+// Portal-only roles (tenant and tenant_employee) are intentionally excluded
+// from the customer-facing Voibee application.
+export const ROLES = ["admin", "tenant_partner", "tenant_traveler"] as const;
 export type Role = (typeof ROLES)[number];
 
 export const PARTNER_TYPES = [
@@ -124,24 +126,6 @@ export type LeaveType = (typeof LEAVE_TYPES)[number];
 export type LeaveRequestStatus = (typeof LEAVE_REQUEST_STATUSES)[number];
 export type HrTaskPriority = (typeof HR_TASK_PRIORITIES)[number];
 export type HrTaskStatus = (typeof HR_TASK_STATUSES)[number];
-
-export const COUNTRY_OPTIONS = [
-  { name: "India", code: "IN", currency: "INR", symbol: "₹" },
-  { name: "United Arab Emirates", code: "AE", currency: "AED", symbol: "د.إ" },
-  { name: "Indonesia", code: "ID", currency: "IDR", symbol: "Rp" },
-  { name: "Maldives", code: "MV", currency: "MVR", symbol: "Rf" },
-  { name: "Singapore", code: "SG", currency: "SGD", symbol: "S$" },
-  { name: "Thailand", code: "TH", currency: "THB", symbol: "฿" },
-  { name: "Malaysia", code: "MY", currency: "MYR", symbol: "RM" },
-  { name: "Vietnam", code: "VN", currency: "VND", symbol: "₫" },
-  { name: "Sri Lanka", code: "LK", currency: "LKR", symbol: "Rs" },
-  { name: "Azerbaijan", code: "AZ", currency: "AZN", symbol: "₼" },
-  { name: "Georgia", code: "GE", currency: "GEL", symbol: "₾" },
-  { name: "Turkey", code: "TR", currency: "TRY", symbol: "₺" },
-  { name: "Japan", code: "JP", currency: "JPY", symbol: "¥" },
-  { name: "France", code: "FR", currency: "EUR", symbol: "€" },
-] as const;
-export type CountryOption = (typeof COUNTRY_OPTIONS)[number];
 
 export const TRIP_CATEGORIES = [
   {label : "Holiday Package",icon : "🌴"},

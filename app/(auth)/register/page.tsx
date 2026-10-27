@@ -57,7 +57,7 @@ function RegisterForm() {
     setLoading(true);
     try {
       const values = getValues();
-      const response = await fetch("/api/auth/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: values.name, mobile: values.mobile, otp, role: "vendor_traveler" }) });
+      const response = await fetch("/api/auth/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: values.name, mobile: values.mobile, otp, role: "tenant_traveler" }) });
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error(data.message || "Registration failed");
       const session = await signIn("credentials", { mobile: values.mobile, otp, redirect: false });
