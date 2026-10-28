@@ -169,7 +169,13 @@ export async function portalSession() {
       },
     });
     if (!response.ok) return null;
-    return response.json();
+    const session = await response.json();
+    const role = session?.user?.role;
+    // The portal and the storefront can be open on the same localhost host
+    // during development. Do not treat a Travel Portal staff session as a
+    // Voibee customer session just because the Auth.js cookie is shared.
+    if (role !== "tenant_traveler" && role !== "tenant_partner") return null;
+    return session;
   } catch (error) {
     console.error(
       "[portal] session unavailable:",

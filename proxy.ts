@@ -33,6 +33,9 @@ function countryCode(req: NextRequest) {
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   if (pathname === "/api" || pathname.startsWith("/api/")) {
+    // Auth.js responses are filtered by the local catch-all route so a
+    // Travel Portal staff cookie cannot become a Voibee customer session.
+    if (pathname.startsWith("/api/auth/")) return NextResponse.next();
     const base = process.env.PORTAL_API_URL;
     const slug = process.env.PORTAL_BUSINESS_SLUG;
     if (!base || !slug) return NextResponse.json({ message: "Portal connection is not configured" }, { status: 503 });
